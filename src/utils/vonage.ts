@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable no-console */
+import path from 'path';
 import Vonage from '@vonage/server-sdk';
 import { UK_NUM_REGEX } from './constants';
 
@@ -9,7 +10,7 @@ const vonage = new Vonage({
   apiKey: process.env.VONAGE_API_KEY as string,
   apiSecret: process.env.VONAGE_API_SECRET as string,
   applicationId: process.env.VONAGE_APPLICATION_ID,
-  privateKey: process.env.VONAGE_APPLICATION_PRIVATE_KEY_PATH,
+  privateKey: path.join(__dirname, '../../vonage_private_key.key'),
 });
 
 interface CallInputType {

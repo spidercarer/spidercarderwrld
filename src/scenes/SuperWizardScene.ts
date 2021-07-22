@@ -6,14 +6,14 @@ import { getUser } from '../utils/getUser';
 export const superWizard = new Scenes.WizardScene(
   'super-wizard',
   async ctx => {
-    //@ts-expect-error
+    // @ts-expect-error
     const { id, is_bot, first_name } = ctx.from;
 
     if (is_bot) {
       ctx.reply('Unfortunatly bot can not create an account with us');
       return ctx.scene.leave();
     }
-    // @ts-expect-error
+    //@ts-expect-error
     ctx.scene.state.me = {};
 
     try {
