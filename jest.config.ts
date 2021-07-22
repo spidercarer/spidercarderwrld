@@ -1,7 +1,7 @@
-export const transform = {
-  '^.+\\.ts?$': 'ts-jest',
+import { Config } from '@jest/types';
+
+// Sync object
+const config: Config.InitialOptions = {
+  verbose: true,
 };
-export const testEnvironment = 'node';
-export const testRegex = './src/.*\\.(test|spec)?\\.(ts|ts)$';
-export const moduleFileExtensions = ['ts', 'tsx', 'js', 'jsx', 'json', 'node'];
-export const roots = ['<rootDir>/src'];
+export default config;
