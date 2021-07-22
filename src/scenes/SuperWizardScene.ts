@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { Entry } from 'contentful-management/dist/typings/export-types';
 import moment from 'moment';
 import { Scenes, Markup } from 'telegraf';
-import { client } from '../utils/contentful';
 import { getUser } from '../utils/getUser';
 
 export const superWizard = new Scenes.WizardScene(

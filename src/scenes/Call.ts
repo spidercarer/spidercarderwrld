@@ -28,15 +28,15 @@ export const callScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async ctx => {
-    // if (
-    //   // @ts-expect-error
-    //   !NUM_REGEX.test(ctx.message.text)
-    // ) {
-    //   await ctx.reply(
-    //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
-    //   );
-    //   return;
-    // }
+    if (
+      //@ts-expect-error
+      !NUM_REGEX.test(ctx.message.text)
+    ) {
+      await ctx.reply(
+        `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+      );
+      return;
+    }
     await ctx.reply(
       `Good,\nReply with the bank name 🏦\n(e.g ${
         // @ts-expect-error
