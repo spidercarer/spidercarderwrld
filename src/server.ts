@@ -288,7 +288,6 @@ export const server = async (
     ]);
   });
   app.post('/vonage-webhook', async (req, res) => {
-    // eslint-disable-next-line no-console
     const { status, to } = req.body;
     if (status === 'started') {
       await ctx.telegram.sendMessage(
@@ -379,5 +378,3 @@ app.listen(port, () =>
   // eslint-disable-next-line no-console
   console.log(`⚡⚡⚡ Server has started on http://localhost:${port}`),
 );
-
-// server();
