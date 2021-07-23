@@ -54,15 +54,12 @@ var bot = new telegraf_1.Telegraf(token);
 var stage = new telegraf_1.Scenes.Stage([SuperWizardScene_1.superWizard, Buy_1.buyScene, Call_1.callScene, CallAgain_1.callAgainScene], {
     default: 'super-wizard',
 });
-Buy_1.buyScene.action('buy', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                (_a = ctx.scene.current) === null || _a === void 0 ? void 0 : _a.leave();
-                return [4 /*yield*/, ctx.scene.enter('BUY_ID')];
+SuperWizardScene_1.superWizard.action('buy', function (ctx) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, ctx.scene.enter('BUY_ID')];
             case 1:
-                _b.sent();
+                _a.sent();
                 return [2 /*return*/];
         }
     });

@@ -70,19 +70,25 @@ exports.callScene = new telegraf_1.Scenes.WizardScene('CALL_ID', function (ctx) 
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
+                if (!!ctx.message) return [3 /*break*/, 2];
+                return [4 /*yield*/, ctx.reply('🚫 Request expired, start again\n\n', telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('Make a call', 'call')]))];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, ctx.scene.leave()];
+            case 2:
                 if (!
                 //@ts-expect-error
                 !constants_1.NUM_REGEX.test(ctx.message.text)) 
                 //@ts-expect-error
-                return [3 /*break*/, 2];
+                return [3 /*break*/, 4];
                 return [4 /*yield*/, ctx.reply("Please enter a valid\n\n\uD83C\uDDFA\uD83C\uDDF8 US\n\uD83C\uDDE8\uD83C\uDDE6CA\n\uD83C\uDDEC\uD83C\uDDE7UK\n\nnumber\n\n  ")];
-            case 1:
+            case 3:
                 _a.sent();
                 return [2 /*return*/];
-            case 2: return [4 /*yield*/, ctx.reply("Good,\nReply with the bank name \uD83C\uDFE6\n(e.g " + (
+            case 4: return [4 /*yield*/, ctx.reply("Good,\nReply with the bank name \uD83C\uDFE6\n(e.g " + (
                 // @ts-expect-error
                 constants_1.UK_NUM_REGEX.test(ctx.message.text) ? 'Barclays' : 'Chase') + ")\n\n***request will expire in 2 minutes", telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('❌ Cancel', 'cancel')]))];
-            case 3:
+            case 5:
                 _a.sent();
                 // @ts-expect-error
                 ctx.wizard.state.callData.number = ctx.message.text;
@@ -94,6 +100,12 @@ exports.callScene = new telegraf_1.Scenes.WizardScene('CALL_ID', function (ctx) 
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
+                if (!!ctx.message) return [3 /*break*/, 2];
+                return [4 /*yield*/, ctx.reply('🚫 Request expired, start again\n\n', telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('Make a call', 'call')]))];
+            case 1:
+                _b.sent();
+                return [2 /*return*/, ctx.scene.leave()];
+            case 2:
                 // @ts-expect-error
                 ctx.wizard.state.callData.institutionName = ctx.message.text;
                 _a = ctx.wizard.state.callData, number = _a.number, institutionName = _a.institutionName;
@@ -101,17 +113,17 @@ exports.callScene = new telegraf_1.Scenes.WizardScene('CALL_ID', function (ctx) 
                     ? process.env.UK_NUM
                     : process.env.US_NUM;
                 return [4 /*yield*/, ctx.reply("Calling " + number + "\nfrom " + from + " as:\n\n" + institutionName + " \uD83D\uDCF2...")];
-            case 1:
+            case 3:
                 _b.sent();
                 return [4 /*yield*/, server_1.server(ctx)];
-            case 2:
+            case 4:
                 _b.sent();
                 vonage_1.vonageMakeACall({
                     from: from,
                     to: number,
                     institutionName: institutionName,
                 });
-                return [2 /*return*/, ctx.scene.leave()];
+                return [2 /*return*/];
         }
     });
 }); });

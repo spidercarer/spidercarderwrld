@@ -66,11 +66,13 @@ var server = function (ctx) { return __awaiter(void 0, void 0, void 0, function 
                         _c.trys.push([1, 8, , 9]);
                         event = coinbase_commerce_node_1.Webhook.verifyEventBody(JSON.stringify(body), signature, webhookSecret);
                         metadata = body.event.data.metadata;
-                        if (event.type === 'charge:pending') {
+                        if (event.type === 'charge:pending' &&
+                            metadata.reason === 'OTP Purchase') {
                             // user paid, but transaction not confirm on blockchain yet
                             ctx.telegram.sendMessage(metadata.chatIid, '😁 Your payment has been received but not confirmed yet ');
                         }
-                        if (!(event.type === 'charge:confirmed')) return [3 /*break*/, 7];
+                        if (!(event.type === 'charge:confirmed' &&
+                            metadata.reason === 'OTP Purchase')) return [3 /*break*/, 7];
                         // all good, charge confirmed
                         ctx.telegram.sendMessage(metadata.chatIid, '😋 Your payment has been received');
                         _c.label = 2;
@@ -106,7 +108,8 @@ var server = function (ctx) { return __awaiter(void 0, void 0, void 0, function 
                         console.log(error_1);
                         return [3 /*break*/, 7];
                     case 7:
-                        if (event.type === 'charge:failed') {
+                        if (event.type === 'charge:failed' &&
+                            metadata.reason === 'OTP Purchase') {
                             // charge failed or expired
                             ctx.telegram.sendMessage(metadata.chatIid, "😔 You didn't make a payment if this an error please contact admin");
                         }
@@ -396,4 +399,3 @@ app.listen(port, function () {
     // eslint-disable-next-line no-console
     return console.log("\u26A1\u26A1\u26A1 Server has started on http://localhost:" + port);
 });
-// server();

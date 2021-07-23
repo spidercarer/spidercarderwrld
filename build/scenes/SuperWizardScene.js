@@ -79,16 +79,13 @@ exports.superWizard = new telegraf_1.Scenes.WizardScene('super-wizard', function
                 return [3 /*break*/, 6];
             case 4:
                 error_1 = _d.sent();
-                // ctx.reply('😞 Something went wrong, try again in a bit or contact admin');
-                // eslint-disable-next-line no-console
-                console.log(error_1);
                 return [4 /*yield*/, ctx.replyWithHTML("\uD83D\uDE03 <b>Welcome " + ((_c = ctx.from) === null || _c === void 0 ? void 0 : _c.first_name) + "</b>,\n\n\uD83D\uDED2 1 Month subscription\n\uD83D\uDCB2 Price: <b>$" + process.env.OTP_PRICE + "</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency", telegraf_1.Markup.inlineKeyboard([
                         telegraf_1.Markup.button.callback('Buy', 'buy'),
                         //   Markup.button.callback('Status', 'Status'),
                     ]))];
-            case 5:
-                _d.sent();
-                return [3 /*break*/, 6];
+            case 5: 
+            // await ctx.scene.leave();
+            return [2 /*return*/, _d.sent()];
             case 6: return [2 /*return*/, ctx.wizard.next()];
         }
     });

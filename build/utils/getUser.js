@@ -45,10 +45,12 @@ var contentful_1 = require("./contentful");
 var getUser = function (_a) {
     var id = _a.id;
     return __awaiter(void 0, void 0, void 0, function () {
-        var space, env, user, hasExpired;
+        var space, env, user, hasExpired, error_1;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, contentful_1.client.getSpace(process.env.CONTENTFUL_SPACE)];
+                case 0:
+                    _b.trys.push([0, 4, , 5]);
+                    return [4 /*yield*/, contentful_1.client.getSpace(process.env.CONTENTFUL_SPACE)];
                 case 1:
                     space = _b.sent();
                     return [4 /*yield*/, space.getEnvironment('master')];
@@ -62,10 +64,14 @@ var getUser = function (_a) {
                 case 3:
                     user = _b.sent();
                     hasExpired = moment_1.default(user.items[0].fields.membershipExpiry['en-US']).isSameOrBefore(moment_1.default());
-                    return [2 /*return*/, {
+                    return [2 /*return*/, Promise.resolve({
                             user: user.items[0],
                             hasExpired: hasExpired,
-                        }];
+                        })];
+                case 4:
+                    error_1 = _b.sent();
+                    return [2 /*return*/, Promise.reject()];
+                case 5: return [2 /*return*/];
             }
         });
     });
