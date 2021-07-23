@@ -28,6 +28,14 @@ export const callScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async ctx => {
+    if (!ctx.message) {
+      await ctx.reply(
+        '🚫 Request expired, start again\n\n',
+        Markup.inlineKeyboard([Markup.button.callback('Make a call', 'call')]),
+      );
+
+      return ctx.scene.leave();
+    }
     if (
       //@ts-expect-error
       !NUM_REGEX.test(ctx.message.text)
@@ -49,6 +57,14 @@ export const callScene = new Scenes.WizardScene(
     return ctx.wizard.next();
   },
   async ctx => {
+    if (!ctx.message) {
+      await ctx.reply(
+        '🚫 Request expired, start again\n\n',
+        Markup.inlineKeyboard([Markup.button.callback('Make a call', 'call')]),
+      );
+
+      return ctx.scene.leave();
+    }
     // @ts-expect-error
     ctx.wizard.state.callData.institutionName = ctx.message.text;
     // @ts-expect-error

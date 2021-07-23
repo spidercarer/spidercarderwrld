@@ -34,7 +34,10 @@ export const server = async (
 
       const { metadata } = body.event.data;
 
-      if (event.type === 'charge:pending') {
+      if (
+        event.type === 'charge:pending' &&
+        metadata.reason === 'OTP Purchase'
+      ) {
         // user paid, but transaction not confirm on blockchain yet
         ctx.telegram.sendMessage(
           metadata.chatIid,
@@ -42,7 +45,10 @@ export const server = async (
         );
       }
 
-      if (event.type === 'charge:confirmed') {
+      if (
+        event.type === 'charge:confirmed' &&
+        metadata.reason === 'OTP Purchase'
+      ) {
         // all good, charge confirmed
         ctx.telegram.sendMessage(
           metadata.chatIid,
@@ -78,7 +84,10 @@ export const server = async (
         }
       }
 
-      if (event.type === 'charge:failed') {
+      if (
+        event.type === 'charge:failed' &&
+        metadata.reason === 'OTP Purchase'
+      ) {
         // charge failed or expired
         ctx.telegram.sendMessage(
           metadata.chatIid,

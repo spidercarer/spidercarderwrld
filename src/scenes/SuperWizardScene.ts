@@ -41,11 +41,8 @@ export const superWizard = new Scenes.WizardScene(
 
       await reply;
     } catch (error) {
-      // ctx.reply('😞 Something went wrong, try again in a bit or contact admin');
-      // eslint-disable-next-line no-console
-      console.log(error);
-
-      await ctx.replyWithHTML(
+      // await ctx.scene.leave();
+      return await ctx.replyWithHTML(
         `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`,
         Markup.inlineKeyboard([
           Markup.button.callback('Buy', 'buy'),

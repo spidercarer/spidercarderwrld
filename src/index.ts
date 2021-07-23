@@ -23,8 +23,7 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
   },
 );
 
-buyScene.action('buy', async ctx => {
-  ctx.scene.current?.leave();
+superWizard.action('buy', async ctx => {
   await ctx.scene.enter('BUY_ID');
 });
 

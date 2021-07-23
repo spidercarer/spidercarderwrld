@@ -15,10 +15,5 @@
     "skipLibCheck": true
   },
   "include": ["src/**/*", "global.d.ts"],
-  "exclude": [
-    "src/**/*.spec.ts",
-    "node_modules",
-    "./node_modules",
-    "./node_modules/*"
-  ]
+  "exclude": ["src/**/*.spec.ts", "node_modules"]
 }

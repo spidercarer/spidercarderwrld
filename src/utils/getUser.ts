@@ -11,19 +11,23 @@ export const getUser = async ({
   user: Entry;
   hasExpired: boolean;
 }> => {
-  const space = await client.getSpace(process.env.CONTENTFUL_SPACE as string);
-  const env = await space.getEnvironment('master');
-  const user = await env.getEntries({
-    content_type: 'user',
-    include: 0,
-    'fields.telegramId': id,
-  });
-  const hasExpired = moment(
-    user.items[0].fields.membershipExpiry['en-US'],
-  ).isSameOrBefore(moment());
+  try {
+    const space = await client.getSpace(process.env.CONTENTFUL_SPACE as string);
+    const env = await space.getEnvironment('master');
+    const user = await env.getEntries({
+      content_type: 'user',
+      include: 0,
+      'fields.telegramId': id,
+    });
+    const hasExpired = moment(
+      user.items[0].fields.membershipExpiry['en-US'],
+    ).isSameOrBefore(moment());
 
-  return {
-    user: user.items[0],
-    hasExpired,
-  };
+    return Promise.resolve({
+      user: user.items[0],
+      hasExpired,
+    });
+  } catch (error) {
+    return Promise.reject();
+  }
 };
