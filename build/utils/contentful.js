@@ -20,7 +20,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.client = void 0;
-var contentful = __importStar(require("contentful-management"));
+const contentful = __importStar(require("contentful-management"));
 exports.client = contentful.createClient({
     accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
 });
