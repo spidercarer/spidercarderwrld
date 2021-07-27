@@ -28,11 +28,11 @@ exports.superWizard = new telegraf_1.Scenes.WizardScene('super-wizard', (ctx) =>
         const { hasExpired, user } = yield getUser_1.getUser({ id });
         ctx.scene.state.me.id = user.fields.id;
         const reply = hasExpired
-            ? ctx.replyWithHTML(`👋 <b>Welcome back ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>`, telegraf_1.Markup.inlineKeyboard([
+            ? ctx.replyWithHTML(`👋 <b>Welcome ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>`, telegraf_1.Markup.inlineKeyboard([
                 telegraf_1.Markup.button.callback('Renew', 'buy'),
             ]))
-            : ctx.replyWithHTML(`👋 <b>Welcome back ${first_name}</b>,\n\n👥 you are already subscribed, you are on the <b>${user.fields.membershipType['en-US']}</b> plan and your subscription expires in <b>${moment_1.default(user.fields.membershipExpiry['en-US']).toNow(true)}</b>`, telegraf_1.Markup.inlineKeyboard([
-                telegraf_1.Markup.button.callback('📞 Make a call', 'call'),
+            : ctx.replyWithHTML(`👋 <b>Welcome ${first_name}</b>,\n\n👥 you are subscribed, you are on the <b>${user.fields.membershipType['en-US']}</b> plan and your subscription expires in <b>${moment_1.default(user.fields.membershipExpiry['en-US']).toNow(true)}</b>`, telegraf_1.Markup.inlineKeyboard([
+                telegraf_1.Markup.button.callback("🎬 Let's go", 'start'),
             ]));
         yield reply;
     }
@@ -40,14 +40,5 @@ exports.superWizard = new telegraf_1.Scenes.WizardScene('super-wizard', (ctx) =>
         return yield ctx.replyWithHTML(`😃 <b>Welcome ${(_a = ctx.from) === null || _a === void 0 ? void 0 : _a.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`, telegraf_1.Markup.inlineKeyboard([
             telegraf_1.Markup.button.callback('Buy', 'buy'),
         ]));
-    }
-    return ctx.wizard.next();
-}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = ctx.scene.state.me;
-    if (id) {
-        return ctx.scene.enter('CALL_ID');
-    }
-    else {
-        return ctx.scene.enter('BUY_ID');
     }
 }));

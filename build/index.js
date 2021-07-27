@@ -11,29 +11,120 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 const telegraf_1 = require("telegraf");
+const AccountStep_1 = require("./scenes/AccountStep");
+const BankStep_1 = require("./scenes/BankStep");
 const Buy_1 = require("./scenes/Buy");
-const Call_1 = require("./scenes/Call");
-const CallAgain_1 = require("./scenes/CallAgain");
+const CallOnNumInput_1 = require("./scenes/CallOnNumInput");
+const CardStep_1 = require("./scenes/CardStep");
+const PayStep_1 = require("./scenes/PayStep");
+const Start_1 = require("./scenes/Start");
 const SuperWizardScene_1 = require("./scenes/SuperWizardScene");
-const constants_1 = require("./utils/constants");
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
     throw new Error('BOT_TOKEN must be provided!');
 }
 const bot = new telegraf_1.Telegraf(token);
-const stage = new telegraf_1.Scenes.Stage([SuperWizardScene_1.superWizard, Buy_1.buyScene, Call_1.callScene, CallAgain_1.callAgainScene], {
+const stage = new telegraf_1.Scenes.Stage([
+    SuperWizardScene_1.superWizard,
+    Buy_1.buyScene,
+    CallOnNumInput_1.callOnNumInputScene,
+    Start_1.startScene,
+    BankStep_1.bankStepScene,
+    PayStep_1.payStepScene,
+    AccountStep_1.accountStepScene,
+    CardStep_1.cardStepScene,
+], {
     default: 'super-wizard',
 });
+SuperWizardScene_1.superWizard.action('start', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('START_ID');
+}));
 SuperWizardScene_1.superWizard.action('buy', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     yield ctx.scene.enter('BUY_ID');
 }));
-Call_1.callScene.action('no', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    (_a = ctx.scene.current) === null || _a === void 0 ? void 0 : _a.leave();
-    yield ctx.scene.enter('CALL_ID');
+BankStep_1.bankStepScene.action('yesCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield ctx.wizard.next();
+        return ctx.wizard.steps[3](ctx);
+    }), 20000);
 }));
-Call_1.callScene.action('yes', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    yield ctx.scene.enter('CALL_AGAIN_ID', ctx.scene.state);
+PayStep_1.payStepScene.action('yesCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield ctx.wizard.next();
+        return ctx.wizard.steps[4](ctx);
+    }), 20000);
+}));
+AccountStep_1.accountStepScene.action('yesCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield ctx.wizard.next();
+        return ctx.wizard.steps[5](ctx);
+    }), 20000);
+}));
+CardStep_1.cardStepScene.action('yesCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
+    setTimeout(() => __awaiter(void 0, void 0, void 0, function* () {
+        yield ctx.wizard.next();
+        return ctx.wizard.steps[4](ctx);
+    }), 20000);
+}));
+BankStep_1.bankStepScene.action('noCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('super-wizard');
+}));
+PayStep_1.payStepScene.action('noCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('super-wizard');
+}));
+AccountStep_1.accountStepScene.action('noCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('super-wizard');
+}));
+CardStep_1.cardStepScene.action('noCallAgain', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('super-wizard');
+}));
+BankStep_1.bankStepScene.action('cancel', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.reply('Operation cancelled successfully ✅');
+    return ctx.scene.enter('super-wizard');
+}));
+PayStep_1.payStepScene.action('cancel', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.reply('Operation cancelled successfully ✅');
+    return ctx.scene.enter('super-wizard');
+}));
+AccountStep_1.accountStepScene.action('cancel', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.reply('Operation cancelled successfully ✅');
+    return ctx.scene.enter('super-wizard');
+}));
+CardStep_1.cardStepScene.action('cancel', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.reply('Operation cancelled successfully ✅');
+    return ctx.scene.enter('super-wizard');
+}));
+CardStep_1.cardStepScene.action('debit', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.wizard.state.callData.cardType = 'debit';
+    yield ctx.wizard.next();
+    return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
+}));
+CardStep_1.cardStepScene.action('credit', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.wizard.state.callData.cardType = 'credit';
+    yield ctx.wizard.next();
+    return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
+}));
+AccountStep_1.accountStepScene.action('start', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.scene.current.leave();
+    return ctx.scene.enter('START_ID');
+}));
+AccountStep_1.accountStepScene.action('yes', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.wizard.state.callData.askCardInfo = 'yes';
+    yield ctx.wizard.next();
+    return ctx.wizard.steps[4](ctx);
+}));
+AccountStep_1.accountStepScene.action('no', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.wizard.state.callData.askCardInfo = 'no';
+    yield ctx.wizard.next();
+    return ctx.wizard.steps[4](ctx);
+}));
+AccountStep_1.accountStepScene.action('call', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    yield ctx.wizard.next();
+    return ctx.wizard.steps[5](ctx);
 }));
 Buy_1.buyScene.action('bitcoin', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const { bitcoin } = ctx.scene.state.currencyAddr
@@ -48,7 +139,7 @@ Buy_1.buyScene.action('bitcoin', (ctx) => __awaiter(void 0, void 0, void 0, func
     }
     yield ctx.replyWithHTML(`💵 <b>Bitcoin payment address</b>\n\nThe bot will let know once payment has been confirmed`);
     yield ctx.reply(`${bitcoin}`);
-    return ctx.reply(`***Please don't reuse this address for future payments`);
+    return ctx.replyWithHTML(`<i>***Please don't reuse this address for future payments***</i>`);
 }));
 Buy_1.buyScene.action('litecoin', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const { litecoin } = ctx.scene.state.currencyAddr
@@ -63,7 +154,7 @@ Buy_1.buyScene.action('litecoin', (ctx) => __awaiter(void 0, void 0, void 0, fun
     }
     yield ctx.replyWithHTML(`💵 <b>Litecoin payment address</b>\n\nThe bot will let know once payment has been confirmed`);
     yield ctx.reply(`${litecoin}`);
-    return ctx.reply(`***Please don't reuse this address for future payments`);
+    return ctx.replyWithHTML(`<i>***Please don't reuse this address for future payments***</i>`);
 }));
 Buy_1.buyScene.action('ethereum', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     const { ethereum } = ctx.scene.state.currencyAddr
@@ -78,22 +169,14 @@ Buy_1.buyScene.action('ethereum', (ctx) => __awaiter(void 0, void 0, void 0, fun
     }
     yield ctx.replyWithHTML(`💵 <b>Ethereum payment address</b>\n\nThe bot will let know once payment has been confirmed`);
     yield ctx.reply(`${ethereum}`);
-    return ctx.reply(`***Please don't reuse this address for future payments`);
-}));
-Call_1.callScene.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    ctx.scene.enter('super-wizard');
-}));
-Call_1.callScene.action('cancel', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    yield ctx.scene.leave();
-    yield ctx.reply('Operation cancelled successfully ✅', telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('📞 Make a call', 'call')]));
+    return ctx.replyWithHTML(`<i>***Please don't reuse this address for future payments***</i>`);
 }));
 SuperWizardScene_1.superWizard.action('call', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    return ctx.scene.enter('CALL_ID');
+    return ctx.scene.enter('START_ID');
 }));
-SuperWizardScene_1.superWizard.hears('call', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    return ctx.scene.enter('CALL_ID');
+SuperWizardScene_1.superWizard.on('text', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    return ctx.scene.enter('START_ID');
 }));
-SuperWizardScene_1.superWizard.hears(constants_1.NUM_REGEX, (ctx) => __awaiter(void 0, void 0, void 0, function* () { return ctx.scene.enter('CALL_ID'); }));
 bot.use(telegraf_1.session());
 bot.use(stage.middleware());
 bot.launch();

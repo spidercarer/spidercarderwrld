@@ -6,7 +6,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "start:dev": "nodemon",
-    "start": "yarn run build && node build/index.js",
+    "start": "node build/index.js",
     "lint": "eslint . --ext .ts",
     "prettier-format": "run-script-os",
     "prettier-format:win32": "prettier --config .prettierrc \"./src/**/*.ts\" --write",
@@ -18,7 +18,7 @@
     "prettier-watch:default": "onchange 'src/**/*.ts' -- prettier --write {{changed}}",
     "test": "jest",
     "test:dev": "jest --watchAll",
-    "prepare": "husky install"
+    "postinstall": "tsc"
   },
   "husky": {
     "hooks": {
@@ -38,7 +38,7 @@
     "eslint": "^7.31.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.1.2",
-    "husky": "^7.0.0",
+    "husky": "^7.0.1",
     "nodemon": "^2.0.12",
     "onchange": "^7.1.0",
     "prettier": "^2.3.2",

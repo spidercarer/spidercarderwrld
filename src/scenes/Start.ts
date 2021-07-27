@@ -1,52 +1,57 @@
-// /* eslint-disable @typescript-eslint/camelcase */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import moment from 'moment';
-// import { Markup, Scenes } from 'telegraf';
-// import { User } from 'telegraf/typings/core/types/typegram';
-// import { client } from '../utils/contentful';
+import { Markup, Scenes } from 'telegraf';
+import { getUser } from '../utils/getUser';
 
-// export const startScene = new Scenes.WizardScene('START', async ctx => {
-//   const { id, is_bot, first_name } = ctx.from as User;
+export const startScene = new Scenes.WizardScene(
+  'START_ID',
+  async ctx => {
+    try {
+      const { hasExpired } = await getUser({ id: ctx.from?.id as number });
+      if (hasExpired) {
+        await ctx.replyWithHTML(
+          `👋 <b>Welcome back ${ctx.from?.first_name}</b>,\n\nYour subscirption has <b>expired.</b>`,
+          Markup.inlineKeyboard([
+            Markup.button.callback('Renew', 'buy'),
+            //   Markup.button.callback('Status', 'Status'),
+          ]),
+        );
+        return ctx.scene.leave();
+      }
+    } catch (error) {
+      await ctx.replyWithHTML(
+        `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`,
+        Markup.inlineKeyboard([
+          Markup.button.callback('Buy', 'buy'),
+          //   Markup.button.callback('Status', 'Status'),
+        ]),
+      );
+      return ctx.scene.leave();
+    }
 
-//   if (is_bot) {
-//     ctx.reply('Unfortunatly bot can not create an account with us');
-//     return ctx.wizard.next();
-//   }
+    await ctx.replyWithHTML(
+      `👍🏽 Awesome, Let's start\n\nReply with the number of the service you would like to get infos for?\n\n1. <b>Bank</b>\n<i>~ Barclays, Chase ~</i>\n\n2. <b>Pay</b>\n<i>~ Apple pay, Google pay ~</i>\n\n3. <b>Account</b>\n<i>~ Coinbase, Instagram ~</i>\n\n4. <b>Card</b>\n<i>~ Debit or Credit card details ~</i>\n\n<i>***request will expire in 2 minutes***</i>`,
+    );
 
-//   try {
-//     const getUser = await client.getEntries({
-//       content_type: 'user',
-//       'fields.telegramId': id,
-//     });
-//     const userInfo = getUser.items;
-//     if (userInfo.length) {
-//       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//       userInfo.map((info: any) => {
-//         ctx.replyWithHTML(
-//           `👋 <b>Welcome back ${first_name}</b>,\n\n👥 you are already subscribed, you are on the <b>${
-//             info.fields.memebership.fields.type
-//           }</b> plan and your subscription expires on <b>${moment(
-//             info.fields.memebership.fields.expiry,
-//           ).format('DD MMM YYYY')}</b>`,
-//           Markup.inlineKeyboard([
-//             Markup.button.callback('Make a call', 'call'),
-//             //   Markup.button.callback('Status', 'Status'),
-//           ]),
-//         );
-//       });
-//       return ctx.wizard.next();
-//     }
-//   } catch (error) {
-//     // eslint-disable-next-line no-console
-//     console.log(error);
-//   }
+    return ctx.wizard.next();
+  },
+  async ctx => {
+    // @ts-expect-error
+    if (ctx.message && ctx.message.text === '1') {
+      return ctx.scene.enter('BANK_STEP_ID');
+    }
+    // @ts-expect-error
+    if (ctx.message && ctx.message.text === '2') {
+      return ctx.scene.enter('PAY_STEP_ID');
+    }
+    // @ts-expect-error
+    if (ctx.message && ctx.message.text === '3') {
+      return ctx.scene.enter('ACCOUNT_STEP_ID');
+    }
+    // @ts-expect-error
+    if (ctx.message && ctx.message.text === '4') {
+      return ctx.scene.enter('CARD_STEP_ID');
+    }
 
-//   ctx.replyWithHTML(
-//     `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`,
-//     Markup.inlineKeyboard([
-//       Markup.button.callback('Buy', 'Buy'),
-//       //   Markup.button.callback('Status', 'Status'),
-//     ]),
-//   );
-//   return ctx.wizard.next();
-// });
+    await ctx.reply('❌ Invalid option, please select again');
+    return;
+  },
+);
