@@ -233,5 +233,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       cardType,
       askCardInfo,
     });
+
+    return ctx.wizard.next();
   },
 ];
