@@ -58,6 +58,9 @@ export const steps = (step: string): Array<Middleware<C>> => [
     );
     // @ts-expect-error ts doesn't not recognise state
     ctx.scene.state[ctx.message.text] = ctx.chat?.id || ctx.from?.id;
+    // eslint-disable-next-line prettier/prettier
+    // eslint-disable-next-line no-console
+    console.log(ctx.scene.state);
 
     // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.number = ctx.message.text;

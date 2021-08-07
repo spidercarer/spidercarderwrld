@@ -491,9 +491,6 @@ export const server = async (
       ? ctx.chat.id
       : undefined;
 
-    // eslint-disable-next-line prettier/prettier
-    console.log(ctx.scene.state);
-
     if (!chatId) {
       return;
     }
