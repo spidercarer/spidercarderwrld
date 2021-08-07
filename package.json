@@ -4,7 +4,7 @@
   "description": "Rocket OTP Telegram bot",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "rm -rf build && tsc",
     "start:dev": "nodemon",
     "start": "yarn build && node build/index.js",
     "lint": "eslint . --ext .ts",
@@ -41,7 +41,6 @@
     "nodemon": "^2.0.12",
     "onchange": "^7.1.0",
     "prettier": "^2.3.2",
-    "rimraf": "^3.0.0",
     "run-script-os": "^1.1.1",
     "ts-node": "^10.1.0",
     "typescript": "^4.2.0"
