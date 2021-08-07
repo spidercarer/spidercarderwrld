@@ -10,7 +10,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     await ctx.replyWithHTML(
       `👍🏽 Awesome, Let's start\n\nReply with the number 📱\n(ex. ${
         Math.round(Math.random()) ? UK_NUM : US_NUM
-      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(
+      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b>\n\n<i>~ ${step.replace(
         /^./,
         step[0].toUpperCase(),
       )} ~</i></b>`,
@@ -50,7 +50,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
         )
           ? `${step === 'account' ? 'Gmail' : 'Barclays'}`
           : `${step === 'account' ? 'Paypal' : 'Chase'}`
-      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(
+      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b>\n\n<i>~ ${step.replace(
         /^./,
         step[0].toUpperCase(),
       )} ~</i></b>`,
@@ -73,7 +73,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
         )
           ? '448081961740'
           : '18882019292'
-      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><b><i>~ ${step.replace(
+      })\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><b>\n\n<i>~ ${step.replace(
         /^./,
         step[0].toUpperCase(),
       )} ~</i></b></b>`,
@@ -100,7 +100,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
           await ctx.replyWithHTML(
             `Perfect, Reply with the wallet service name \n(e.g ${
               Math.round(Math.random()) ? 'Apple pay' : 'Google pay'
-            })\n\n<i>***request will expire in 2 minutes***</i><b><i>~ ${step.replace(
+            })\n\n<i>***request will expire in 2 minutes***</i><b>\n\n<i>~ ${step.replace(
               /^./,
               step[0].toUpperCase(),
             )} ~</i></b>`,
@@ -126,7 +126,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
             return;
           }
           await ctx.replyWithHTML(
-            `💳 Select card type\n\n<i>***request will expire in 2 minutes***</i><b><i>~ ${step.replace(
+            `💳 Select card type\n\n<i>***request will expire in 2 minutes***</i><b>\n\n<i>~ ${step.replace(
               /^./,
               step[0].toUpperCase(),
             )} ~</i></b>`,
@@ -166,7 +166,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
         },
         async (ctx: any) => {
           await ctx.replyWithHTML(
-            `Click call once you have sent the OTP.\n\n<i>***request will expire in 2 minutes***</i><b><i>~ ${step.replace(
+            `Click call once you have sent the OTP.\n\n<i>***request will expire in 2 minutes***</i><b>\n\n<i>~ ${step.replace(
               /^./,
               step[0].toUpperCase(),
             )} ~</i></b>`,
@@ -215,7 +215,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
 
     await ctx.replyWithHTML(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...
-          \n<b><i>~ ${step.replace(/^./, step[0].toUpperCase())} ~</i></b>`,
+          \n<b>\n\n<i>~ ${step.replace(/^./, step[0].toUpperCase())} ~</i></b>`,
     );
 
     await server(ctx);
