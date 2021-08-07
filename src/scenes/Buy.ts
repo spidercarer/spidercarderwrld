@@ -22,7 +22,8 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
     ]),
   );
 
-  await server(ctx);
+  const chatId = ctx.chat?.id || ctx.from?.id;
+  await server(ctx, chatId);
 
   // @ts-expect-error ts doesn't not recognise state
   ctx.wizard.state.currencyAddr = {
@@ -30,5 +31,5 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
     ethereum: coinbaseCharge.addresses.ethereum,
     litecoin: coinbaseCharge.addresses.litecoin,
   };
-  return ctx.wizard.next();
+  return ctx.scene.leave();
 });

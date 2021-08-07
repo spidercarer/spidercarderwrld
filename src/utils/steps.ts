@@ -56,11 +56,6 @@ export const steps = (step: string): Array<Middleware<C>> => [
       )} ~</i></b>`,
       Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
-    // @ts-expect-error ts doesn't not recognise state
-    ctx.scene.state[ctx.message.text] = ctx.chat?.id || ctx.from?.id;
-    // eslint-disable-next-line prettier/prettier
-    // eslint-disable-next-line no-console
-    console.log(ctx.scene.state);
 
     // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.number = ctx.message.text;
@@ -222,7 +217,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
       )} ~</i></b>`,
     );
 
-    await server(ctx);
+    const chatId = ctx.chat?.id || ctx.from?.id;
+    await server(ctx, chatId);
 
     await vonageMakeACall({
       from,

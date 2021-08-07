@@ -24,6 +24,7 @@ export const server = async (
     //@ts-expect-error might fix this later
     wizard: Scenes.WizardContextWizard<unknown>;
   },
+  chatId?: number,
 ): Promise<void> => {
   app.post('/coinbase-webhook', async (req, res) => {
     const body = req.body;
@@ -482,15 +483,6 @@ export const server = async (
   });
   app.post('/vonage-webhook', async (req, res) => {
     const { status, to } = req.body;
-
-    // @ts-expect-error userCalling will be at runtime
-    const chatId = ctx.scene.state[to]
-      ? // @ts-expect-error userCalling will be at runtime
-        ctx.scene.state[to]
-      : ctx.chat
-      ? ctx.chat.id
-      : undefined;
-
     if (!chatId) {
       return;
     }
