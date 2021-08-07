@@ -493,6 +493,7 @@ export const server = async (
 
     // @ts-expect-error userCalling will be at runtime
     console.log('userCalling: ', ctx.wizard.state.userCalling);
+    console.log('scene: ', ctx.scene.state);
     console.log('ctx.chat.id: ', ctx.chat?.id);
 
     if (!chatId) {
