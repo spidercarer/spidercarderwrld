@@ -217,6 +217,10 @@ superWizard.on('text', async (ctx) => {
 // bot.use(Telegraf.log());
 bot.use(session());
 bot.use(stage.middleware());
+bot.catch((err) => {
+  // eslint-disable-next-line no-console
+  console.log(err);
+});
 bot.launch();
 
 // Enable graceful stop
