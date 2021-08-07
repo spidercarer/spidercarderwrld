@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/ban-ts-ignore */
 import { resources } from 'coinbase-commerce-node';
 import { Markup, Scenes } from 'telegraf';
 import { server } from '../server';
 import { createCharge } from '../utils/coinbase';
 
-export const buyScene = new Scenes.WizardScene('BUY_ID', async ctx => {
+export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
   const coinbaseCharge: resources.Charge = await createCharge(
     'OTP',
     `OTP Buying`,
@@ -25,7 +24,7 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async ctx => {
 
   await server(ctx);
 
-  // @ts-expect-error
+  // @ts-expect-error ts doesn't not recognise state
   ctx.wizard.state.currencyAddr = {
     bitcoin: coinbaseCharge.addresses.bitcoin,
     ethereum: coinbaseCharge.addresses.ethereum,

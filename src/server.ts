@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-console */
 import { Webhook } from 'coinbase-commerce-node';
@@ -20,9 +19,9 @@ app.use(
 
 export const server = async (
   ctx: Context<Update> & {
-    //@ts-expect-error
+    //@ts-expect-error might fix this later
     scene: Scenes.SceneContextScene<unknown, Scenes.WizardSessionData>;
-    //@ts-expect-error
+    //@ts-expect-error might fix this later
     wizard: Scenes.WizardContextWizard<unknown>;
   },
 ): Promise<void> => {
@@ -46,7 +45,7 @@ export const server = async (
       ) {
         // user paid, but transaction not confirm on blockchain yet
         ctx.telegram.sendMessage(
-          metadata.chatIid,
+          metadata.chatId,
           '😁 Your payment has been received but not confirmed yet ',
         );
       }
@@ -57,7 +56,7 @@ export const server = async (
       ) {
         // all good, charge confirmed
         ctx.telegram.sendMessage(
-          metadata.chatIid,
+          metadata.chatId,
           '😋 Your payment has been received',
         );
         try {
@@ -71,10 +70,7 @@ export const server = async (
               telegramId: { 'en-US': ctx.from?.id },
               username: { 'en-US': ctx.from?.username },
               membershipExpiry: {
-                'en-US': moment
-                  .utc()
-                  .add(1, 'month')
-                  .format(),
+                'en-US': moment.utc().add(1, 'month').format(),
               },
               membershipType: 'SILVER',
             },
@@ -96,7 +92,7 @@ export const server = async (
       ) {
         // charge failed or expired
         ctx.telegram.sendMessage(
-          metadata.chatIid,
+          metadata.chatId,
           "😔 You didn't make a payment if this an error please contact admin",
         );
       }
@@ -133,13 +129,26 @@ export const server = async (
 
   app.post('/vonage-webhook/pin/:chatId/:language', async (req, res) => {
     const { dtmf } = req.body;
+    const { chatId, language } = req.params;
     if (dtmf && dtmf.digits === '*') {
+      await ctx.telegram.sendMessage(
+        chatId,
+        `OTP not received ❌\n\nCall again`,
+        {
+          parse_mode: 'HTML',
+          reply_markup: Markup.inlineKeyboard([
+            Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
+            Markup.button.callback('👎🏽 No', 'noCallAgain'),
+          ]).reply_markup,
+        },
+      );
+
       return res.json([
         {
           action: 'talk',
           text: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
           style: 2,
-          language: req.params.language,
+          language,
         },
       ]);
     }
@@ -289,9 +298,17 @@ export const server = async (
     const { language, chatId, step } = req.params;
 
     if (dtmf && dtmf.digits === '*') {
-      await ctx.telegram.sendMessage(chatId, `OTP not received ❌`, {
-        parse_mode: 'HTML',
-      });
+      await ctx.telegram.sendMessage(
+        chatId,
+        `OTP not received ❌\n\nCall again`,
+        {
+          parse_mode: 'HTML',
+          reply_markup: Markup.inlineKeyboard([
+            Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
+            Markup.button.callback('👎🏽 No', 'noCallAgain'),
+          ]).reply_markup,
+        },
+      );
 
       return res.json([
         {
@@ -466,37 +483,35 @@ export const server = async (
   app.post('/vonage-webhook', async (req, res) => {
     const { status, to } = req.body;
 
+    // @ts-expect-error userCalling will be at runtime
+    const chatId = ctx.wizard.state.userCalling
+      ? // @ts-expect-error userCalling will be at runtime
+        ctx.wizard.state.userCalling[to]
+      : ctx.chat
+      ? ctx.chat.id
+      : undefined;
+
+    if (!chatId) {
+      return;
+    }
+
     if (status === 'started') {
-      await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
-        `Calling (${to}) 📞`,
-      );
+      await ctx.telegram.sendMessage(chatId, `Calling (${to}) 📞`);
     }
 
     if (status === 'ringing') {
-      await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
-        `Ringing (${to}) 🔔`,
-      );
+      await ctx.telegram.sendMessage(chatId, `Ringing (${to}) 🔔`);
     }
 
     if (status === 'answered') {
-      await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
-        `On call (${to}) 🤳🏽`,
-        {
-          parse_mode: 'HTML',
-        },
-      );
+      await ctx.telegram.sendMessage(chatId, `On call (${to}) 🤳🏽`, {
+        parse_mode: 'HTML',
+      });
     }
 
     if (status === 'busy') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '<b>On another call </b> ❌\n\nCall again',
         {
           parse_mode: 'HTML',
@@ -510,8 +525,7 @@ export const server = async (
 
     if (status === 'machine') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '<b>Voicemail</b> ❌\n\nCall again',
         {
           parse_mode: 'HTML',
@@ -525,22 +539,15 @@ export const server = async (
 
     if (status === 'cancelled') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
-        'Call could not be place, the number is unreachable ❌.',
-        {
-          parse_mode: 'HTML',
-          reply_markup: Markup.inlineKeyboard([
-            Markup.button.callback('Make a call', 'call'),
-          ]).reply_markup,
-        },
+        chatId,
+        'Call could not be placed, the number is unreachable ❌.',
       );
+      ctx.scene.enter('super-wizard');
     }
 
     if (status === 'rejected' || status === 'declined') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '<b>Hung up</b> ❌\n\nCall again',
         {
           parse_mode: 'HTML',
@@ -554,8 +561,7 @@ export const server = async (
 
     if (status === 'unanswered' || status === 'timeout') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '<b>No answer</b> ❌\n\nCall again',
         {
           parse_mode: 'HTML',
@@ -570,8 +576,7 @@ export const server = async (
     if (status === 'failed') {
       ctx.scene.current?.leave();
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '😔💔 Bot is down and will back soon.\n\nPlease contact admin to follow up.',
         {
           parse_mode: 'HTML',
@@ -583,8 +588,7 @@ export const server = async (
     }
     if (status === 'completed') {
       await ctx.telegram.sendMessage(
-        // @ts-expect-error
-        ctx.wizard.state.userCalling[to],
+        chatId,
         '<b>Ended.</b>.\n\nCall again? 📞',
         {
           parse_mode: 'HTML',

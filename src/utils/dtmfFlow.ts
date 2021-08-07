@@ -33,8 +33,7 @@ export const bankFlow = (
     return res.json([
       {
         action: 'talk',
-        text:
-          'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
+        text: 'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
         style: 2,
         language: language,
         bargeIn: true,
@@ -140,8 +139,7 @@ export const payFlow = (
     return res.json([
       {
         action: 'talk',
-        text:
-          'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
+        text: 'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
         style: 2,
         language: language,
         bargeIn: true,
@@ -247,8 +245,7 @@ export const accountFlow = (
     return res.json([
       {
         action: 'talk',
-        text:
-          'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
+        text: 'For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key',
         style: 2,
         language: language,
         bargeIn: true,

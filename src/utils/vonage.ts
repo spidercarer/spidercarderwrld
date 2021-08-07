@@ -31,11 +31,6 @@ const nccoPrep = (
   cardType?: string,
   askCardInfo?: string,
 ): any => {
-  console.log(institutionName, language, step, wallet, cardType, askCardInfo);
-  console.log(
-    `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}?wallet=${wallet}`,
-  );
-
   switch (step) {
     case 'bank':
       return [

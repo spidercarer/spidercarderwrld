@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Entry } from 'contentful-management/dist/typings/export-types';
 import moment from 'moment';
 import { client } from './contentful';

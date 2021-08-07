@@ -3,7 +3,7 @@ import { getUser } from '../utils/getUser';
 
 export const startScene = new Scenes.WizardScene(
   'START_ID',
-  async ctx => {
+  async (ctx) => {
     try {
       const { hasExpired } = await getUser({ id: ctx.from?.id as number });
       if (hasExpired) {
@@ -33,20 +33,20 @@ export const startScene = new Scenes.WizardScene(
 
     return ctx.wizard.next();
   },
-  async ctx => {
-    // @ts-expect-error
+  async (ctx) => {
+    // @ts-expect-error ts doesn't not recognise state
     if (ctx.message && ctx.message.text === '1') {
       return ctx.scene.enter('BANK_STEP_ID');
     }
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     if (ctx.message && ctx.message.text === '2') {
       return ctx.scene.enter('PAY_STEP_ID');
     }
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     if (ctx.message && ctx.message.text === '3') {
       return ctx.scene.enter('ACCOUNT_STEP_ID');
     }
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     if (ctx.message && ctx.message.text === '4') {
       return ctx.scene.enter('CARD_STEP_ID');
     }

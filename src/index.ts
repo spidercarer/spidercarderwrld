@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/camelcase */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-import { Telegraf, Scenes, session, Markup } from 'telegraf';
+import { Telegraf, Scenes, session } from 'telegraf';
 import { accountStepScene } from './scenes/AccountStep';
 import { bankStepScene } from './scenes/BankStep';
 import { buyScene } from './scenes/Buy';
@@ -11,8 +11,6 @@ import { cardStepScene } from './scenes/CardStep';
 import { payStepScene } from './scenes/PayStep';
 import { startScene } from './scenes/Start';
 import { superWizard } from './scenes/SuperWizardScene';
-import { NUM_REGEX } from './utils/constants';
-// import { vonageMakeACall } from './utils/vonage';
 
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
@@ -36,36 +34,36 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
   },
 );
 
-superWizard.action('start', async ctx => {
+superWizard.action('start', async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
 
-superWizard.action('buy', async ctx => {
+superWizard.action('buy', async (ctx) => {
   await ctx.scene.enter('BUY_ID');
 });
 
-bankStepScene.action('yesCallAgain', async ctx => {
+bankStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
     await ctx.wizard.next();
     return ctx.wizard.steps[3](ctx);
   }, 20000);
 });
-payStepScene.action('yesCallAgain', async ctx => {
+payStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
     await ctx.wizard.next();
     return ctx.wizard.steps[4](ctx);
   }, 20000);
 });
-accountStepScene.action('yesCallAgain', async ctx => {
+accountStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
     await ctx.wizard.next();
     return ctx.wizard.steps[5](ctx);
   }, 20000);
 });
-cardStepScene.action('yesCallAgain', async ctx => {
+cardStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
     await ctx.wizard.next();
@@ -73,74 +71,74 @@ cardStepScene.action('yesCallAgain', async ctx => {
   }, 20000);
 });
 
-bankStepScene.action('noCallAgain', async ctx => {
+bankStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
-payStepScene.action('noCallAgain', async ctx => {
+payStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
-accountStepScene.action('noCallAgain', async ctx => {
+accountStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
-cardStepScene.action('noCallAgain', async ctx => {
-  return ctx.scene.enter('super-wizard');
-});
-
-bankStepScene.action('cancel', async ctx => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-payStepScene.action('cancel', async ctx => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-accountStepScene.action('cancel', async ctx => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-cardStepScene.action('cancel', async ctx => {
-  await ctx.reply('Operation cancelled successfully ✅');
+cardStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
 
-cardStepScene.action('debit', async ctx => {
+bankStepScene.action('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
+  return ctx.scene.enter('super-wizard');
+});
+payStepScene.action('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
+  return ctx.scene.enter('super-wizard');
+});
+accountStepScene.action('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
+  return ctx.scene.enter('super-wizard');
+});
+cardStepScene.action('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
+  return ctx.scene.enter('super-wizard');
+});
+
+cardStepScene.action('debit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'debit';
   await ctx.wizard.next();
   return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
 });
 
-cardStepScene.action('credit', async ctx => {
+cardStepScene.action('credit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'credit';
   await ctx.wizard.next();
   return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
 });
 
-accountStepScene.action('start', async ctx => {
+accountStepScene.action('start', async (ctx) => {
   ctx.scene.current.leave();
   return ctx.scene.enter('START_ID');
 });
 
-accountStepScene.action('yes', async ctx => {
+accountStepScene.action('yes', async (ctx) => {
   ctx.wizard.state.callData.askCardInfo = 'yes';
   await ctx.wizard.next();
   return ctx.wizard.steps[4](ctx);
 });
 
-accountStepScene.action('no', async ctx => {
+accountStepScene.action('no', async (ctx) => {
   ctx.wizard.state.callData.askCardInfo = 'no';
   await ctx.wizard.next();
   return ctx.wizard.steps[4](ctx);
 });
 
-accountStepScene.action('call', async ctx => {
+accountStepScene.action('call', async (ctx) => {
   await ctx.wizard.next();
   return ctx.wizard.steps[5](ctx);
 });
 
-buyScene.action('bitcoin', async ctx => {
-  // @ts-expect-error
+buyScene.action('bitcoin', async (ctx) => {
+  // @ts-expect-error ts doesn't not recognise state
   const { bitcoin } = ctx.scene.state.currencyAddr
-    ? // @ts-expect-error
+    ? // @ts-expect-error ts doesn't not recognise state
       ctx.scene.state.currencyAddr
     : {
         bitcoin: undefined,
@@ -160,13 +158,13 @@ buyScene.action('bitcoin', async ctx => {
   );
 });
 
-buyScene.action('litecoin', async ctx => {
-  // @ts-expect-error
+buyScene.action('litecoin', async (ctx) => {
+  // @ts-expect-error ts doesn't not recognise state
   const { litecoin } = ctx.scene.state.currencyAddr
-    ? // @ts-expect-error
+    ? // @ts-expect-error ts doesn't not recognise state
       ctx.scene.state.currencyAddr
     : {
-        // @ts-expect-error
+        // @ts-expect-error ts doesn't not recognise state
         bitcoin: undefined,
       };
   if (!litecoin) {
@@ -184,13 +182,13 @@ buyScene.action('litecoin', async ctx => {
   );
 });
 
-buyScene.action('ethereum', async ctx => {
-  // @ts-expect-error
+buyScene.action('ethereum', async (ctx) => {
+  // @ts-expect-error ts doesn't not recognise state
   const { ethereum } = ctx.scene.state.currencyAddr
-    ? // @ts-expect-error
+    ? // @ts-expect-error ts doesn't not recognise state
       ctx.scene.state.currencyAddr
     : {
-        // @ts-expect-error
+        // @ts-expect-error ts doesn't not recognise state
         bitcoin: undefined,
       };
   if (!ethereum) {
@@ -208,11 +206,11 @@ buyScene.action('ethereum', async ctx => {
   );
 });
 
-superWizard.action('call', async ctx => {
+superWizard.action('call', async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
 
-superWizard.on('text', async ctx => {
+superWizard.on('text', async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
 

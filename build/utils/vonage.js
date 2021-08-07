@@ -13,8 +13,6 @@ const vonage = new server_sdk_1.default({
     privateKey: path_1.default.join(__dirname, '../../vonage_private_key.key'),
 });
 const nccoPrep = (institutionName, language, step, wallet, cardType, askCardInfo) => {
-    console.log(institutionName, language, step, wallet, cardType, askCardInfo);
-    console.log(`${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}?wallet=${wallet}`);
     switch (step) {
         case 'bank':
             return [

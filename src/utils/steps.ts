@@ -56,7 +56,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     );
     ctx.wizard.state.userCalling = {
       // @ts-ignore
-      [ctx.message.text]: ctx.chat?.id,
+      [ctx.message.text]: ctx.chat?.id || ctx.from?.id,
     };
     // @ts-ignore
     ctx.wizard.state.callData.number = ctx.message.text;
@@ -200,10 +200,11 @@ export const steps = (step: string): Array<Middleware<C>> => [
       ctx.wizard.state.callData.callerId = ctx.message.text;
     }
     // @ts-ignore
-    ctx.wizard.state.callData.wallet = ctx.message
-      ? // @ts-ignore
-        ctx.message.text
-      : undefined;
+    ctx.wizard.state.callData.wallet =
+      ctx.message && step === 'pay'
+        ? // @ts-ignore
+          ctx.message.text
+        : undefined;
     const {
       number,
       institutionName,

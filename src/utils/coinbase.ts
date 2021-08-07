@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { Client, resources, CreateCharge } from 'coinbase-commerce-node';
 
 Client.init(process.env.COINBASE_API_KEY as string);

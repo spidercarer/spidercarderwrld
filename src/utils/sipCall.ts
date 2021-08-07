@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/camelcase */
 import JsSIP from 'jssip';
 import NodeWebSocket from 'jssip-node-websocket';
 
@@ -19,16 +18,16 @@ ua.start();
 
 // Register callbacks to desired call events
 const eventHandlers = {
-  progress: function(_e: any) {
+  progress: function (_e: any) {
     console.log('call is in progress');
   },
-  failed: function(e: any) {
+  failed: function (e: any) {
     console.log('call failed with cause: ' + e.data.cause);
   },
-  ended: function(e: any) {
+  ended: function (e: any) {
     console.log('call ended with cause: ' + e.data.cause);
   },
-  confirmed: function(_e: any) {
+  confirmed: function (_e: any) {
     console.log('call confirmed');
   },
 };

