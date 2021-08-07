@@ -605,6 +605,11 @@ export const server = async (
 };
 
 const port = process.env.PORT || 4000;
+
+app.get('/', (_, res) => {
+  res.send('Hello World!');
+});
+
 app.listen(port, () =>
   // eslint-disable-next-line no-console
   console.log(`⚡⚡⚡ Server has started on http://localhost:${port}`),
