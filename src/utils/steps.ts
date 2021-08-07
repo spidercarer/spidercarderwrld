@@ -56,12 +56,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
       )} ~</i></b>`,
       Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
-    ctx.wizard.state.userCalling = {
-      // @ts-expect-error ts doesn't not recognise state
-      [ctx.message.text]: ctx.chat?.id || ctx.from?.id,
-    };
-    // eslint-disable-next-line no-console
-    console.log('Chat ID: ', ctx.chat?.id || ctx.from?.id);
+    // @ts-expect-error ts doesn't not recognise state
+    ctx.wizard.state[ctx.message.text] = ctx.chat?.id || ctx.from?.id;
 
     // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.number = ctx.message.text;

@@ -484,15 +484,15 @@ export const server = async (
     const { status, to } = req.body;
 
     // @ts-expect-error userCalling will be at runtime
-    const chatId = ctx.wizard.state.userCalling
+    const chatId = ctx.scene.state[to]
       ? // @ts-expect-error userCalling will be at runtime
-        ctx.wizard.state.userCalling[to]
+        ctx.scene.state[to]
       : ctx.chat
       ? ctx.chat.id
       : undefined;
 
     // @ts-expect-error userCalling will be at runtime
-    console.log('userCalling: ', ctx.wizard.state.userCalling);
+    console.log('to: ', ctx.wizard.state[to]);
     console.log('scene: ', ctx.scene.state);
     console.log('ctx.chat.id: ', ctx.chat?.id);
 
