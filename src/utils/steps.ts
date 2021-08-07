@@ -57,7 +57,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
     // @ts-expect-error ts doesn't not recognise state
-    ctx.wizard.state[ctx.message.text] = ctx.chat?.id || ctx.from?.id;
+    ctx.scene.state[ctx.message.text] = ctx.chat?.id || ctx.from?.id;
 
     // @ts-expect-error ts doesn't not recognise state
     ctx.wizard.state.callData.number = ctx.message.text;
