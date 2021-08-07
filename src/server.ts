@@ -491,11 +491,6 @@ export const server = async (
       ? ctx.chat.id
       : undefined;
 
-    // @ts-expect-error userCalling will be at runtime
-    console.log('to: ', ctx.wizard.state[to]);
-    console.log('scene: ', ctx.scene.state);
-    console.log('ctx.chat.id: ', ctx.chat?.id);
-
     if (!chatId) {
       return;
     }
