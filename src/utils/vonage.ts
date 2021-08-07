@@ -8,7 +8,12 @@ const vonage = new Vonage({
   apiKey: process.env.VONAGE_API_KEY as string,
   apiSecret: process.env.VONAGE_API_SECRET as string,
   applicationId: process.env.VONAGE_APPLICATION_ID,
-  privateKey: path.join(__dirname, '../../vonage_private_key.key'),
+  privateKey: path.join(
+    __dirname,
+    process.env.NODE_ENV === 'production'
+      ? '../../vonage_private_key_prod.key'
+      : '../../vonage_private_key.key',
+  ),
 });
 
 interface CallInputType {
