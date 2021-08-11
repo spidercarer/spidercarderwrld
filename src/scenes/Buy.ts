@@ -1,6 +1,6 @@
 import { resources } from 'coinbase-commerce-node';
 import { Markup, Scenes } from 'telegraf';
-import { server } from '../server';
+// import { server } from '../server';
 import { createCharge } from '../utils/coinbase';
 
 export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
@@ -33,7 +33,7 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
     );
   }
 
-  await server(ctx, chatId);
+  // await server(ctx, chatId);
 
   // @ts-expect-error ts doesn't not recognise state
   ctx.wizard.state.currencyAddr = {

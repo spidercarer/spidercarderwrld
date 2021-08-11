@@ -2,7 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-import { Telegraf, Scenes, session } from 'telegraf';
+import { Telegraf, Scenes } from 'telegraf';
 import { accountStepScene } from './scenes/AccountStep';
 import { bankStepScene } from './scenes/BankStep';
 import { buyScene } from './scenes/Buy';
@@ -11,13 +11,16 @@ import { cardStepScene } from './scenes/CardStep';
 import { payStepScene } from './scenes/PayStep';
 import { startScene } from './scenes/Start';
 import { superWizard } from './scenes/SuperWizardScene';
+import LocalSession from 'telegraf-session-local';
+
+import './server';
 
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
   throw new Error('BOT_TOKEN must be provided!');
 }
 
-const bot = new Telegraf<Scenes.WizardContext>(token);
+export const bot = new Telegraf<Scenes.WizardContext>(token);
 const stage = new Scenes.Stage<Scenes.WizardContext>(
   [
     superWizard,
@@ -217,7 +220,7 @@ superWizard.on('text', async (ctx) => {
 });
 
 // bot.use(Telegraf.log());
-bot.use(session());
+bot.use(new LocalSession().middleware());
 bot.use(stage.middleware());
 bot.catch((err) => {
   // eslint-disable-next-line no-console

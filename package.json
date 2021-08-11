@@ -59,6 +59,7 @@
     "jssip-node-websocket": "^3.0.0",
     "moment": "^2.29.1",
     "telegraf": "^4.4.1",
+    "telegraf-session-local": "^2.1.0",
     "ts-jest": "^27.0.4"
   }
 }

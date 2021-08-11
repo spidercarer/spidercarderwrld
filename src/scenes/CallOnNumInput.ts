@@ -1,11 +1,15 @@
 import { Markup, Scenes } from 'telegraf';
-import { server } from '../server';
+// import { server } from '../server';
 import { vonageMakeACall } from '../utils/vonage';
 import { getUser } from '../utils/getUser';
+
+let chatId: number | undefined;
 
 export const callOnNumInputScene = new Scenes.WizardScene(
   'CALL_ID_ON_NUM_INPUT',
   async (ctx) => {
+    // @ts-expect-error ts does not recognise state
+    ctx.chat?.id || ctx.from?.id || ctx.scene.state.chatId || undefined;
     try {
       const { hasExpired } = await getUser({ id: ctx.from?.id as number });
       if (hasExpired) {
@@ -134,12 +138,13 @@ export const callOnNumInputScene = new Scenes.WizardScene(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...`,
     );
 
-    await server(ctx);
+    // await server(ctx);
 
     await vonageMakeACall({
       from,
       to: number,
       institutionName: institutionName,
+      chatId,
     });
   },
 );

