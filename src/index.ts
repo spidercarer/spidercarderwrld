@@ -35,6 +35,8 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
 );
 
 superWizard.action('start', async (ctx) => {
+  // @ts-expect-error ts doesn't not recognise setting up state this way
+  ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
   return ctx.scene.enter('START_ID');
 });
 

@@ -112,16 +112,16 @@ export const server = async (
 
     switch (step) {
       case 'bank':
-        bankFlow(dtmf, res, language, ctx, step);
+        bankFlow(dtmf, res, language, chatId, step);
         break;
       case 'pay':
-        payFlow(dtmf, res, language, ctx, step, wallet as string);
+        payFlow(dtmf, res, language, chatId, step, wallet as string);
         break;
       case 'account':
-        accountFlow(dtmf, res, language, ctx, step, askCardInfo as string);
+        accountFlow(dtmf, res, language, chatId, step, askCardInfo as string);
         break;
       case 'card':
-        cardFlow(dtmf, res, language, ctx, step, cardType as string);
+        cardFlow(dtmf, res, language, chatId, step, cardType as string);
         break;
       default:
         break;

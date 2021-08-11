@@ -1,12 +1,14 @@
 import { Response } from 'express';
 
 export const bankFlow = (
-  dtmf: any,
+  dtmf: {
+    digits: string;
+  },
   res: Response,
   language: string,
-  ctx: any,
+  chatId: number | undefined,
   step: string,
-) => {
+): Response => {
   if (dtmf && dtmf.digits === '1') {
     return res.json([
       {
@@ -18,7 +20,7 @@ export const bankFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -40,7 +42,7 @@ export const bankFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -106,13 +108,15 @@ export const bankFlow = (
 };
 
 export const payFlow = (
-  dtmf: any,
+  dtmf: {
+    digits: string;
+  },
   res: Response,
   language: string,
-  ctx: any,
+  chatId: number | undefined,
   step: string,
   wallet?: string,
-) => {
+): Response => {
   if (dtmf && dtmf.digits === '1') {
     return res.json([
       {
@@ -124,7 +128,7 @@ export const payFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -146,7 +150,7 @@ export const payFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -212,13 +216,15 @@ export const payFlow = (
 };
 
 export const accountFlow = (
-  dtmf: any,
+  dtmf: {
+    digits: string;
+  },
   res: Response,
   language: string,
-  ctx: any,
+  chatId: number | undefined,
   step: string,
   askCardInfo?: string,
-) => {
+): Response => {
   if (dtmf && dtmf.digits === '1') {
     return res.json([
       {
@@ -230,7 +236,7 @@ export const accountFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}?askCardInfo=${askCardInfo}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -252,7 +258,7 @@ export const accountFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}?askCardInfo=${askCardInfo}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -274,7 +280,7 @@ export const accountFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}?askCardInfo=${askCardInfo}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -318,13 +324,15 @@ export const accountFlow = (
 };
 
 export const cardFlow = (
-  dtmf: any,
+  dtmf: {
+    digits: string;
+  },
   res: Response,
   language: string,
-  ctx: any,
+  chatId: number | undefined,
   step: string,
   cardType: string,
-) => {
+): Response => {
   if (dtmf && dtmf.digits === '1') {
     return res.json([
       {
@@ -336,7 +344,7 @@ export const cardFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${ctx.chat?.id}/${language}?cardType=${cardType}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -358,7 +366,7 @@ export const cardFlow = (
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${step}/${ctx.chat?.id}/${language}`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${step}/${chatId}/${language}`,
         ],
         action: 'input',
         type: ['dtmf'],
