@@ -56,12 +56,14 @@ app.post('/coinbase-webhook', async (req, res) => {
         const newUser = await env.createEntry('user', {
           fields: {
             id: { 'en-US': Date.now() },
-            telegramId: { 'en-US': metadata.chatId },
+            telegramId: { 'en-US': Number(metadata.chatId) },
             username: { 'en-US': metadata.username },
             membershipExpiry: {
               'en-US': moment.utc().add(1, 'month').format(),
             },
-            membershipType: 'SILVER',
+            membershipType: {
+              'en-US': 'SILVER',
+            },
           },
         });
 
