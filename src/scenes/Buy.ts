@@ -8,7 +8,7 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
     'OTP',
     `OTP Buying`,
     process.env.OTP_PRICE as string,
-    ctx.from?.id as number,
+    ctx.from?.username as string,
     ctx.chat?.id as number,
     'OTP Purchase',
   );
@@ -22,7 +22,17 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
     ]),
   );
 
-  const chatId = ctx.chat?.id || ctx.from?.id;
+  const chatId =
+    // @ts-expect-error ts doesn't recognise state
+    ctx.chat?.id || ctx.from?.id || ctx.scene.state.chatId || undefined;
+
+  if (!chatId) {
+    return ctx.reply(
+      '🚫 Request expired, start again\n\n',
+      Markup.inlineKeyboard([Markup.button.callback('Make a call', 'call')]),
+    );
+  }
+
   await server(ctx, chatId);
 
   // @ts-expect-error ts doesn't not recognise state

@@ -68,8 +68,8 @@ export const server = async (
           const newUser = await env.createEntry('user', {
             fields: {
               id: { 'en-US': Date.now() },
-              telegramId: { 'en-US': ctx.from?.id },
-              username: { 'en-US': ctx.from?.username },
+              telegramId: { 'en-US': metadata.chatId },
+              username: { 'en-US': metadata.username },
               membershipExpiry: {
                 'en-US': moment.utc().add(1, 'month').format(),
               },

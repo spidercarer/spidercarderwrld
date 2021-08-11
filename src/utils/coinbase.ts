@@ -8,7 +8,7 @@ export const createCharge = async (
   name: string,
   description: string,
   amount: string,
-  id: number,
+  username: string,
   chatId: number,
   reason: string,
 ): Promise<resources.Charge> => {
@@ -21,7 +21,7 @@ export const createCharge = async (
     },
     pricing_type: 'fixed_price',
     metadata: {
-      id,
+      username,
       chatId,
       reason,
     },

@@ -41,7 +41,7 @@ superWizard.action('start', async (ctx) => {
 });
 
 superWizard.action('buy', async (ctx) => {
-  await ctx.scene.enter('BUY_ID');
+  return ctx.scene.enter('BUY_ID');
 });
 
 bankStepScene.action('yesCallAgain', async (ctx) => {
