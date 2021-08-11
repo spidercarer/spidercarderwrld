@@ -7,6 +7,7 @@ import { Markup } from 'telegraf';
 import { bot } from '.';
 import { client } from './utils/contentful';
 import { accountFlow, bankFlow, cardFlow, payFlow } from './utils/dtmfFlow';
+import { getUser } from './utils/getUser';
 
 const app = express();
 
@@ -49,11 +50,28 @@ app.post('/coinbase-webhook', async (req, res) => {
         '😋 Your payment has been received',
       );
       try {
+        const { user } = await getUser({
+          id: Number(metadata.chatId),
+        });
+
+        if (user) {
+          user.fields.membershipExpiry = {
+            'en-US': moment.utc().add(1, 'month').format(),
+          };
+
+          await user.update();
+
+          return bot.telegram.sendMessage(
+            metadata.chatId,
+            '🤩 Your subsciption has been renewed, to start send "call"',
+          );
+        }
+      } catch (error) {
         const space = await client.getSpace(
           process.env.CONTENTFUL_SPACE as string,
         );
         const env = await space.getEnvironment('master');
-        const newUser = await env.createEntry('user', {
+        await env.createEntry('user', {
           fields: {
             id: { 'en-US': Date.now() },
             telegramId: { 'en-US': Number(metadata.chatId) },
@@ -67,13 +85,10 @@ app.post('/coinbase-webhook', async (req, res) => {
           },
         });
 
-        bot.telegram.sendMessage(
+        return bot.telegram.sendMessage(
           metadata.chatId,
           '🤩 Your subsciption has been confirmed, to start send "call"',
         );
-        console.log(newUser);
-      } catch (error) {
-        console.log(error);
       }
     }
 

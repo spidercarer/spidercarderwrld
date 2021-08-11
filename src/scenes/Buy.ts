@@ -14,7 +14,7 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
   );
 
   await ctx.replyWithHTML(
-    '💱 <b>Select the currency you would like to pay with</b>\n\nWe will send you the address to pay to.\n\nYou can always come back up to chosoe another currency if you have selected the wrong one',
+    '💱 <b>Select the currency you would like to pay with</b>\n\nWe will send you the address to pay to.\n\nYou can always come back up to chose another currency if you have selected the wrong one',
     Markup.inlineKeyboard([
       Markup.button.callback('Bitcoin', 'bitcoin'),
       Markup.button.callback('Ethereum', 'ethereum'),
