@@ -60,6 +60,7 @@ app.post('/coinbase-webhook', async (req, res) => {
           };
 
           await user.update();
+          await user.publish();
 
           return bot.telegram.sendMessage(
             metadata.chatId,
@@ -71,7 +72,7 @@ app.post('/coinbase-webhook', async (req, res) => {
           process.env.CONTENTFUL_SPACE as string,
         );
         const env = await space.getEnvironment('master');
-        await env.createEntry('user', {
+        const user = await env.createEntry('user', {
           fields: {
             id: { 'en-US': Date.now() },
             telegramId: { 'en-US': Number(metadata.chatId) },
@@ -84,6 +85,8 @@ app.post('/coinbase-webhook', async (req, res) => {
             },
           },
         });
+
+        await user.publish();
 
         return bot.telegram.sendMessage(
           metadata.chatId,
