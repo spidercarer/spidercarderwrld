@@ -9,8 +9,6 @@ let chatId: number | undefined;
 
 export const steps = (step: string): Array<Middleware<C>> => [
   async (ctx) => {
-    chatId =
-      ctx.chat?.id || ctx.from?.id || ctx.scene.state.chatId || undefined;
     await ctx.replyWithHTML(
       `👍🏽 Awesome, Let's start\n\nReply with the number 📱\n(ex. ${
         Math.round(Math.random()) ? UK_NUM : US_NUM
@@ -221,14 +219,15 @@ export const steps = (step: string): Array<Middleware<C>> => [
       )} ~</i></b>`,
     );
 
+    chatId =
+      ctx.chat?.id || ctx.from?.id || ctx.scene.state.chatId || undefined;
+
     if (!chatId) {
       return ctx.reply(
         '🚫 Request expired, start again\n\n',
         Markup.inlineKeyboard([Markup.button.callback('Make a call', 'call')]),
       );
     }
-
-    // await server(ctx, chatId);
 
     await vonageMakeACall({
       from,

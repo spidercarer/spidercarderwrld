@@ -132,7 +132,7 @@ const nccoPrep = (
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const vonageMakeACall: any = ({
+export const vonageMakeACall: any = async ({
   institutionName,
   to,
   from,
