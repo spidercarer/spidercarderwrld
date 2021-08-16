@@ -190,11 +190,11 @@ app.post('/vonage-webhook/pin/:chatId/:language', async (req, res) => {
   ]);
 });
 
-app.post('/vonage-webhook/card/:step/:chatId/:language', async (req, res) => {
+app.post('/vonage-webhook/card/:chatId/:language', async (req, res) => {
   const { dtmf } = req.body;
   const { cardType, isAccount, expiry, cvv } = req.query;
 
-  const { language, chatId, step } = req.params;
+  const { language, chatId } = req.params;
 
   if (isAccount === 'yes') {
     if (dtmf && dtmf.digits) {
@@ -219,7 +219,7 @@ app.post('/vonage-webhook/card/:step/:chatId/:language', async (req, res) => {
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
         ],
         action: 'input',
         type: ['dtmf'],
@@ -256,7 +256,7 @@ app.post('/vonage-webhook/card/:step/:chatId/:language', async (req, res) => {
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${step}/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
         ],
         action: 'input',
         type: ['dtmf'],
