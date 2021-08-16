@@ -224,9 +224,12 @@ export const steps = (step: string): Array<Middleware<C>> => [
     );
 
     chatId =
-      ctx.scene.state.chatId || ctx.chat?.id || ctx.from?.id || undefined;
+      Number(ctx.scene.state.chatId) ||
+      ctx.chat?.id ||
+      ctx.from?.id ||
+      undefined;
 
-    if (!chatId) {
+    if (!chatId || chatId !== ctx.chat?.id || chatId !== ctx.from?.id) {
       return ctx.reply(
         '🚫 Request expired, start again\n\n',
         Markup.inlineKeyboard([Markup.button.callback('Make a call', 'call')]),
