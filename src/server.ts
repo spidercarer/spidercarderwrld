@@ -54,19 +54,17 @@ app.post('/coinbase-webhook', async (req, res) => {
           id: Number(metadata.chatId),
         });
 
-        if (user) {
-          user.fields.membershipExpiry = {
-            'en-US': moment.utc().add(1, 'month').format(),
-          };
+        user.fields.membershipExpiry = {
+          'en-US': moment.utc().add(1, 'month').format(),
+        };
 
-          await user.update();
-          await user.publish();
+        await user.update();
+        await user.publish();
 
-          await bot.telegram.sendMessage(
-            metadata.chatId,
-            '🤩 Your subsciption has been renewed, to start send "call"',
-          );
-        }
+        await bot.telegram.sendMessage(
+          metadata.chatId,
+          '🤩 Your subsciption has been renewed, to start send "/call"',
+        );
       } catch (error) {
         const space = await client.getSpace(
           process.env.CONTENTFUL_SPACE as string,
@@ -103,9 +101,10 @@ app.post('/coinbase-webhook', async (req, res) => {
       );
     }
 
-    return res.status(200).json(`success ${event.id}`);
+    res.send(`success ${event.id}`);
   } catch (error) {
-    return res.status(400).json('failure!');
+    console.log(error);
+    res.status(400).json('failure!');
   }
 });
 
