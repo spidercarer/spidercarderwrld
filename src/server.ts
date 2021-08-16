@@ -219,7 +219,7 @@ app.post('/vonage-webhook/card/:chatId/:language', async (req, res) => {
       },
       {
         eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+          `${process.env.ENDPOINT_URL}/vonage-webhook/?card/${chatId}/${language}?expiry=yes`,
         ],
         action: 'input',
         type: ['dtmf'],
