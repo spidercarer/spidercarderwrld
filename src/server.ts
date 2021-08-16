@@ -62,7 +62,7 @@ app.post('/coinbase-webhook', async (req, res) => {
           await user.update();
           await user.publish();
 
-          return bot.telegram.sendMessage(
+          await bot.telegram.sendMessage(
             metadata.chatId,
             '🤩 Your subsciption has been renewed, to start send "call"',
           );
@@ -88,7 +88,7 @@ app.post('/coinbase-webhook', async (req, res) => {
 
         await user.publish();
 
-        return bot.telegram.sendMessage(
+        await bot.telegram.sendMessage(
           metadata.chatId,
           '🤩 Your subsciption has been confirmed, to start send "/call"',
         );
