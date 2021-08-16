@@ -34,11 +34,12 @@ export const superWizard = new Scenes.WizardScene(
               user.fields.membershipExpiry['en-US'],
             ).toNow(true)}</b>`,
             Markup.inlineKeyboard([
-              Markup.button.callback("🎬 Let's go", 'start'),
+              Markup.button.callback("🎬 Let's go", 'LET_GO'),
             ]),
           );
 
       await reply;
+      return ctx.wizard.next();
     } catch (error) {
       // await ctx.scene.leave();
       return await ctx.replyWithHTML(

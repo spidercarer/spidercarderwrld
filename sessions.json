@@ -9,6 +9,22 @@
           "cursor": 1
         }
       }
+    },
+    {
+      "id": "1799878487:1799878487",
+      "data": {
+        "__scenes": {
+          "current": "BUY_ID",
+          "state": {
+            "currencyAddr": {
+              "bitcoin": "38J2YFAZaBSVqjrXuHjKK29JUetTxVAri6",
+              "ethereum": "0xe6d9df3614205f192febfec5c816fc1c7ffc1047",
+              "litecoin": "MHWDyUdMtGcwN13RR3agXWvcPnrKwrDopX"
+            }
+          },
+          "cursor": 0
+        }
+      }
     }
   ]
 }

@@ -179,7 +179,9 @@ export const steps = (step: string): Array<Middleware<C>> => [
     if (!ctx.wizard.state.callData) {
       await ctx.reply(
         '🚫 Request expired, start again\n\n',
-        Markup.inlineKeyboard([Markup.button.callback("🎬 Let's go", 'start')]),
+        Markup.inlineKeyboard([
+          Markup.button.callback("🎬 Let's go", 'expired'),
+        ]),
       );
     }
     if (step === 'bank' && !ctx.wizard.state.callData.callerId) {

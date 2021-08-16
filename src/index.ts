@@ -37,14 +37,46 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
   },
 );
 
-superWizard.action('start', async (ctx) => {
-  // @ts-expect-error ts doesn't not recognise setting up state this way
-  ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
+stage.start(async (ctx) => {
+  if (ctx.wizard) {
+    // @ts-expect-error ts doesn't not recognise setting up state this way
+    ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
+  }
+  return ctx.scene.enter('START_ID');
+});
+
+stage.action('call', async (ctx) => {
+  return ctx.scene.enter('START_ID');
+});
+
+stage.action('cancel', async (ctx) => {
+  return ctx.scene.enter('super-wizard');
+});
+
+stage.action('buy', async (ctx) => {
+  return ctx.scene.enter('BUY_ID');
+});
+
+startScene.action('buy', async (ctx) => {
+  return ctx.scene.enter('BUY_ID');
+});
+
+superWizard.action('call', async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
 
 superWizard.action('buy', async (ctx) => {
   return ctx.scene.enter('BUY_ID');
+});
+
+superWizard.action('cancel', async (ctx) => {
+  return ctx.scene.enter('START_ID');
+});
+
+superWizard.action('LET_GO', async (ctx) => {
+  // @ts-expect-error ts doesn't not recognise setting up state this way
+  ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
+  return ctx.scene.enter('START_ID');
 });
 
 bankStepScene.action('yesCallAgain', async (ctx) => {
@@ -118,7 +150,7 @@ cardStepScene.action('credit', async (ctx) => {
   return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
 });
 
-accountStepScene.action('start', async (ctx) => {
+accountStepScene.action('expired', async (ctx) => {
   ctx.scene.current.leave();
   return ctx.scene.enter('START_ID');
 });
@@ -209,14 +241,6 @@ buyScene.action('ethereum', async (ctx) => {
   return ctx.replyWithHTML(
     `<i>***Please don't reuse this address for future payments***</i>`,
   );
-});
-
-superWizard.action('call', async (ctx) => {
-  return ctx.scene.enter('START_ID');
-});
-
-superWizard.on('text', async (ctx) => {
-  return ctx.scene.enter('START_ID');
 });
 
 // bot.use(Telegraf.log());
