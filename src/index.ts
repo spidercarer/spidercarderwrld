@@ -38,10 +38,6 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
 );
 
 stage.start(async (ctx) => {
-  if (ctx.wizard) {
-    // @ts-expect-error ts doesn't not recognise setting up state this way
-    ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
-  }
   return ctx.scene.enter('START_ID');
 });
 
@@ -71,8 +67,6 @@ superWizard.action('buy', async (ctx) => {
 });
 
 superWizard.action('LET_GO', async (ctx) => {
-  // @ts-expect-error ts doesn't not recognise setting up state this way
-  ctx.wizard.state.chatId = ctx.from?.id || ctx.chat?.id;
   return ctx.scene.enter('START_ID');
 });
 

@@ -5,7 +5,9 @@ export const startScene = new Scenes.WizardScene(
   'START_ID',
   async (ctx) => {
     try {
-      const { hasExpired } = await getUser({ id: ctx.from?.id as number });
+      const { hasExpired, user } = await getUser({
+        id: ctx.from?.id as number,
+      });
       if (hasExpired) {
         await ctx.replyWithHTML(
           `👋 <b>Welcome back ${ctx.from?.first_name}</b>,\n\nYour subscirption has <b>expired.</b>`,
@@ -16,6 +18,8 @@ export const startScene = new Scenes.WizardScene(
         );
         return ctx.scene.leave();
       }
+      // @ts-expect-error ts doesn't not recognise setting up state this way
+      ctx.wizard.state.chatId = Number(user.fields.telegramId['en-US']);
     } catch (error) {
       await ctx.replyWithHTML(
         `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`,

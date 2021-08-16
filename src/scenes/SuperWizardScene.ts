@@ -17,6 +17,9 @@ export const superWizard = new Scenes.WizardScene(
 
     try {
       const { hasExpired, user } = await getUser({ id });
+      // @ts-expect-error ts doesn't not recognise setting up state this way
+      ctx.wizard.state.chatId = Number(user.fields.telegramId['en-US']);
+
       // @ts-expect-error typescript won't let add new state
       ctx.scene.state.me.id = user.fields.id;
       const reply = hasExpired

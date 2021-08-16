@@ -222,7 +222,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     );
 
     chatId =
-      ctx.chat?.id || ctx.from?.id || ctx.scene.state.chatId || undefined;
+      ctx.scene.state.chatId || ctx.chat?.id || ctx.from?.id || undefined;
 
     if (!chatId) {
       return ctx.reply(
