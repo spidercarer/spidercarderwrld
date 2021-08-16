@@ -169,7 +169,9 @@ export const steps = (step: string): Array<Middleware<C>> => [
               /^./,
               step[0].toUpperCase(),
             )} ~</i></b>`,
-            Markup.inlineKeyboard([Markup.button.callback('Call now', 'call')]),
+            Markup.inlineKeyboard([
+              Markup.button.callback('Call now', 'accountCall'),
+            ]),
           );
           return ctx.wizard.next();
         },

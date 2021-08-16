@@ -158,7 +158,7 @@ accountStepScene.action('no', async (ctx) => {
   return ctx.wizard.steps[4](ctx);
 });
 
-accountStepScene.action('call', async (ctx) => {
+accountStepScene.action('accountCall', async (ctx) => {
   await ctx.wizard.next();
   return ctx.wizard.steps[5](ctx);
 });
