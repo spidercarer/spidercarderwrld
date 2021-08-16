@@ -90,7 +90,7 @@ app.post('/coinbase-webhook', async (req, res) => {
 
         return bot.telegram.sendMessage(
           metadata.chatId,
-          '🤩 Your subsciption has been confirmed, to start send "call"',
+          '🤩 Your subsciption has been confirmed, to start send "/call"',
         );
       }
     }
@@ -103,7 +103,7 @@ app.post('/coinbase-webhook', async (req, res) => {
       );
     }
 
-    return res.json(`success ${event.id}`);
+    return res.status(200).json(`success ${event.id}`);
   } catch (error) {
     return res.status(400).json('failure!');
   }
