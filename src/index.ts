@@ -50,6 +50,7 @@ stage.action('call', async (ctx) => {
 });
 
 stage.action('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
   return ctx.scene.enter('super-wizard');
 });
 
@@ -67,10 +68,6 @@ superWizard.action('call', async (ctx) => {
 
 superWizard.action('buy', async (ctx) => {
   return ctx.scene.enter('BUY_ID');
-});
-
-superWizard.action('cancel', async (ctx) => {
-  return ctx.scene.enter('START_ID');
 });
 
 superWizard.action('LET_GO', async (ctx) => {

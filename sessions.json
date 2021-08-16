@@ -4,8 +4,14 @@
       "id": "1860996067:1860996067",
       "data": {
         "__scenes": {
-          "current": "START_ID",
-          "state": {},
+          "current": "super-wizard",
+          "state": {
+            "me": {
+              "id": {
+                "en-US": 1626522933313
+              }
+            }
+          },
           "cursor": 1
         }
       }
