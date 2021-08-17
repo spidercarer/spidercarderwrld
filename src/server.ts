@@ -104,7 +104,7 @@ app.post('/coinbase-webhook', async (req, res) => {
     res.send(`success ${event.id}`);
   } catch (error) {
     console.log(error);
-    res.status(400).json('failure!');
+    res.status(400).send('failure!');
   }
 });
 
