@@ -54,17 +54,18 @@ app.post('/coinbase-webhook', async (req, res) => {
           id: Number(metadata.chatId),
         });
 
-        user.fields.membershipExpiry = {
-          'en-US': moment.utc().add(1, 'month').format(),
-        };
+        if (user) {
+          user.fields.membershipExpiry = {
+            'en-US': moment.utc().add(1, 'month').format(),
+          };
 
-        await user.update();
-        await user.publish();
+          await (await user.update()).publish();
 
-        await bot.telegram.sendMessage(
-          metadata.chatId,
-          '🤩 Your subsciption has been renewed, to start send "/call"',
-        );
+          await bot.telegram.sendMessage(
+            metadata.chatId,
+            '🤩 Your subsciption has been renewed, to start send "/call"',
+          );
+        }
       } catch (error) {
         const space = await client.getSpace(
           process.env.CONTENTFUL_SPACE as string,
