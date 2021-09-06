@@ -41,8 +41,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
       ctx.message.text.substring(0, 2) === '44';
 
     if (!numValid) {
-      await ctx.reply(
-        `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+      await ctx.replyWithHTML(
+        `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
       );
       return;
     }
