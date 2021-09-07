@@ -9,13 +9,10 @@ const vonage = new Vonage({
   apiKey: process.env.VONAGE_API_KEY as string,
   apiSecret: process.env.VONAGE_API_SECRET as string,
   applicationId: process.env.VONAGE_APPLICATION_ID,
-  privateKey: path.join(
-    __dirname,
-    process.env.NODE_ENV === 'production'
-      ? `../../${process.env.VONAGE_KEY_NAME}.key`
-      : '../../vonage_private_key.key',
-  ),
+  privateKey: path.join(__dirname, `../../${process.env.VONAGE_KEY_NAME}.key`),
 });
+
+console.log(`../../${process.env.VONAGE_KEY_NAME}.key`);
 
 interface CallInputType {
   institutionName: string;
@@ -184,6 +181,8 @@ export const vonageMakeACall: any = async ({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async (error: any, response: any) => {
       if (error) {
+        console.log(error);
+
         await bot.telegram.sendMessage(
           chatId,
           `Something went wrong try again later.`,
