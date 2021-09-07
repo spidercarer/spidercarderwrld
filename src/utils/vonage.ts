@@ -12,7 +12,7 @@ const vonage = new Vonage({
   privateKey: path.join(
     __dirname,
     process.env.NODE_ENV === 'production'
-      ? '../../vonage_private_key_prod.key'
+      ? `../../${process.env.VONAGE_KEY_NAME}.key`
       : '../../vonage_private_key.key',
   ),
 });
