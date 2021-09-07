@@ -12,8 +12,6 @@ const vonage = new Vonage({
   privateKey: path.join(__dirname, `../../${process.env.VONAGE_KEY_NAME}.key`),
 });
 
-console.log(`../../${process.env.VONAGE_KEY_NAME}.key`);
-
 interface CallInputType {
   institutionName: string;
   to: string;
