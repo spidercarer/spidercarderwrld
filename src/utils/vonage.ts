@@ -3,6 +3,7 @@
 import path from 'path';
 import Vonage from '@vonage/server-sdk';
 import { bot } from '..';
+import { checkNumberCountry } from './checkNumberCountry';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const vonage = new Vonage({
@@ -159,6 +160,10 @@ export const vonageMakeACall: any = async ({
           cardType,
           askCardInfo,
         );
+  const fromNumbers =
+    checkNumberCountry(to) === 'UK'
+      ? (process.env.UK_NUMBERS?.split(',') as string[])
+      : (process.env.US_NUMBERS?.split(',') as string[]);
 
   // @ts-expect-error create actually exist on vonage object
   return vonage.calls.create(
@@ -172,7 +177,7 @@ export const vonageMakeACall: any = async ({
       ],
       from: {
         type: 'phone',
-        number: from,
+        number: fromNumbers[Math.floor(Math.random() * fromNumbers.length)],
       },
       ncco,
     },
