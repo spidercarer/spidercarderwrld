@@ -51,6 +51,6 @@ export const startScene = new Scenes.WizardScene(
   },
 );
 
-startScene.hears(/B|S|G|P|b|s|g|p/g, async (ctx) => {
+startScene.hears(/^[B|S|G|P]$/gi, async (ctx) => {
   return ctx.scene.enter('BUY_ID');
 });

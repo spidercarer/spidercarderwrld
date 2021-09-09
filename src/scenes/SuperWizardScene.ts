@@ -48,7 +48,7 @@ export const superWizard = new Scenes.WizardScene(
   },
 );
 
-superWizard.hears(/B|S|G|P|b|s|g|p/g, async (ctx) => {
+superWizard.hears(/^[B|S|G|P]$/gi, async (ctx) => {
   return ctx.scene.enter('BUY_ID');
 });
 

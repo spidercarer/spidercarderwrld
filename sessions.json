@@ -32,13 +32,9 @@
       "id": "1954803565:1954803565",
       "data": {
         "__scenes": {
-          "current": "BUY_ID",
+          "current": "super-wizard",
           "state": {
-            "currencyAddr": {
-              "bitcoin": "3Dx3PBAt5tyWq9bx8zkyz2n7ndCKJvEDt3",
-              "ethereum": "0x894880769822cbf02e1aa4984579de9e62631c99",
-              "litecoin": "MKxxZ3rHcCuqdXGFpWuPuwNHduDcFB7aWG"
-            }
+            "me": {}
           },
           "cursor": 0
         }

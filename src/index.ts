@@ -50,6 +50,11 @@ stage.action('cancel', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
 
+stage.command('cancel', async (ctx) => {
+  await ctx.reply('Operation cancelled successfully ✅');
+  return ctx.scene.enter('super-wizard');
+});
+
 // bot.use(Telegraf.log());
 bot.use(new LocalSession().middleware());
 bot.use(stage.middleware());
