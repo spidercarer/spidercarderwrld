@@ -23,12 +23,8 @@ export const superWizard = new Scenes.WizardScene(
       // @ts-expect-error typescript won't let add new state
       ctx.scene.state.me.id = user.fields.id;
       const reply = hasExpired
-        ? ctx.replyWithHTML(
-            `👋 <b>Welcome ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>`,
-            Markup.inlineKeyboard([
-              Markup.button.callback('Renew', 'buy'),
-              //   Markup.button.callback('Status', 'Status'),
-            ]),
+        ? await ctx.replyWithHTML(
+            `👋 <b>Welcome back ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>\n\n🛒 Please select the subscription you want\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
           )
         : ctx.replyWithHTML(
             `👋 <b>Welcome ${first_name}</b>,\n\n👥 you are subscribed, you are on the <b>${
@@ -45,13 +41,25 @@ export const superWizard = new Scenes.WizardScene(
       return ctx.wizard.next();
     } catch (error) {
       // await ctx.scene.leave();
-      return await ctx.replyWithHTML(
-        `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\n🛒 1 Month subscription\n💲 Price: <b>$${process.env.OTP_PRICE}</b>\n\nTo purchase click the buy button below and you will be prompted to select a currency`,
-        Markup.inlineKeyboard([
-          Markup.button.callback('Buy', 'buy'),
-          //   Markup.button.callback('Status', 'Status'),
-        ]),
+      return ctx.replyWithHTML(
+        `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\nYou don't have any subscription\n\n🛒 Please select the subscription you want\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
       );
     }
   },
 );
+
+superWizard.hears(/B|S|G|P|b|s|g|p/g, async (ctx) => {
+  return ctx.scene.enter('BUY_ID');
+});
+
+superWizard.action('call', async (ctx) => {
+  return ctx.scene.enter('START_ID');
+});
+
+superWizard.action('buy', async (ctx) => {
+  return ctx.scene.enter('BUY_ID');
+});
+
+superWizard.action('LET_GO', async (ctx) => {
+  return ctx.scene.enter('START_ID');
+});

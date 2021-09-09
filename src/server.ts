@@ -7,6 +7,7 @@ import { Markup } from 'telegraf';
 import { bot } from '.';
 import { client } from './utils/contentful';
 import { accountFlow, bankFlow, cardFlow, payFlow } from './utils/dtmfFlow';
+import { getMembership } from './utils/getMembership';
 import { getUser } from './utils/getUser';
 
 const app = express();
@@ -30,7 +31,8 @@ app.post('/coinbase-webhook', async (req, res) => {
       webhookSecret,
     );
 
-    const { metadata } = body.event.data;
+    const { metadata, pricing } = body.event.data;
+    const subsciption = getMembership(pricing.local.amount);
 
     if (event.type === 'charge:pending' && metadata.reason === 'OTP Purchase') {
       // user paid, but transaction not confirm on blockchain yet
@@ -41,8 +43,9 @@ app.post('/coinbase-webhook', async (req, res) => {
     }
 
     if (
-      event.type === 'charge:confirmed' &&
-      metadata.reason === 'OTP Purchase'
+      (event.type === 'charge:confirmed' &&
+        metadata.reason === 'OTP Purchase') ||
+      (event.type === 'charge:resolved' && metadata.reason === 'OTP Purchase')
     ) {
       // all good, charge confirmed
       bot.telegram.sendMessage(
@@ -77,10 +80,10 @@ app.post('/coinbase-webhook', async (req, res) => {
             telegramId: { 'en-US': Number(metadata.chatId) },
             username: { 'en-US': metadata.username },
             membershipExpiry: {
-              'en-US': moment.utc().add(1, 'month').format(),
+              'en-US': moment.utc().add(subsciption.month, 'month').format(),
             },
             membershipType: {
-              'en-US': 'SILVER',
+              'en-US': subsciption.type,
             },
           },
         });
