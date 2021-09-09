@@ -3,11 +3,6 @@ import { pay } from '../steps/pay';
 
 export const payStepScene = new Scenes.WizardScene('PAY_STEP_ID', ...pay);
 
-payStepScene.action('cancel', async (ctx) => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-
 payStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });

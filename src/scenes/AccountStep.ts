@@ -28,11 +28,6 @@ accountStepScene.action('accountCall', async (ctx) => {
   return ctx.wizard.steps[5](ctx);
 });
 
-accountStepScene.action('cancel', async (ctx) => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-
 accountStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
