@@ -3,11 +3,6 @@ import { card } from '../steps/card';
 
 export const cardStepScene = new Scenes.WizardScene('CARD_STEP_ID', ...card);
 
-cardStepScene.action('cancel', async (ctx) => {
-  await ctx.reply('Operation cancelled successfully ✅');
-  return ctx.scene.enter('super-wizard');
-});
-
 cardStepScene.action('debit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'debit';
   await ctx.wizard.next();
