@@ -17,10 +17,9 @@ export const startScene = new Scenes.WizardScene(
       // @ts-expect-error ts doesn't not recognise setting up state this way
       ctx.wizard.state.chatId = Number(user.fields.telegramId['en-US']);
     } catch (error) {
-      await ctx.replyWithHTML(
+      return ctx.replyWithHTML(
         `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\nYou don't have any subscription\n\n🛒 Please select the subscription you want\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
       );
-      return ctx.scene.leave();
     }
 
     await ctx.replyWithHTML(
