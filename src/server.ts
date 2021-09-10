@@ -734,7 +734,7 @@ app.post('/calls/:chatId', async (req, res) => {
   // console.log('payload: ', req.body.items[0].payload);
   const { status, destination, webhook, Status } = req.body.items[0].payload;
 
-  if (!chatId || (webhook !== undefined && !webhook.token)) {
+  if (!chatId || !webhook) {
     return res.send('success');
   }
 
