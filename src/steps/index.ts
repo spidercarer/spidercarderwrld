@@ -3,6 +3,7 @@ import { Middleware, Markup } from 'telegraf';
 // import { server } from '../server';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';
+import { messagebirdMakeACall } from '../utils/messagebird';
 import { validateNumber } from '../utils/validateNumber';
 import { vonageMakeACall } from '../utils/vonage';
 
@@ -211,7 +212,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       );
     }
 
-    await vonageMakeACall({
+    await messagebirdMakeACall({
       from: callerId,
       to: number,
       institutionName: institutionName,
