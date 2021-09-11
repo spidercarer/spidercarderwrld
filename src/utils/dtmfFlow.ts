@@ -19,7 +19,7 @@ export const bankFlow = (
           action: 'say',
           options: {
             payload:
-              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the security code yet please press the star key followed by the # key',
+              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
             language,
             voice: 'female',
             loop: true,
@@ -60,7 +60,7 @@ export const bankFlow = (
           action: 'say',
           options: {
             payload:
-              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the security code yet please press the star key followed by the # key',
+              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
             language,
             voice: 'female',
             loop: true,
@@ -205,7 +205,7 @@ export const payFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the security code yet please press the star key followed by the # key`,
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -245,7 +245,7 @@ export const payFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the security code yet please press the star key followed by the # key`,
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -389,7 +389,7 @@ export const accountFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the security code yet please press the star key followed by the # key`,
+            payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -429,7 +429,7 @@ export const accountFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the # key. If you have not received the code yet please press the star key followed by the # key`,
+            payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -573,7 +573,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the # key`,
+            payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -613,7 +613,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY, please enter your ${cardType} card number followed by the # key`,
+            payload: `For your SECURITY, please enter your ${cardType} card number followed by the pound key`,
             language,
             voice: 'female',
             loop: true,

