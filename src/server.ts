@@ -60,7 +60,7 @@ app.post('/coinbase-webhook', async (req, res) => {
 
         if (user) {
           user.fields.membershipExpiry = {
-            'en-US': moment.utc().add(1, 'month').format(),
+            'en-US': moment.utc().add(subsciption.month, 'month').format(),
           };
 
           await (await user.update()).publish();
