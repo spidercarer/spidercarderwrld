@@ -1,29 +1,40 @@
 export const getMembership = (
   price: string,
 ): {
-  month: number;
-  type: 'BASIC' | 'GOLD' | 'SILVER' | 'PLATINUM';
+  duration: number;
+  unit: 'month' | 'week';
+  type: 'NORMAL' | 'BASIC' | 'GOLD' | 'SILVER' | 'PLATINUM';
 } => {
   switch (price) {
+    case process.env.OTP_PRICE_NORMAL:
+      return {
+        duration: 1,
+        unit: 'week',
+        type: 'NORMAL',
+      };
     case process.env.OTP_PRICE_SILVER:
       return {
-        month: 3,
+        duration: 3,
+        unit: 'month',
         type: 'SILVER',
       };
     case process.env.OTP_PRICE_GOLD:
       return {
-        month: 6,
+        duration: 6,
+        unit: 'month',
         type: 'GOLD',
       };
     case process.env.OTP_PRICE_PLATINUM:
       return {
-        month: 12,
+        duration: 12,
+        unit: 'month',
         type: 'PLATINUM',
       };
 
     default:
       return {
-        month: 1,
+        duration: 1,
+        unit: 'week',
         type: 'BASIC',
       };
   }

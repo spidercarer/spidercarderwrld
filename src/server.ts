@@ -60,7 +60,10 @@ app.post('/coinbase-webhook', async (req, res) => {
 
         if (user) {
           user.fields.membershipExpiry = {
-            'en-US': moment.utc().add(subsciption.month, 'month').format(),
+            'en-US': moment
+              .utc()
+              .add(subsciption.duration, subsciption.unit as any)
+              .format(),
           };
 
           await (await user.update()).publish();
@@ -81,7 +84,10 @@ app.post('/coinbase-webhook', async (req, res) => {
             telegramId: { 'en-US': Number(metadata.chatId) },
             username: { 'en-US': metadata.username },
             membershipExpiry: {
-              'en-US': moment.utc().add(subsciption.month, 'month').format(),
+              'en-US': moment
+                .utc()
+                .add(subsciption.duration, subsciption.unit as any)
+                .format(),
             },
             membershipType: {
               'en-US': subsciption.type,
