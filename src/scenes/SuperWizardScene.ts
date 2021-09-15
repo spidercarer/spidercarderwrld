@@ -24,7 +24,7 @@ export const superWizard = new Scenes.WizardScene(
       ctx.scene.state.me.id = user.fields.id;
       const reply = hasExpired
         ? await ctx.replyWithHTML(
-            `👋 <b>Welcome back ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>\n\n🛒 Please select the subscription you want\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
+            `👋 <b>Welcome back ${first_name}</b>,\n\nYour subscirption has <b>expired.</b>\n\n🛒 Please select the subscription you want\n\n<b>N</b> 🟢 NORMAL - 1 Week - <b>$${process.env.OTP_PRICE_NORMAL}</b>\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
           )
         : ctx.replyWithHTML(
             `👋 <b>Welcome ${first_name}</b>,\n\n👥 you are subscribed, you are on the <b>${
@@ -42,13 +42,13 @@ export const superWizard = new Scenes.WizardScene(
     } catch (error) {
       // await ctx.scene.leave();
       return ctx.replyWithHTML(
-        `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\nYou don't have any subscription\n\n🛒 Please select the subscription you want\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
+        `😃 <b>Welcome ${ctx.from?.first_name}</b>,\n\nYou don't have any subscription\n\n🛒 Please select the subscription you want\n\n<b>N</b> 🟢 NORMAL - 1 Week - <b>$${process.env.OTP_PRICE_NORMAL}</b>\n\n<b>B</b> 🔵 BASIC - 1 Month - <b>$${process.env.OTP_PRICE_BASIC}</b>\n\n<b>S</b> ⚪️ SILVER - 3 Months - <b>$${process.env.OTP_PRICE_SILVER}</b>\n\n<b>G</b> 🟡 GOLD - 6 Months - <b>$${process.env.OTP_PRICE_GOLD}</b>\n\n<b>P</b> ⚫️ PLATINUM - 12 Months - <b>$${process.env.OTP_PRICE_PLATINUM}</b>\n\nreply with the letter of the subscription you want e.g P for PLATINUM`,
       );
     }
   },
 );
 
-superWizard.hears(/^[B|S|G|P]$/gi, async (ctx) => {
+superWizard.hears(/^[N|B|S|G|P]$/gi, async (ctx) => {
   return ctx.scene.enter('BUY_ID');
 });
 
