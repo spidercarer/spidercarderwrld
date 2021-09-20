@@ -33,7 +33,7 @@ export const bankFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
@@ -113,7 +113,7 @@ export const bankFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'bankStepGoto',
           onKeypressVar: 'dtmf',
@@ -170,7 +170,7 @@ export const bankFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'bankStepGoto',
           onKeypressVar: 'dtmf',
@@ -298,7 +298,7 @@ export const payFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'payStepGoto',
           onKeypressVar: 'dtmf',
@@ -354,7 +354,7 @@ export const payFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'bankStepGoto',
           onKeypressVar: 'dtmf',
@@ -482,7 +482,7 @@ export const accountFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'accountStepGoto',
           onKeypressVar: 'dtmf',
@@ -538,7 +538,7 @@ export const accountFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'accountStepGoto',
           onKeypressVar: 'dtmf',
@@ -587,7 +587,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
@@ -628,7 +628,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
@@ -666,7 +666,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
@@ -722,7 +722,7 @@ export const cardFlow = (
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',

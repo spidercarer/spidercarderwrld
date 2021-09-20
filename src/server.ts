@@ -281,7 +281,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
@@ -338,7 +338,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
@@ -390,7 +390,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 5,
+            length: '5s',
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
@@ -490,7 +490,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
@@ -547,7 +547,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
@@ -605,7 +605,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'pause',
               options: {
-                length: 5,
+                length: '5s',
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
@@ -686,7 +686,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'pause',
               options: {
-                length: 5,
+                length: '5s',
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
@@ -729,7 +729,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'pause',
               options: {
-                length: 5,
+                length: '5s',
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',

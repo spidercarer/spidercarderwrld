@@ -51,7 +51,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'bankStepGoto',
             onKeypressVar: 'dtmf',
@@ -89,7 +89,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'accountStepGoto',
             onKeypressVar: 'dtmf',
@@ -127,7 +127,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'payStepGoto',
             onKeypressVar: 'dtmf',
@@ -169,7 +169,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: 5,
+              length: '5s',
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
