@@ -26,6 +26,7 @@ export const bankFlow = (
           },
           onKeypressGoto: 'bankStepOTP',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
           onKeypressVar: 'dtmf',
         },
@@ -38,6 +39,7 @@ export const bankFlow = (
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -68,6 +70,7 @@ export const bankFlow = (
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -79,6 +82,7 @@ export const bankFlow = (
           onKeypressGoto: 'bankStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -213,6 +217,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -224,6 +229,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -253,6 +259,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -264,6 +271,7 @@ export const payFlow = (
           onKeypressGoto: 'payStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -397,6 +405,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -408,6 +417,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -437,6 +447,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -448,6 +459,7 @@ export const accountFlow = (
           onKeypressGoto: 'accountStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 8,
         },
         {
@@ -581,6 +593,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 18,
         },
         {
@@ -592,6 +605,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 18,
         },
         {
@@ -621,6 +635,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 18,
         },
         {
@@ -632,6 +647,7 @@ export const cardFlow = (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
+          timeout: '5s',
           maxNumKeys: 18,
         },
         {

@@ -35,7 +35,7 @@ export const getMembership = (
       return {
         duration: 1,
         unit: 'week',
-        type: 'BASIC',
+        type: 'NORMAL',
       };
   }
 };
