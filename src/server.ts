@@ -274,7 +274,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -286,7 +286,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -331,7 +331,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -343,7 +343,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -383,7 +383,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -395,7 +395,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: '5s',
+          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -483,7 +483,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -495,7 +495,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -540,7 +540,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -552,7 +552,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: '5s',
+            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -598,7 +598,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -610,7 +610,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -679,7 +679,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 6,
             },
             {
@@ -691,7 +691,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 6,
             },
             {
@@ -722,7 +722,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -734,7 +734,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: '5s',
+              timeout: 5,
               maxNumKeys: 18,
             },
             {
