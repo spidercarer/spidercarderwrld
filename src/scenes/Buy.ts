@@ -11,7 +11,7 @@ export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
 
   switch (message.toLowerCase()) {
     case 'n':
-      price = process.env.OTP_PRICE_BASIC;
+      price = process.env.OTP_PRICE_NORMAL;
       await ctx.reply(
         `You have selected the NORMAL subscription, click Proceed to continue`,
         Markup.inlineKeyboard([
