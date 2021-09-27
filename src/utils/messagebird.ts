@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import initMB from 'messagebird';
+import initMB, { CallFlowParameter } from 'messagebird';
+import { languages } from 'messagebird/types/voice_messages';
 import { v4 as uuidv4 } from 'uuid';
 import { bot } from '..';
 
@@ -19,13 +20,13 @@ interface CallInputType {
 
 const callFlow = (
   institutionName: string,
-  language: string,
+  language: languages | undefined,
   step: string,
   chatId: number,
   wallet?: string,
   cardType?: string,
   askCardInfo?: string,
-): any => {
+): CallFlowParameter => {
   switch (step) {
     case 'bank':
       return {
@@ -34,6 +35,7 @@ const callFlow = (
         record: false,
         steps: [
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
@@ -41,22 +43,26 @@ const callFlow = (
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS transaction on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
-              length: '5s',
-              loop: true,
+              length: 5,
             },
             onKeypressGoto: 'bankStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: '5s',
+              length: 5,
             },
             onKeypressGoto: 'bankStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
             id: 'bankStepGoto',
             action: 'fetchCallFlow',
             options: {
@@ -72,6 +78,7 @@ const callFlow = (
         record: false,
         steps: [
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
@@ -79,22 +86,26 @@ const callFlow = (
               payload: `This is a call from ${institutionName.toUpperCase()} account security line. We have BLOCKED a recent SUSPICIOUS login attempt on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
-              length: '5s',
-              loop: true,
+              length: 5,
             },
             onKeypressGoto: 'accountStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: '5s',
+              length: 5,
             },
             onKeypressGoto: 'accountStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
             id: 'accountStepGoto',
             action: 'fetchCallFlow',
             options: {
@@ -110,6 +121,7 @@ const callFlow = (
         record: false,
         steps: [
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
@@ -117,22 +129,26 @@ const callFlow = (
               payload: `This is a call from ${institutionName.toUpperCase()} mobile wallet line. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
-              length: '5s',
-              loop: true,
+              length: 5,
             },
             onKeypressGoto: 'payStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: '5s',
+              length: 5,
             },
             onKeypressGoto: 'payStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
             id: 'payStepGoto',
             action: 'fetchCallFlow',
             options: {
@@ -152,6 +168,7 @@ const callFlow = (
         record: false,
         steps: [
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
@@ -159,22 +176,26 @@ const callFlow = (
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
-              length: '5s',
-              loop: true,
+              length: 5,
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'pause',
             options: {
-              length: '5s',
+              length: 5,
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
           },
           {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
             id: 'cardStepGoto',
             action: 'fetchCallFlow',
             options: {
@@ -184,7 +205,16 @@ const callFlow = (
         ],
       };
     default:
-      break;
+      return {
+        // @ts-expect-error id is indeed known param
+        id: uuidv4(),
+        title: 'should never be here',
+        steps: [
+          {
+            action: 'hangup',
+          },
+        ],
+      };
   }
 };
 
@@ -204,7 +234,7 @@ export const messagebirdMakeACall: any = async ({
     )
       ? callFlow(
           institutionName,
-          'en-GB',
+          'en-gb',
           step,
           chatId,
           wallet,
@@ -213,7 +243,7 @@ export const messagebirdMakeACall: any = async ({
         )
       : callFlow(
           institutionName,
-          'en-US',
+          'en-us',
           step,
           chatId,
           wallet,
