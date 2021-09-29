@@ -791,10 +791,6 @@ app.post('/calls/:chatId', async (req, res) => {
       '<b>Voicemail</b> ❌\n\nCall again',
       {
         parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
-          Markup.button.callback('👎🏽 No', 'noCallAgain'),
-        ]).reply_markup,
       },
     );
   }
