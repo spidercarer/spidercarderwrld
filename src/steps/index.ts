@@ -183,11 +183,14 @@ export const steps = (step: string): Array<Middleware<C>> => [
       // @ts-expect-error ts doesn't not recognise state
       ctx.wizard.state.callData.callerId = ctx.message.text;
     }
-    ctx.wizard.state.callData.wallet =
-      ctx.message && step === 'pay'
-        ? // @ts-expect-error ts doesn't not recognise state
-          ctx.message.text
-        : undefined;
+
+    const w = ctx.wizard.state.callData.wallet;
+    ctx.wizard.state.callData.wallet = w
+      ? w
+      : ctx.message && step === 'pay'
+      ? // @ts-expect-error ts doesn't not recognise state
+        ctx.message.text
+      : undefined;
     const { number, institutionName, callerId, wallet, cardType, askCardInfo } =
       ctx.wizard.state.callData;
 

