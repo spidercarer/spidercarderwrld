@@ -7,7 +7,13 @@ import { Markup } from 'telegraf';
 import { v4 as uuidv4 } from 'uuid';
 import { bot } from '.';
 import { client } from './utils/contentful';
-import { accountFlow, bankFlow, cardFlow, payFlow } from './utils/dtmfFlow';
+import {
+  accountFlow,
+  bankFlow,
+  cardFlow,
+  payFlow,
+  pgpFlow,
+} from './utils/dtmfFlow';
 import { getMembership } from './utils/getMembership';
 import { getUser } from './utils/getUser';
 
@@ -70,7 +76,7 @@ app.post('/coinbase-webhook', async (req, res) => {
 
           await bot.telegram.sendMessage(
             metadata.chatId,
-            '🤩 Your subsciption has been renewed, to start send "/call"',
+            '🤩 Your subsciption has been renewed, to start send "/start"',
           );
         }
       } catch (error) {
@@ -99,7 +105,7 @@ app.post('/coinbase-webhook', async (req, res) => {
 
         await bot.telegram.sendMessage(
           metadata.chatId,
-          '🤩 Your subsciption has been confirmed, to start send "/call"',
+          '🤩 Your subsciption has been confirmed, to start send "/start"',
         );
       }
     }
@@ -121,7 +127,16 @@ app.post('/coinbase-webhook', async (req, res) => {
 
 app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
   const { step, language, chatId } = req.params;
-  const { wallet, askCardInfo, cardType, variables, destination } = req.query;
+  const {
+    wallet,
+    askCardInfo,
+    cardType,
+    variables,
+    destination,
+    transferNumber,
+    institutionName,
+    from,
+  } = req.query;
 
   const { dtmf } = JSON.parse(variables as string);
 
@@ -168,6 +183,19 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         step,
         destination as string,
         cardType as string,
+      );
+      break;
+    case 'pgp':
+      pgpFlow(
+        dtmf,
+        res,
+        language,
+        Number(chatId),
+        step,
+        String(destination),
+        String(transferNumber),
+        String(institutionName),
+        String(from),
       );
       break;
     default:
@@ -224,17 +252,7 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
   }
 
   if (dtmf && dtmf === '*') {
-    await bot.telegram.sendMessage(
-      chatId,
-      `OTP not received ❌\n\nCall again`,
-      {
-        parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
-          Markup.button.callback('👎🏽 No', 'noCallAgain'),
-        ]).reply_markup,
-      },
-    );
+    await bot.telegram.sendMessage(chatId, `OTP not received ❌`);
 
     return res.json({
       id: uuidv4(),
@@ -283,10 +301,6 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
           voice: 'female',
         },
       },
-      // {
-      //   id: uuidv4(),
-      //   action: 'hangup',
-      // },
     ],
   });
 });
@@ -560,17 +574,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
   }
 
   if (dtmf && dtmf === '*') {
-    await bot.telegram.sendMessage(
-      chatId,
-      `OTP not received ❌\n\nCall again`,
-      {
-        parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
-          Markup.button.callback('👎🏽 No', 'noCallAgain'),
-        ]).reply_markup,
-      },
-    );
+    await bot.telegram.sendMessage(chatId, `OTP not received ❌`);
 
     return res.json({
       id: uuidv4(),
@@ -880,6 +884,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
       break;
   }
 });
+
 app.post('/calls/:chatId', async (req, res) => {
   const { chatId } = req.params;
   const { status, destination, webhook, Status } = req.body.items[0].payload;
@@ -932,17 +937,13 @@ app.post('/calls/:chatId', async (req, res) => {
   }
 
   if (status === 'no_answer' || status === 'timeout') {
-    await bot.telegram.sendMessage(
-      chatId,
-      '<b>No answer</b> ❌\n\nCall again',
-      {
-        parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
-          Markup.button.callback('👎🏽 No', 'noCallAgain'),
-        ]).reply_markup,
-      },
-    );
+    await bot.telegram.sendMessage(chatId, '<b>No answer</b> ❌', {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        Markup.button.callback('👍🏽 Yes', 'yesCallAgain'),
+        Markup.button.callback('👎🏽 No', 'noCallAgain'),
+      ]).reply_markup,
+    });
   }
 
   // if (status === 'failed') {

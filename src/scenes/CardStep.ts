@@ -5,13 +5,11 @@ export const cardStepScene = new Scenes.WizardScene('CARD_STEP_ID', ...card);
 
 cardStepScene.action('debit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'debit';
-  await ctx.wizard.next();
   return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
 });
 
 cardStepScene.action('credit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'credit';
-  await ctx.wizard.next();
   return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
 });
 
@@ -22,7 +20,6 @@ cardStepScene.action('noCallAgain', async (ctx) => {
 cardStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
-    await ctx.wizard.next();
     return ctx.wizard.steps[4](ctx);
   }, 20000);
 });

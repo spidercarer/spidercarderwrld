@@ -35,7 +35,6 @@ accountStepScene.action('noCallAgain', async (ctx) => {
 accountStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
-    await ctx.wizard.next();
     return ctx.wizard.steps[5](ctx);
   }, 20000);
 });

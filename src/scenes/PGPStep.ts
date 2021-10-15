@@ -1,13 +1,13 @@
 import { Scenes } from 'telegraf';
-import { bank } from '../steps/bank';
+import { pgp } from '../steps/pgp';
 
-export const bankStepScene = new Scenes.WizardScene('BANK_STEP_ID', ...bank);
+export const pgpStepScene = new Scenes.WizardScene('PGP_STEP_ID', ...pgp);
 
-bankStepScene.action('noCallAgain', async (ctx) => {
+pgpStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');
 });
 
-bankStepScene.action('yesCallAgain', async (ctx) => {
+pgpStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
     return ctx.wizard.steps[3](ctx);

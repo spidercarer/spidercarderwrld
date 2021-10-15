@@ -163,15 +163,43 @@ export const steps = (step: string): Array<Middleware<C>> => [
         },
       ]
     : []),
+  ...(step === 'pgp'
+    ? [
+        async (ctx: any) => {
+          await ctx.reply(
+            'Finally,\n\nReply with the number the call will be transfered to 👉🏽',
+            Markup.inlineKeyboard([
+              Markup.button.callback('❌ Cancel', 'cancel'),
+            ]),
+          );
+          ctx.wizard.state.callData.callerId = ctx.message.text;
+          return ctx.wizard.next();
+        },
+      ]
+    : []),
   async (ctx) => {
     if (!ctx.wizard.state.callData) {
-      await ctx.reply(
+      return await ctx.reply(
         '🚫 Request expired, start again\n\n',
         Markup.inlineKeyboard([
           Markup.button.callback("🎬 Let's go", 'expired'),
         ]),
       );
     }
+
+    if (step === 'pgp' && !ctx.wizard.state.callData.transferNumber) {
+      if (
+        !/^(?:\+?1[-.●]?)?\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$/.test(
+          // @ts-expect-error ts doesn't not recognise text here
+          ctx?.message?.text,
+        )
+      ) {
+        return ctx.reply('Please enter a valid US number');
+      }
+      // @ts-expect-error ts doesn't not recognise text here
+      ctx.wizard.state.callData.transferNumber = ctx?.message?.text;
+    }
+
     if (step === 'bank' && !ctx.wizard.state.callData.callerId) {
       // @ts-expect-error ts doesn't not recognise state
       if (!validateNumber(ctx.message.text)) {
@@ -191,8 +219,15 @@ export const steps = (step: string): Array<Middleware<C>> => [
       ? // @ts-expect-error ts doesn't not recognise state
         ctx.message.text
       : undefined;
-    const { number, institutionName, callerId, wallet, cardType, askCardInfo } =
-      ctx.wizard.state.callData;
+    const {
+      number,
+      institutionName,
+      callerId,
+      wallet,
+      cardType,
+      askCardInfo,
+      transferNumber,
+    } = ctx.wizard.state.callData;
 
     await ctx.replyWithHTML(
       `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...\n\n<b><i>~ ${step.replace(
@@ -217,7 +252,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
     await messagebirdMakeACall({
       from: callerId,
       to: number,
-      institutionName: institutionName,
+      institutionName,
+      transferNumber,
       step,
       wallet,
       cardType,

