@@ -38,10 +38,11 @@ const callFlow = (
         record: false,
         steps: [
           {
-            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
               ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS transaction on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
@@ -81,10 +82,11 @@ const callFlow = (
         record: false,
         steps: [
           {
-            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
               ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} account security line. We have BLOCKED a recent SUSPICIOUS login attempt on your account. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
@@ -124,10 +126,11 @@ const callFlow = (
         record: false,
         steps: [
           {
-            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
               ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} mobile wallet line. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
@@ -171,10 +174,11 @@ const callFlow = (
         record: false,
         steps: [
           {
-            // @ts-expect-error id is indeed known param
             id: uuidv4(),
             action: 'say',
             options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
               ifMachine: 'delay',
               payload: `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
               language,
@@ -217,12 +221,13 @@ const callFlow = (
             id: uuidv4(),
             action: 'say',
             options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
               ifMachine: 'delay',
               payload: `Welcome to the ${institutionName} fraud prevention line. We recently notice a suspicious activity on your account, if this was you simply hang up. If this was not you please press 1 to speak to a ${institutionName} representative to better assist you in securing your account.`,
               language: 'en-us',
               voice: 'female',
               length: 5,
-              // @ts-expect-error ts does not recognise loop
               loop: true,
             },
             onKeypressGoto: 'nextStep',

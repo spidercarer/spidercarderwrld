@@ -9,11 +9,10 @@
             "callData": {
               "number": "16172752394",
               "institutionName": "chase",
-              "callerId": "18882019292",
-              "cardType": "debit"
+              "callerId": "18882019292"
             }
           },
-          "cursor": 5
+          "cursor": 4
         }
       }
     },
