@@ -731,7 +731,7 @@ export const cardFlow = async (
           id: 'cardStepOTP',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}`,
           },
         },
       ],
