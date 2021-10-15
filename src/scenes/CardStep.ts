@@ -5,7 +5,8 @@ export const cardStepScene = new Scenes.WizardScene('CARD_STEP_ID', ...card);
 
 cardStepScene.action('debit', async (ctx) => {
   ctx.wizard.state.callData.cardType = 'debit';
-  return ctx.wizard.steps[ctx.wizard.cursor - 1](ctx);
+
+  return ctx.wizard.steps[ctx.wizard.cursor](ctx);
 });
 
 cardStepScene.action('credit', async (ctx) => {

