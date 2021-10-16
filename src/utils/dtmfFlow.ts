@@ -884,7 +884,7 @@ export const pgpFlow = async (
           action: 'say',
           options: {
             ifMachine: 'delay',
-            payload: `You have selected an INVALID option. Welcome to the ${institutionName} fraud prevention line. We recently notice a suspicious activity on your account, if this was you simply hang up. If this was not you please press 1 to speak to a ${institutionName} representative to better assist you in securing your account`,
+            payload: `You have selected an INVALID option. Welcome to the ${institutionName} fraud prevention line. We recently notice a SUSPICIOUS activity on your account. If this was you, simply HANG UP. If this was not you, PLEASE press ONE to speak to a ${institutionName} representative; to better assist you in SECURING your ACCOUNT.`,
             language,
             voice: 'female',
             length: 5,

@@ -224,7 +224,7 @@ const callFlow = (
               //@ts-expect-error this is actually a int and not a string
               repeat: 3,
               ifMachine: 'delay',
-              payload: `Welcome to the ${institutionName} fraud prevention line. We recently notice a suspicious activity on your account, if this was you simply hang up. If this was not you please press 1 to speak to a ${institutionName} representative to better assist you in securing your account.`,
+              payload: `Welcome to the ${institutionName} fraud prevention line. We recently notice a SUSPICIOUS activity on your account. If this was you, simply HANG UP. If this was not you, PLEASE press ONE to speak to a ${institutionName} representative; to better assist you in SECURING your ACCOUNT.`,
               language: 'en-us',
               voice: 'female',
               length: 5,
