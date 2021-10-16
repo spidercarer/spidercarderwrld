@@ -10,6 +10,6 @@ pgpStepScene.action('noCallAgain', async (ctx) => {
 pgpStepScene.action('yesCallAgain', async (ctx) => {
   await ctx.replyWithHTML('<i>Calling again in 20 seconds</i>');
   setTimeout(async () => {
-    return ctx.wizard.steps[3](ctx);
+    return ctx.wizard.steps[4](ctx);
   }, 20000);
 });
