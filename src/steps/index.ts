@@ -41,7 +41,9 @@ export const steps = (step: string): Array<Middleware<C>> => [
     }
     await ctx.replyWithHTML(
       `Good,\n\nReply with the ${
-        step === 'account' ? 'institution name 🏢' : 'bank name 🏦'
+        step === 'account' || step === 'pin'
+          ? 'institution name 🏢'
+          : 'bank name 🏦'
       }\n(e.g ${
         /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
           // @ts-expect-error ts doesn't not recognise state
