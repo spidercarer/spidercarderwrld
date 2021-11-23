@@ -7,7 +7,7 @@ let price: string | undefined;
 
 export const buyScene = new Scenes.WizardScene('BUY_ID', async (ctx) => {
   // @ts-expect-error ts doesn't recognize text on message
-  const message = ctx.message?.text;
+  const message = ctx.message?.text || '';
 
   switch (message.toLowerCase()) {
     case 'n':

