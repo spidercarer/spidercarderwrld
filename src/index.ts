@@ -8,7 +8,6 @@ import { Telegraf, Scenes } from 'telegraf';
 import { accountStepScene } from './scenes/AccountStep';
 import { bankStepScene } from './scenes/BankStep';
 import { buyScene } from './scenes/Buy';
-import { callOnNumInputScene } from './scenes/CallOnNumInput';
 import { cardStepScene } from './scenes/CardStep';
 import { payStepScene } from './scenes/PayStep';
 import { startScene } from './scenes/Start';
@@ -16,6 +15,7 @@ import { superWizard } from './scenes/SuperWizardScene';
 import LocalSession from 'telegraf-session-local';
 import { pgpStepScene } from './scenes/PGPStep';
 import { pinStepScene } from './scenes/PinStep';
+import { customStepScene } from './scenes/CustomStep';
 
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
@@ -27,7 +27,6 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
   [
     superWizard,
     buyScene as any,
-    callOnNumInputScene,
     startScene,
     bankStepScene,
     payStepScene,
@@ -35,6 +34,7 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
     cardStepScene,
     pinStepScene,
     pgpStepScene,
+    customStepScene,
   ],
   {
     default: 'super-wizard',

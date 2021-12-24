@@ -4,16 +4,16 @@
       "id": "1860996067:1860996067",
       "data": {
         "__scenes": {
-          "current": "PIN_STEP_ID",
+          "current": "CARD_STEP_ID",
           "state": {
             "callData": {
               "number": "16172752394",
-              "institutionName": "TMOBILE",
+              "institutionName": "Chase",
               "callerId": "18882019292",
-              "pinType": "carrierPin"
+              "cardType": "debit"
             }
           },
-          "cursor": 5
+          "cursor": 6
         }
       }
     },
@@ -65,6 +65,16 @@
       "id": "704573301:704573301",
       "data": {
         "__scenes": {}
+      }
+    },
+    {
+      "id": "5004320461:5004320461",
+      "data": {
+        "__scenes": {
+          "current": "START_ID",
+          "state": {},
+          "cursor": 0
+        }
       }
     }
   ]
