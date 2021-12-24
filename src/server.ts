@@ -1574,11 +1574,11 @@ app.post('/calls/:chatId', async (req, res) => {
     );
   }
 
-  if (Status === 'MACHINE') {
-    await bot.telegram.sendMessage(chatId, '<b>Voicemail</b> ❌', {
-      parse_mode: 'HTML',
-    });
-  }
+  // if (Status === 'MACHINE') {
+  //   await bot.telegram.sendMessage(chatId, '<b>Voicemail</b> ❌', {
+  //     parse_mode: 'HTML',
+  //   });
+  // }
 
   if (status === 'cancelled') {
     await bot.telegram.sendMessage(
