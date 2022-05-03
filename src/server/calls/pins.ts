@@ -2,7 +2,7 @@ import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
 
-app.post('/calls/pins/:step/:chatId/:language', async (req, res) => {
+app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
   const { step, chatId, language } = req.params;
 
   const { variables, pinType } = req.query;

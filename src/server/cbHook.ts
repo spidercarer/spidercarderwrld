@@ -7,7 +7,7 @@ import { client } from '../utils/contentful';
 import { getMembership } from '../utils/getMembership';
 import { getUser } from '../utils/getUser';
 
-app.post('/coinbase-webhook', async (req, res) => {
+app.all('/coinbase-webhook', async (req, res) => {
   const body = req.body;
   const signature = req.headers['x-cc-webhook-signature'] as string;
   const webhookSecret = process.env.COINBASE_WEBHOOK_SECRET as string;

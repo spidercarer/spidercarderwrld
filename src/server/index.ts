@@ -15,7 +15,11 @@ import './calls';
 
 const port = process.env.PORT || 4040;
 
-app.get('/', (_, res) => {
+app.all(`/ding`, (_, res) => {
+  res.send(`dong`);
+});
+
+app.all('/', (_, res) => {
   res.send('Hello World!');
 });
 

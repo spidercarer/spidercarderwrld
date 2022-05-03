@@ -1,3 +1,4 @@
+import { languages } from 'messagebird/types/voice_messages';
 import { Context } from 'telegraf/typings';
 
 type C = Context & {
@@ -19,4 +20,5 @@ interface CallInputType {
   actions?: string;
   customMessage?: string;
   otpLength?: number;
+  language?: languages;
 }

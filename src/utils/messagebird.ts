@@ -1,27 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import initMB from 'messagebird';
-import { languages } from 'messagebird/types/voice_messages';
 import { bot } from '..';
 import { answer } from '../server/answer';
+import { CallInputType } from '../types';
 
 export const messagebird = initMB(process.env.MESSAGEBIRD_API_KEY as string);
-
-interface CallInputType {
-  institutionName: string;
-  to: string;
-  from: string;
-  chatId: number;
-  step: string;
-  language: languages;
-  wallet?: string;
-  cardType?: string;
-  askCardInfo?: string;
-  transferNumber: string;
-  pinType?: string;
-  actions?: string;
-  customMessage?: string;
-}
 
 export const messagebirdMakeACall: any = async ({
   institutionName,
@@ -37,6 +21,7 @@ export const messagebirdMakeACall: any = async ({
   customMessage,
   actions,
   language,
+  otpLength,
 }: CallInputType) => {
   const flow = answer({
     institutionName,
@@ -51,6 +36,7 @@ export const messagebirdMakeACall: any = async ({
     customMessage,
     actions,
     language,
+    otpLength,
   });
   const numbers = process.env.MESSAGEBIRD_NUMBERS?.split(`,`);
   return messagebird.calls.create(

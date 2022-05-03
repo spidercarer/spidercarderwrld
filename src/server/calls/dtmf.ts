@@ -9,7 +9,7 @@ import {
   pgpFlow,
 } from '../../utils/dtmfFlow';
 
-app.post('/calls/dtmf/:language/:step/:chatId', (req, res) => {
+app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
   const { step, language, chatId } = req.params;
   const {
     wallet,
@@ -22,10 +22,11 @@ app.post('/calls/dtmf/:language/:step/:chatId', (req, res) => {
     actions,
     customMessage,
     otpLength,
+    variables,
+    destination,
   } = req.query;
 
-  const dtmf = req.body.Digits;
-  const destination = req.body.To;
+  const { dtmf } = JSON.parse(variables as string);
 
   switch (step) {
     case 'bank':

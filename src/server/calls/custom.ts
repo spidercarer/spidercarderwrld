@@ -2,7 +2,7 @@ import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
 
-app.post('/custom/:step/:chatId/:language', async (req, res) => {
+app.all('/custom/:step/:chatId/:language', async (req, res) => {
   const { actions, action } = req.query;
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
