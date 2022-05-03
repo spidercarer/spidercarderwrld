@@ -187,7 +187,7 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `The OTP you have entered is incorrect. Please enter the OTP again followed by the pound key.`,
+            payload: `The one time password you have entered is incorrect. Please enter the one time password again followed by the pound key.`,
             language,
             voice: 'female',
           },
@@ -218,6 +218,7 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
     });
     // @ts-expect-error I can do this
     bot.context = {};
+    return;
   }
 
   res.json({
