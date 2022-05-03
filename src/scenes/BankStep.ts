@@ -1,7 +1,25 @@
-import { Scenes } from 'telegraf';
+import { Markup, Scenes } from 'telegraf';
 import { bank } from '../steps/bank';
+import { client } from '../utils/plivo';
 
 export const bankStepScene = new Scenes.WizardScene('BANK_STEP_ID', ...bank);
+
+bankStepScene.action('valid', async (ctx) => {
+  if (!ctx.wizard.state.callUUID) {
+    return ctx.reply('This call has ended already.', {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        Markup.button.callback('🚀 Start again', 'LET_GO'),
+      ]).reply_markup,
+    });
+  }
+
+  client.calls.speakText(
+    ctx.wizard.state.callUUID,
+    'Your information has been verified.',
+    {},
+  );
+});
 
 bankStepScene.action('noCallAgain', async (ctx) => {
   return ctx.scene.enter('super-wizard');

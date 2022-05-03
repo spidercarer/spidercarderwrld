@@ -2,8 +2,6 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-import './server';
-
 import { Telegraf, Scenes } from 'telegraf';
 import { accountStepScene } from './scenes/AccountStep';
 import { bankStepScene } from './scenes/BankStep';
@@ -16,6 +14,8 @@ import LocalSession from 'telegraf-session-local';
 import { pgpStepScene } from './scenes/PGPStep';
 import { pinStepScene } from './scenes/PinStep';
 import { customStepScene } from './scenes/CustomStep';
+
+import './server';
 
 const token = process.env.BOT_TOKEN;
 if (token === undefined) {
@@ -52,6 +52,16 @@ stage.action('call', async (ctx) => {
 stage.action('cancel', async (ctx) => {
   await ctx.reply('Operation cancelled successfully ✅');
   return ctx.scene.enter('super-wizard');
+});
+
+stage.action('valid', () => {
+  // @ts-expect-error adding to state
+  bot.context.valid = true;
+});
+
+stage.action('invalid', () => {
+  // @ts-expect-error adding to state
+  bot.context.valid = false;
 });
 
 stage.command('cancel', async (ctx) => {

