@@ -160,6 +160,7 @@ export const custom = (): Array<Middleware<C>> => [
       pinType,
       actions: JSON.stringify(d),
       customMessage,
+      language: number[0] === `1` ? `en-us` : `en-gb`,
     });
 
     return ctx.wizard.next();
