@@ -2,7 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
-import { Telegraf, Scenes } from 'telegraf';
+import { Telegraf, Scenes, Markup } from 'telegraf';
 import { accountStepScene } from './scenes/AccountStep';
 import { bankStepScene } from './scenes/BankStep';
 import { buyScene } from './scenes/Buy';
@@ -42,12 +42,17 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
 );
 
 stage.start(async (ctx) => {
+  ctx.scene.enter('super-wizard');
   return ctx.scene.enter('START_ID');
 });
 
-stage.action(`support`, async (ctx) => {
-  return ctx.replyWithHTML(`
-  We currently suport:
+stage.command(`support`, async (ctx) => {
+  console.log(`Hello support`);
+
+  return ctx.replyWithHTML(
+    `
+  We currently support the following countries:
+
     🇺🇸 United State 
     🇦🇺 Australia 
     🇬🇧 Great Britain 
@@ -66,8 +71,9 @@ stage.action(`support`, async (ctx) => {
     🇳🇱 Netherland 
     🇩🇰 Denmark
   
-  Contact us at <a href="https://t.me/rocketsmsgateway">RocketSupport</a> to learn more.
-  `);
+  `,
+    Markup.inlineKeyboard([Markup.button.callback('🤯 Start', 'cancel')]),
+  );
 });
 
 stage.action('call', async (ctx) => {

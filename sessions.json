@@ -4,24 +4,16 @@
       "id": "1860996067:1860996067",
       "data": {
         "__scenes": {
-          "current": "BANK_STEP_ID",
+          "current": "super-wizard",
           "state": {
-            "callData": {
-              "number": {
-                "language": "en-US",
-                "voice": "Polly.Joanna",
-                "country": {
-                  "name": "United State",
-                  "flag": "🇺🇸"
-                },
-                "to": "16172752394"
-              },
-              "institutionName": "chase",
-              "callerId": "16172752394",
-              "otpLength": 6
-            }
+            "me": {
+              "id": {
+                "en-US": 1626522933313
+              }
+            },
+            "chatId": 1860996067
           },
-          "cursor": 5
+          "cursor": 1
         }
       }
     },
