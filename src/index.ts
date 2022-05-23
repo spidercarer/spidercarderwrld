@@ -66,7 +66,7 @@ stage.action(`support`, async (ctx) => {
     🇳🇱 Netherland 
     🇩🇰 Denmark
   
-  Contact us at <a href="https://t.me/rocketsmsgateway">RocketSupport</a> to learn more
+  Contact us at <a href="https://t.me/rocketsmsgateway">RocketSupport</a> to learn more.
   `);
 });
 
