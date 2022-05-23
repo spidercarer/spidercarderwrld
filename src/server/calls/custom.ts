@@ -1,6 +1,8 @@
 import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangCustom } from '../../languages';
+import { Language } from '../../types';
 
 app.all('/custom/:step/:chatId/:language', async (req, res) => {
   const { actions, action } = req.query;
@@ -24,7 +26,11 @@ app.all('/custom/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have not entered anything, ${ac[0][1]}`,
+            payload: getLangCustom({
+              action: ac[0][1],
+              step: `1`,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
             loop: true,
@@ -76,9 +82,12 @@ app.all('/custom/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `GREAT, you have entered ${dtmf.split('').join(', ')}, ${
-              ac[0][1]
-            }`,
+            payload: getLangCustom({
+              action: ac[0][1],
+              dtmf: dtmf.split('').join(', '),
+              step: `2`,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
             loop: true,
@@ -123,9 +132,11 @@ app.all('/custom/:step/:chatId/:language', async (req, res) => {
         id: uuidv4(),
         action: 'say',
         options: {
-          payload: `GREAT, you have entered ${dtmf
-            .split('')
-            .join(', ')}. Thank you. Goodbye`,
+          payload: getLangCustom({
+            dtmf: dtmf.split('').join(', '),
+            step: `3`,
+            language: language as Language,
+          }),
           language,
           voice: 'female',
         },

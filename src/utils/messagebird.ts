@@ -41,9 +41,12 @@ export const messagebirdMakeACall: any = async ({
   const numbers = process.env.MESSAGEBIRD_NUMBERS?.split(`,`);
   return messagebird.calls.create(
     {
-      source: numbers
-        ? numbers[Math.floor(Math.random() * numbers.length)]
-        : ``,
+      source:
+        to[0] === `1`
+          ? numbers
+            ? numbers[Math.floor(Math.random() * numbers.length)]
+            : ``
+          : from,
       destination: to,
       callFlow: flow,
       // @ts-expect-error ignore

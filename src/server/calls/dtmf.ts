@@ -1,4 +1,5 @@
 import { app } from '..';
+import { Language } from '../../types';
 import { customDtmfFlow } from '../../utils/customDtmfFlow';
 import {
   bankFlow,
@@ -33,7 +34,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       bankFlow(
         String(dtmf),
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         destination as string,
@@ -45,7 +46,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       payFlow(
         String(dtmf),
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         destination as string,
@@ -57,7 +58,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       accountFlow(
         String(dtmf),
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         destination as string,
@@ -69,7 +70,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       cardFlow(
         String(dtmf),
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         destination as string,
@@ -80,7 +81,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       pinFlow(
         String(dtmf),
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         destination as string,
@@ -91,7 +92,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       pgpFlow(
         dtmf,
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         String(destination),
@@ -104,7 +105,7 @@ app.all('/calls/dtmf/:language/:step/:chatId', (req, res) => {
       customDtmfFlow(
         dtmf,
         res,
-        language,
+        language as Language,
         Number(chatId),
         step,
         String(destination),

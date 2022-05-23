@@ -22,3 +22,91 @@ interface CallInputType {
   otpLength?: number;
   language?: languages;
 }
+
+type CountryCode =
+  | `US`
+  | `AU`
+  | `GB`
+  | `NZ`
+  | `ZA`
+  | `ES`
+  | `PT`
+  | `BR`
+  | `IT`
+  | `FR`
+  | `DE`
+  | `NO`
+  | `PL`
+  | `SE`
+  | `TR`
+  | `NL`
+  | `DK`;
+
+type Country =
+  | `United State`
+  | `Canada`
+  | `Australia`
+  | `Great Britain`
+  | `New Zealand`
+  | `South Africa`
+  | `Spain`
+  | `Portugal`
+  | `Brazil`
+  | `Italia`
+  | `France`
+  | `Germany`
+  | `Norway`
+  | `Poland`
+  | `Sweden`
+  | `Turkey`
+  | `Netherland`
+  | `Denmark`;
+
+type Flag =
+  | `🇺🇸`
+  | `🇨🇦`
+  | `🇦🇺`
+  | `🇬🇧`
+  | `🇳🇿`
+  | `🇿🇦`
+  | `🇪🇸`
+  | `🇵🇹`
+  | `🇧🇷`
+  | `🇮🇹`
+  | `🇫🇷`
+  | `🇩🇪`
+  | `🇳🇴`
+  | `🇵🇱`
+  | `🇸🇪`
+  | `🇹🇷`
+  | `🇳🇱`
+  | `🇩🇰`;
+
+type Language =
+  | 'en-US'
+  | 'en-CA'
+  | 'en-AU'
+  | 'en-GB'
+  | 'en-NZ'
+  | 'en-ZA'
+  | 'es-ES'
+  | 'pt-PT'
+  | 'pt-BR'
+  | 'it-IT'
+  | 'fr-FR'
+  | 'de-DE'
+  | 'nb-NO'
+  | 'pl-PL'
+  | 'sv-SE'
+  | 'tr-TR'
+  | 'cy-GB'
+  | 'nl-NL'
+  | 'da-DK'
+  | 'ca-ES';
+
+type GetCountry = {
+  name: Country;
+  flag: Flag;
+};
+
+type Voice = `Polly.Joanna` | `Polly.Ayaynda`;

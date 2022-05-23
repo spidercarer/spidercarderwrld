@@ -1,11 +1,13 @@
 import { Response } from 'express';
 import { bot } from '..';
 import { v4 as uuidv4 } from 'uuid';
+import { getLangCustomDTMFFlow } from '../languages';
+import { Language } from '../types';
 
 export const customDtmfFlow = async (
   dtmf: string,
   res: Response,
-  language: string,
+  language: Language,
   chatId: number | undefined,
   step: string,
   destination: string,
@@ -79,7 +81,7 @@ export const customDtmfFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `${customMessage}. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangCustomDTMFFlow({ dtmf, language, customMessage }),
             language,
             voice: 'female',
           },
@@ -116,7 +118,7 @@ export const customDtmfFlow = async (
           id: uuidv4(),
           action: 'say',
           options: {
-            payload: `${customMessage}. If this was not you, please press 1, if this was you, please press 2, to repeat these options, please press 3.`,
+            payload: getLangCustomDTMFFlow({ dtmf, language, customMessage }),
             language,
             voice: 'female',
           },
