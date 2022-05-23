@@ -42,13 +42,10 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
 );
 
 stage.start(async (ctx) => {
-  ctx.scene.enter('super-wizard');
   return ctx.scene.enter('START_ID');
 });
 
 stage.command(`support`, async (ctx) => {
-  console.log(`Hello support`);
-
   return ctx.replyWithHTML(
     `
   We currently support the following countries:
