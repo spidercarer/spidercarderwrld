@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Middleware, Markup } from 'telegraf';
-import { getCountry } from '../languages/helpers/getCountry';
 import { getLangAndVoice } from '../languages/helpers/getLangAndVoice';
 import { C } from '../types';
 import { UK_NUM, US_NUM } from '../utils/constants';

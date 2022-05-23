@@ -1,5 +1,3 @@
-import { getLangAndVoice } from '../../languages/helpers/getLangAndVoice';
-
 export const getNotValidNumberMsg = () => {
   return `Country not supported yet.
   We currently support the following countries:

@@ -42,6 +42,7 @@ const stage = new Scenes.Stage<Scenes.WizardContext>(
 );
 
 stage.start(async (ctx) => {
+  ctx.scene.enter('super-wizard');
   return ctx.scene.enter('START_ID');
 });
 
@@ -68,6 +69,7 @@ stage.command(`support`, async (ctx) => {
     🇳🇱 Netherland 
     🇩🇰 Denmark
   
+  Contact us at <b><a href="https://t.me/rocketsmsgateway">RocketSupport</a></b> to learn more.
   `,
     Markup.inlineKeyboard([Markup.button.callback('🤯 Start', 'cancel')]),
   );
