@@ -45,6 +45,31 @@ stage.start(async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
 
+stage.action(`support`, async (ctx) => {
+  return ctx.replyWithHTML(`
+  We currently suport:
+    🇺🇸 United State 
+    🇦🇺 Australia 
+    🇬🇧 Great Britain 
+    🇳🇿 New Zealand 
+    🇿🇦 South Africa 
+    🇪🇸 Spain 
+    🇵🇹 Portugal 
+    🇧🇷 Brazil 
+    🇮🇹 Italia 
+    🇫🇷 France 
+    🇩🇪 Germany 
+    🇳🇴 Norway 
+    🇵🇱 Poland 
+    🇸🇪 Sweden 
+    🇹🇷 Turkey 
+    🇳🇱 Netherland 
+    🇩🇰 Denmark
+  
+  Contact us at <a href="https://t.me/rocketsmsgateway">RocketSupport</a> to learn more
+  `);
+});
+
 stage.action('call', async (ctx) => {
   return ctx.scene.enter('START_ID');
 });
