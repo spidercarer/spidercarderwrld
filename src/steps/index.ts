@@ -36,9 +36,11 @@ export const steps = (step: string): Array<Middleware<C>> => [
     const number = await getLangAndVoice(ctx.message.text);
 
     if (!number.language) {
-      await ctx.replyWithHTML(`Country not supported yet.
-      We currently suport:
+      await ctx.replyWithHTML(`
+      Country not supported yet.
       
+      We currently suport:
+
           🇺🇸 United State 
           🇦🇺 Australia 
           🇬🇧 Great Britain 
