@@ -38,6 +38,7 @@ export const steps = (step: string): Array<Middleware<C>> => [
     if (!number.language) {
       await ctx.replyWithHTML(`Country not supported yet.
       We currently suport:
+      
           🇺🇸 United State 
           🇦🇺 Australia 
           🇬🇧 Great Britain 
@@ -55,6 +56,8 @@ export const steps = (step: string): Array<Middleware<C>> => [
           🇹🇷 Turkey 
           🇳🇱 Netherland 
           🇩🇰 Denmark 
+      
+      Send a number of any the countries mentioned above to continue or click /cancel to start again.
       `);
       return;
     }
